@@ -1,0 +1,14 @@
+coverage:
+  status:
+    project:
+      default:
+        enabled: yes
+        target: auto
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        enabled: yes
+        target: auto
+        threshold: 1%
+        informational: true

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Filipovich"
+    given-names: "Matthew J."
+    orcid: "https://orcid.org/0000-0002-2195-698X"
+  - family-names: "Lvovsky"
+    given-names: "A. I."
+  doi: "10.48550/arXiv.2411.18591"
+  journal: "arXiv"
+  month: 11
+  title: "TorchOptics: An open-source Python library for differentiable Fourier optics simulations"
+  url: "https://arxiv.org/abs/2411.18591"
+  year: 2024

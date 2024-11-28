@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "torchoptics"
+version = "0.0.0rc1"
+description = "Python library for differentiable Fourier optics simulations with PyTorch."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
+requires-python = ">=3.9"
+dependencies = [
+    "torch",
+    "matplotlib",
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://github.com/MatthewFilipovich/torchoptics"
+Documentation = "https://torchoptics.readthedocs.io/"
+Tracker = "https://github.com/MatthewFilipovich/torchoptics/issues"
+
+[tool.black]
+line-length = 110
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "matplotlib.*"
+ignore_errors = true

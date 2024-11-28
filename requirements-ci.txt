@@ -1,0 +1,6 @@
+scipy
+torch
+matplotlib
+pylint
+mypy
+coverage
