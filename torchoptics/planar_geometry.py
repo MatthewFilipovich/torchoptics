@@ -86,7 +86,7 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
                 the planar dimensions. Otherwise, returns the length between the edges of the first and last
                 grid cells. Default: `False`.
         """
-        shape_tensor = self.spacing.new_tensor(self.shape)
+        shape_tensor = torch.tensor(self.shape, dtype=self.spacing.dtype, device=self.spacing.device)
         return self.spacing * (shape_tensor - 1) if use_grid_points else self.spacing * shape_tensor
 
     def bounds(self, use_grid_points=False) -> Tensor:

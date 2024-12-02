@@ -88,7 +88,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         tensor = initialize_tensor(
             "asm_pad_factor", value, (2,), is_integer=True, validate_non_negative=True, fill_value=True
         )
-        self._asm_pad_factor = tuple(tensor.tolist())
+        self._asm_pad_factor = (tensor[0].item(), tensor[1].item())
 
     @property
     def interpolation_mode(self) -> str:
