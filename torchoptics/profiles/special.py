@@ -57,7 +57,8 @@ def sinc(
     The sinc profile is defined by the following equation:
 
     .. math::
-        \psi(x, y) = \text{sinc}\left(\frac{x}{a}\right) \cdot \text{sinc}\left(\frac{y}{b}\right)
+        \psi(x, y) = \frac{1}{\sqrt{ab}}\text{sinc}\left(\frac{x}{a}\right)
+        \cdot \text{sinc}\left(\frac{y}{b}\right)
 
     where:
 
@@ -76,5 +77,5 @@ def sinc(
     """
     x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
     scale = initialize_tensor("scale", scale, (2,), fill_value=True, validate_positive=True)
-    sinc_pattern = torch.sinc(x / scale[0]) * torch.sinc(y / scale[1])
+    sinc_pattern = torch.sinc(x / scale[0]) * torch.sinc(y / scale[1]) / (scale[0] * scale[1]) ** 0.5
     return sinc_pattern
