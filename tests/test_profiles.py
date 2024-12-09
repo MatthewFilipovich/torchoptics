@@ -354,5 +354,28 @@ class TestGaussianSchellModel(unittest.TestCase):
         self.assertTrue(torch.all(incoherent_data == 0))  # off-diagonal elements should be zero
 
 
+class TestBesselProfile(unittest.TestCase):
+    def setUp(self):
+        self.shape = (100, 100)
+        self.cone_angle = torch.pi / 4
+        self.wavelength = 0.5
+        self.spacing = (0.1, 0.1)
+        self.offset = (0.0, 0.0)
+
+        self.profile = bessel(
+            shape=self.shape,
+            cone_angle=self.cone_angle,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+
+    def test_bessel_shape(self):
+        self.assertEqual(self.profile.shape, self.shape)
+
+    def test_bessel_values(self):
+        self.assertTrue(torch.all(self.profile.abs() <= 1))
+
+
 if __name__ == "__main__":
     unittest.main()

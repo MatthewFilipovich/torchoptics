@@ -1,5 +1,6 @@
 """This module contains functions to generate different types of profiles."""
 
+from .bessel import bessel
 from .gratings import blazed_grating, sinusoidal_amplitude_grating, sinusoidal_phase_grating
 from .hermite_gaussian import gaussian, hermite_gaussian
 from .laguerre_gaussian import laguerre_gaussian

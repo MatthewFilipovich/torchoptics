@@ -275,7 +275,7 @@ class TestField(unittest.TestCase):
         field = Field(data, wavelength=1, spacing=1)
 
         # Test visualization of the field data
-        fig = field.visualize(intensity=True, show=False, return_fig=True)
+        fig = field.visualize(show=False, return_fig=True)
         self.assertIsInstance(fig, plt.Figure)
 
 
