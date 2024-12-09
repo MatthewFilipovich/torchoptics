@@ -92,7 +92,7 @@ measurements = [
 
 # Visualize the measured intensity distributions
 for i, measurement in enumerate(measurements):
-    measurement.visualize(title=f"z={i}f", vmax=1, intensity=True)
+    measurement.visualize(title=f"z={i}f", vmax=1)
 ```
 
 <p align="center">

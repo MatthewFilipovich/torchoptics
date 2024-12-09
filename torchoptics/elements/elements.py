@@ -73,6 +73,7 @@ class ModulationElement(Element):
         Args:
             **kwargs: Additional keyword arguments for visualization.
         """
+        kwargs.update({"symbol": r"\mathcal{M}"})
         return self._visualize(self.modulation_profile, **kwargs)
 
 
@@ -110,4 +111,5 @@ class PolarizedModulationElement(Element):
             *index (int): Index of the tensor to visualize.
             **kwargs: Additional keyword arguments for visualization.
         """
+        kwargs.update({"symbol": "J"})
         return self._visualize(self.polarized_modulation_profile, index, **kwargs)

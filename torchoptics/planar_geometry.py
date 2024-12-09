@@ -132,8 +132,8 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
         offset_str = f"({self.offset[0].item():.2e}, {self.offset[1].item():.2e})"
         return f"shape={shape_str}, z={self.z.item():.2e}, spacing={spacing_str}, offset={offset_str}"
 
-    def _visualize(self, data: Tensor, index: tuple = (), bounds: bool = False, **kwargs) -> Any:
+    def _visualize(self, data: Tensor, index: tuple = (), show_bounds: bool = False, **kwargs) -> Any:
         """Visualizes the data tensor."""
-        if bounds:
+        if show_bounds:
             kwargs.update({"extent": torch.cat((self.bounds()[2:], self.bounds()[:2])).cpu().detach()})
         return visualize_tensor(data[index + (slice(None), slice(None))], **kwargs)

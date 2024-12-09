@@ -245,7 +245,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             )
         return outer2d(self.data, other.data) * self.cell_area()
 
-    def visualize(self, *index: int, intensity=False, **kwargs) -> Any:
+    def visualize(self, *index: int, **kwargs) -> Any:
         """
         Visualizes the field.
 
@@ -254,8 +254,8 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             intensity (bool): Whether to visualize only the intensity. Default: `False`.
             **kwargs: Additional keyword arguments for visualization.
         """
-        data = self.intensity() if intensity else self.data
-        return self._visualize(data, index, **kwargs)
+        kwargs.update({"symbol": r"\psi"})
+        return self._visualize(self.data, index, **kwargs)
 
     def copy(self, **kwargs) -> Field:
         """

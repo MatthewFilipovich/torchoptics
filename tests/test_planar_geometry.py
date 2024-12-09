@@ -99,7 +99,7 @@ class TestPlanarGeometry(unittest.TestCase):
 
         tensor = torch.randn(self.shape)
 
-        visual = plane._visualize(tensor, show=True, return_fig=True, bounds=True)
+        visual = plane._visualize(tensor, show=True, return_fig=True, show_bounds=True)
 
         mock_show.assert_called_once()  # Check if plt.show() was called
         self.assertIsInstance(visual, matplotlib.pyplot.Figure)

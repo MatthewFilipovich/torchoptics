@@ -97,7 +97,7 @@ This example demonstrates simulating a 4f imaging system using TorchOptics. The 
 
     # Visualize the measured intensity distributions
     for i, measurement in enumerate(measurements):
-        measurement.visualize(title=f"z={i}f", vmax=1, intensity=True)
+        measurement.visualize(title=f"z={i}f", vmax=1)
 
 .. figure:: _static/4f_simulation.png
    :width: 700px

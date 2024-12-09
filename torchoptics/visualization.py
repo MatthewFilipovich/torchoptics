@@ -19,6 +19,7 @@ def visualize_tensor(
     cmap: str = "inferno",
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
+    symbol: Optional[str] = None,
     show: bool = True,
     return_fig: bool = False,
 ) -> Optional[plt.Figure]:
@@ -35,6 +36,7 @@ def visualize_tensor(
         cmap (str, optional): The colormap to use. Default: `"inferno"`.
         xlabel (str, optional): The label for the x-axis. Default: `None`.
         ylabel (str, optional): The label for the y-axis. Default: `None`.
+        symbol (str, optional): Symbol used in ax title. Default: `None`.
         show (bool, optional): Whether to display the plot. Default: `True`.
         return_fig (bool, optional): Whether to return the figure. Default: `False`.
     """
@@ -43,10 +45,39 @@ def visualize_tensor(
         raise ValueError(f"Expected tensor to be 2D, but got shape {tensor.shape}.")
     tensor = tensor.detach().cpu().view(tensor.shape[-2], tensor.shape[-1])
 
-    fig, axes = plt.subplots(2, 2, figsize=(10, 10)) if tensor.is_complex() else plt.subplots(figsize=(5, 5))
+    if tensor.is_complex():
+        fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+        tensor = torch.where(tensor == -0.0 - 0.0j, 0, tensor)  # Remove numerical artifacts
 
-    subplots_func = _create_complex_image_subplots if tensor.is_complex() else _create_image_subplot
-    subplots_func(tensor, extent, vmin, vmax, cmap, xlabel, ylabel, axes)
+        create_image_subplot(  # Plot absolute square
+            tensor.abs().square(),
+            extent,
+            vmin,
+            vmax,
+            cmap,
+            xlabel,
+            ylabel,
+            axes[0],
+            rf"$|{symbol}|^2$" if symbol is not None else None,
+        )
+
+        create_image_subplot(  # plot angle
+            tensor.angle(),
+            extent,
+            -torch.pi,
+            torch.pi,
+            "twilight_shifted",
+            xlabel,
+            ylabel,
+            axes[1],
+            r"$\arg \{" + symbol + r"\}$" if symbol is not None else None,
+        )
+
+        axes[1].get_images()[0].set_interpolation("none")
+        plt.subplots_adjust(wspace=0.4, hspace=0.4)
+    else:
+        fig, axes = plt.subplots(figsize=(5, 5))
+        create_image_subplot(tensor, extent, vmin, vmax, cmap, xlabel, ylabel, axes, symbol)
 
     if title:
         fig.suptitle(title, y=0.95)
@@ -57,41 +88,7 @@ def visualize_tensor(
     return fig if return_fig else None
 
 
-def _create_complex_image_subplots(
-    tensor: Tensor,
-    extent: Optional[Sequence[float]],
-    vmin: Optional[float],
-    vmax: Optional[float],
-    cmap: str,
-    xlabel: Optional[str],
-    ylabel: Optional[str],
-    axes: Any,
-) -> None:
-    """Creates subplots for visualizing a complex-valued tensor."""
-    components = [tensor.abs().square(), tensor.angle(), tensor.real, tensor.imag]
-    ax_titles = [r"$|\psi|^2$", r"$\arg \{ \psi \}$", r"$\Re \{\psi \}$", r"$\Im \{\psi \}$"]
-    cmap_list = [cmap, "twilight_shifted", "viridis", "viridis"]
-    vmin_list = [vmin, -torch.pi, None, None]
-    vmax_list = [vmax, torch.pi, None, None]
-
-    for i in range(4):
-        _create_image_subplot(
-            components[i],
-            extent=extent,
-            vmin=vmin_list[i],
-            vmax=vmax_list[i],
-            cmap=cmap_list[i],
-            xlabel=xlabel,
-            ylabel=ylabel,
-            ax=axes.flat[i],  # type: ignore[attr-defined]
-        )
-        axes.flat[i].set_title(ax_titles[i])  # type: ignore[attr-defined]
-
-    axes[0, 1].get_images()[0].set_interpolation("none")  # type: ignore[index]
-    plt.subplots_adjust(wspace=0.4, hspace=0.4)
-
-
-def _create_image_subplot(
+def create_image_subplot(
     tensor: Tensor,
     extent: Optional[Sequence[float]],
     vmin: Optional[float],
@@ -100,6 +97,7 @@ def _create_image_subplot(
     xlabel: Optional[str],
     ylabel: Optional[str],
     ax: Any,
+    ax_title: Optional[str],
 ) -> None:
     """Creates a subplot for visualizing a real-valued tensor."""
     extent_tuple = tuple(extent) if extent is not None else None
@@ -109,3 +107,4 @@ def _create_image_subplot(
     plt.colorbar(im, cax=cax, orientation="vertical")
     ax.set_xlabel(xlabel)  # type: ignore[arg-type]
     ax.set_ylabel(ylabel)  # type: ignore[arg-type]
+    ax.set_title(ax_title)

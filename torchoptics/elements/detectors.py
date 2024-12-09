@@ -105,7 +105,7 @@ class IntensityDetector(Element):
         intensity_flat, weight_flat = field.intensity().flatten(-2), self.weight.flatten(-2)
         return linear(intensity_flat, weight_flat) * self.cell_area()  # pylint: disable=not-callable
 
-    def visualize(self, *index: int, sum_weight: bool = False, **kwargs) -> Any:
+    def visualize(self, *index: int, **kwargs) -> Any:
         """
         Visualizes the detector output or the weight matrix.
 
@@ -114,8 +114,8 @@ class IntensityDetector(Element):
             sum_weight (bool): Whether to plot the sum of the weight matrix. Default: `False`.
             **kwargs: Additional keyword arguments for visualization.
         """
-        data = self.weight.sum(dim=0) if sum_weight else self.weight
-        return self._visualize(data, index, **kwargs)
+        kwargs.update({"symbol": "W"})
+        return self._visualize(self.weight, index, **kwargs)
 
     @staticmethod
     def _validate_weight(tensor):
