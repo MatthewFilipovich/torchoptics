@@ -71,6 +71,8 @@ def visualize_tensor(
             ylabel,
             axes[1],
             r"$\arg \{" + symbol + r"\}$" if symbol is not None else None,
+            cbar_ticks=[-torch.pi, 0, torch.pi],
+            cbar_ticklabels=[r"$-\pi$", r"$0$", r"$\pi$"],
         )
 
         axes[1].get_images()[0].set_interpolation("none")
@@ -88,7 +90,7 @@ def visualize_tensor(
     return fig if return_fig else None
 
 
-def create_image_subplot(
+def create_image_subplot(  # pylint: disable=too-many-locals
     tensor: Tensor,
     extent: Optional[Sequence[float]],
     vmin: Optional[float],
@@ -98,13 +100,19 @@ def create_image_subplot(
     ylabel: Optional[str],
     ax: Any,
     ax_title: Optional[str],
+    cbar_ticks: Optional[Sequence[float]] = None,
+    cbar_ticklabels: Optional[Sequence[str]] = None,
 ) -> None:
     """Creates a subplot for visualizing a real-valued tensor."""
     extent_tuple = tuple(extent) if extent is not None else None
     im = ax.imshow(tensor, extent=extent_tuple, vmin=vmin, vmax=vmax, cmap=cmap)  # type: ignore[arg-type]
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
-    plt.colorbar(im, cax=cax, orientation="vertical")
+    colorbar = plt.colorbar(im, cax=cax, orientation="vertical")
+    if cbar_ticks is not None:
+        colorbar.set_ticks(cbar_ticks)
+    if cbar_ticklabels is not None:
+        colorbar.set_ticklabels(cbar_ticklabels)
     ax.set_xlabel(xlabel)  # type: ignore[arg-type]
     ax.set_ylabel(ylabel)  # type: ignore[arg-type]
     ax.set_title(ax_title)
