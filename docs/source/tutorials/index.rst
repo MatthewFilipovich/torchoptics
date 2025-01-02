@@ -9,3 +9,4 @@ This section provides tutorials and example simulations using the TorchOptics li
 
    4f_system.ipynb
    training_diffractive_splitter.ipynb
+   diffraction_pattern.ipynb
