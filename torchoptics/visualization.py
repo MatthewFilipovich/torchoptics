@@ -58,7 +58,7 @@ def visualize_tensor(
             xlabel,
             ylabel,
             axes[0],
-            rf"$|{symbol}|^2$" if symbol is not None else None,
+            rf"$|${symbol}$|^2$" if symbol is not None else None,
         )
 
         create_image_subplot(  # plot angle
@@ -70,7 +70,7 @@ def visualize_tensor(
             xlabel,
             ylabel,
             axes[1],
-            r"$\arg \{" + symbol + r"\}$" if symbol is not None else None,
+            r"$\arg \{$" + symbol + r"$\}$" if symbol is not None else None,
             cbar_ticks=[-torch.pi, 0, torch.pi],
             cbar_ticklabels=[r"$-\pi$", r"$0$", r"$\pi$"],
         )

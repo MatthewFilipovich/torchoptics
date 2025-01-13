@@ -37,8 +37,8 @@ def schell_model(
         intensity_func (Callable[[Tensor, Tensor], Tensor]): Function defining the intensity distribution,
             which takes the :math:`x` and :math:`y` coordinates and returns the intensity values.
         coherence_func (Callable[[Tensor, Tensor], Tensor]): Function defining the coherence distribution,
-            which takes the pairwise :math:`x` and :math:`y` coordinate differences and returns the coherence
-            values.
+            which takes the pairwise :math:`dx` and :math:`dy` coordinate differences and returns the
+            coherence values.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Offset coordinates of the pattern. Default: `(0, 0)`.
@@ -51,9 +51,9 @@ def schell_model(
     intensity = intensity_func(x, y)
 
     # Compute pairwise differences for coherence function
-    x_diff = x.unsqueeze(-1).unsqueeze(-1) - x.unsqueeze(0).unsqueeze(0)
-    y_diff = y.unsqueeze(-1).unsqueeze(-1) - y.unsqueeze(0).unsqueeze(0)
-    coherence = coherence_func(x_diff, y_diff)
+    dx = x.unsqueeze(-1).unsqueeze(-1) - x.unsqueeze(0).unsqueeze(0)
+    dy = y.unsqueeze(-1).unsqueeze(-1) - y.unsqueeze(0).unsqueeze(0)
+    coherence = coherence_func(dx, dy)
 
     return outer2d(intensity, intensity) ** 0.5 * coherence
 
@@ -95,10 +95,10 @@ def gaussian_schell_model(
         :math:`\Gamma(x_1, x_2, y_1, y_2)`.
     """
 
-    def coherence_func(x, y):
+    def coherence_func(dx, dy):
         if coherence_width == 0:  # Return 1 only at (x, y) = (0, 0), and 0 elsewhere
-            return (x == 0) & (y == 0)
-        return torch.exp(-(x**2 + y**2) / (2 * coherence_width**2))
+            return (dx == 0) * (dy == 0)
+        return torch.exp(-(dx**2 + dy**2) / (2 * coherence_width**2))
 
     def intensity_func(x, y):
         return 2 / (torch.pi * waist_radius**2) * torch.exp(-(2 * (x**2 + y**2)) / waist_radius**2)

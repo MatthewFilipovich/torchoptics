@@ -254,7 +254,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             intensity (bool): Whether to visualize only the intensity. Default: `False`.
             **kwargs: Additional keyword arguments for visualization.
         """
-        kwargs.update({"symbol": r"\psi"})
+        kwargs.update({"symbol": r"$\psi$"})
         return self._visualize(self.data, index, **kwargs)
 
     def copy(self, **kwargs) -> Field:
@@ -399,3 +399,15 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         indices_unsqueezed = [..., *((None,) * self._data_min_dim)]
         normalized_data = self.data * (normalized_power / self.power()[indices_unsqueezed])
         return self.copy(data=normalized_data)
+
+    def visualize(self, *index: int, **kwargs) -> Any:
+        """
+        Visualizes the the time-averaged intensity (diagonal of the spatial coherence matrix).
+
+        Args:
+            *index (int): Index of the data tensor to visualize.
+            intensity (bool): Whether to visualize only the intensity. Default: `False`.
+            **kwargs: Additional keyword arguments for visualization.
+        """
+        kwargs.update({"symbol": r"diag$(\Gamma)$"})
+        return self._visualize(self.intensity(), index, **kwargs)
