@@ -114,7 +114,7 @@ class IntensityDetector(Element):
             sum_weight (bool): Whether to plot the sum of the weight matrix. Default: `False`.
             **kwargs: Additional keyword arguments for visualization.
         """
-        kwargs.update({"symbol": "$W$"})
+        kwargs.update({"symbol": r"$\mathcal{W}" + f"_{index[-1]}$"})
         return self._visualize(self.weight, index, **kwargs)
 
     @staticmethod
