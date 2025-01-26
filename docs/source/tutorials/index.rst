@@ -11,3 +11,5 @@ This section provides tutorials and example simulations using the TorchOptics li
    training_diffractive_splitter.ipynb
    diffraction_pattern.ipynb
    spatial_coherence.ipynb
+   polychromatic_4f_system.ipynb
+   polychromatic_grating.ipynb
