@@ -68,7 +68,7 @@ def sinusoidal_amplitude_grating(
 
     where:
 
-    - :math:`m` is the amplitude contrast, and
+    - :math:`m` is the amplitude contrast (:math:`0-1`), and
     - :math:`\Lambda` is the period of the grating.
 
     Args:
@@ -108,7 +108,7 @@ def sinusoidal_phase_grating(
 
     where:
 
-    - :math:`m` is the phase contrast, and
+    - :math:`m` is the phase contrast (:math:`0-2\pi`), and
     - :math:`\Lambda` is the period of the grating.
 
     Args:
