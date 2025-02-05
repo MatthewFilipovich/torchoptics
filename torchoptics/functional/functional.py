@@ -204,7 +204,7 @@ def plane_sample(
     data: Tensor,
     data_plane: PlanarGeometry,
     interpolated_plane: PlanarGeometry,
-    interpolation_mode: str = "bilinear",
+    interpolation_mode: str,
 ) -> Tensor:
     """
     Interpolates data from a 2D plane onto a new plane.
@@ -213,7 +213,7 @@ def plane_sample(
         data (torch.Tensor): The input data to interpolate.
         data_plane (PlanarGeometry): The plane containing the input data.
         interpolated_plane (PlanarGeometry): The plane to interpolate the data to.
-        interpolation_mode (str, optional): The interpolation mode. Default: `"bilinear"`.
+        interpolation_mode (str, optional): The interpolation mode.
 
     Returns:
         torch.Tensor: The interpolated data.

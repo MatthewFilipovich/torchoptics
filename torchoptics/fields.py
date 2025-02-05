@@ -32,7 +32,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         propagation_method (str): The propagation method to use. Default: `"AUTO"`.
         asm_pad_factor (Vector2): The padding factor along planar dimensions for angular spectrum method (ASM)
             propagation. Default: `2`.
-        interpolation_mode (str): The interpolation mode to use. Default: `"bilinear"`.
+        interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
     """
 
     _data_min_dim = 2
@@ -46,7 +46,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         offset: Optional[Vector2] = None,
         propagation_method: str = "AUTO",
         asm_pad_factor: Vector2 = 2,
-        interpolation_mode: str = "bilinear",
+        interpolation_mode: str = "nearest",
     ) -> None:
 
         self._validate_data(data)
@@ -304,7 +304,7 @@ class PolarizedField(Field):  # pylint: disable=abstract-method
         propagation_method (str): The propagation method to use. Default: `"AUTO"`.
         asm_pad_factor (Vector2): The padding factor along planar dimensions for angular spectrum method (ASM)
             propagation. Default: `2`.
-        interpolation_mode (str): The interpolation mode to use. Default: `"bilinear"`.
+        interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
     """
 
     _data_min_dim = 3
@@ -361,7 +361,7 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         propagation_method (str): The propagation method to use. Default: `"AUTO"`.
         asm_pad_factor (Vector2): The padding factor along planar dimensions for angular spectrum method (ASM)
             propagation. Default: `2`.
-        interpolation_mode (str): The interpolation mode to use. Default: `"bilinear"`.
+        interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
     """
 
     _data_min_dim = 4
