@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Optional
 
 import torch
@@ -52,10 +53,17 @@ def propagator(
 
     if output_plane.z != field.z:  # Propagate to output plane z
         propagation_plane = get_propagation_plane(field, output_plane)
-        propagation_func = (
-            dim_propagation if is_dim_propagation(field, propagation_plane) else asm_propagation
-        )
-        field = propagation_func(field, propagation_plane)
+        is_dim = is_dim_propagation(field, propagation_plane)
+        propagation_func = dim_propagation if is_dim else asm_propagation
+        propagated_field = propagation_func(field, propagation_plane)
+
+        if is_dim and torch.any(calculate_power(field) < calculate_power(propagated_field)):
+            warnings.warn(
+                f"Field power increased during propagation from z={field.z} to z={output_plane.z}.\n"
+                "Consider using different geometries or asm propagation method.",
+                category=RuntimeWarning,
+            )
+        field = propagated_field
 
     if not output_plane.is_same_geometry(field):  # Interpolate to output plane geometry
         transformed_data = plane_sample(field.data, field, output_plane, field.interpolation_mode)
@@ -138,3 +146,8 @@ def calculate_min_dim_propagation_distance(field: Field) -> float:
     - :math:`\lambda` is the wavelength of the field.
     """
     return float((field.length() * field.spacing).max() / field.wavelength)
+
+
+def calculate_power(field: Field) -> torch.Tensor:
+    """Function is necessary to properly calculate power for SpatialCoherence objects."""
+    return field.data.abs().square().sum(dim=(-1, -2)) * field.cell_area()
