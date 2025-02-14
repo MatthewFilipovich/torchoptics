@@ -19,7 +19,7 @@ class Modulator(ModulationElement):
     The modulator is described by a complex modulation profile.
 
     Args:
-        modulation_profile (Tensor): Complex modulation profile.
+        modulation (Tensor): Complex modulation profile.
         z (Scalar): Position along the z-axis. Default: `0`.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
@@ -28,14 +28,17 @@ class Modulator(ModulationElement):
 
     def __init__(
         self,
-        modulation_profile: Tensor,
+        modulation: Tensor,
         z: Scalar = 0,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor("modulation_profile", modulation_profile)
-        super().__init__(modulation_profile.shape, z, spacing, offset)
-        self.register_optics_property("modulation_profile", modulation_profile, is_complex=True)
+        _validate_input_tensor("modulation", modulation)
+        super().__init__(modulation.shape, z, spacing, offset)
+        self.register_optics_property("modulation", modulation, is_complex=True)
+
+    def modulation_profile(self) -> Tensor:
+        return self.modulation
 
 
 class PhaseModulator(ModulationElement):
@@ -63,9 +66,7 @@ class PhaseModulator(ModulationElement):
         super().__init__(phase.shape, z, spacing, offset)
         self.register_optics_property("phase", phase)
 
-    @property
     def modulation_profile(self) -> Tensor:
-        """Returns the phase modulation profile."""
         return torch.exp(1j * self.phase)
 
 
@@ -94,9 +95,7 @@ class AmplitudeModulator(ModulationElement):
         super().__init__(amplitude.shape, z, spacing, offset)
         self.register_optics_property("amplitude", amplitude)
 
-    @property
     def modulation_profile(self) -> Tensor:
-        """Returns the amplitude modulation profile."""
         return self.amplitude.cdouble()
 
 
