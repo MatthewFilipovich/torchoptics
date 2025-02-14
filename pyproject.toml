@@ -9,7 +9,7 @@ description = "Python library for differentiable Fourier optics simulations with
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "torch",
     "matplotlib",
