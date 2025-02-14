@@ -5,9 +5,10 @@ from typing import Optional
 import torch
 from torch import Tensor
 
+from ..config import get_default_wavelength
 from ..param import Param
 from ..type_defs import Scalar, Vector2
-from .elements import ModulationElement
+from .elements import ModulationElement, PolychromaticModulationElement
 
 __all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator"]
 
@@ -97,6 +98,36 @@ class AmplitudeModulator(ModulationElement):
 
     def modulation_profile(self) -> Tensor:
         return self.amplitude.cdouble()
+
+
+class PolychromaticPhaseModulator(PolychromaticModulationElement):
+    r"""
+    Phase-only modulator element that modules the field based on the optical path length.
+
+    :math:`\phi = \exp(2j \pi / \lambda \cdot \text{opl})`
+
+    Args:
+        opl (Tensor): Optical path length along plane (real-valued tensor).
+        z (Scalar): Position along the z-axis. Default: `0`.
+        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
+        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+    """
+
+    def __init__(
+        self,
+        opl: Tensor,
+        z: Scalar = 0,
+        spacing: Optional[Vector2] = None,
+        offset: Optional[Vector2] = None,
+    ) -> None:
+        _validate_input_tensor("opl", opl)
+        super().__init__(opl.shape, z, spacing, offset)
+        self.register_optics_property("opl", opl)
+
+    def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
+        wavelength = get_default_wavelength() if wavelength is None else wavelength
+        return torch.exp(2j * torch.pi / wavelength * self.opl)
 
 
 def _validate_input_tensor(name, tensor):
