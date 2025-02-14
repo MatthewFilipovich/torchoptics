@@ -1,6 +1,6 @@
-scipy
-torch
-matplotlib
-pylint
-mypy
-coverage
+scipy==1.15.1
+torch==2.5.0
+matplotlib==3.10.0
+pylint==3.3.4
+mypy==1.15.0
+coverage==7.6.12
