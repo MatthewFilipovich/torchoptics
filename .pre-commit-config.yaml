@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 24.3.0
+    rev: 25.1.0
     hooks:
       - id: black
         files: "^(torchoptics|tests)/"
@@ -19,7 +19,16 @@ repos:
         files: "^torchoptics/"
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.2.0"
+    rev: "v1.15.0"
     hooks:
       - id: mypy
         files: "^torchoptics/"
+
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
+        args:
+          - --keep-output
+          - --extra-keys 
+          - metadata.kernelspec metadata.language_info
