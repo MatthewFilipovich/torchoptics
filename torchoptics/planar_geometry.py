@@ -31,6 +31,10 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    z: Tensor
+    spacing: Tensor
+    offset: Tensor
+
     def __init__(
         self,
         shape: Vector2,

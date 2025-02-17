@@ -132,7 +132,7 @@ class System(Module):
 
     def sorted_elements(self) -> tuple[Element, ...]:
         """Returns the elements sorted by their z position."""
-        return tuple(sorted(self.elements, key=lambda element: element.z))
+        return tuple(sorted(self.elements, key=lambda element: element.z.item()))
 
     def elements_in_field_path(self, field: Field, output_element: Optional[Element]) -> tuple[Element, ...]:
         """

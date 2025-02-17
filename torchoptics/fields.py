@@ -36,6 +36,8 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
     """
 
     _data_min_dim = 2
+    data: Tensor
+    wavelength: Tensor
 
     def __init__(
         self,
@@ -278,7 +280,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             "interpolation_mode": self.interpolation_mode,
         }
         properties.update(kwargs)
-        return self.__class__(**properties)
+        return self.__class__(**properties)  # type: ignore
 
     def _validate_data(self, tensor: Tensor) -> None:
         if not isinstance(tensor, (Tensor, Param)):

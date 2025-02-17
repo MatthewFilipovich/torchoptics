@@ -38,6 +38,9 @@ class Lens(ModulationElement):
             the lens diameter, otherwise lens is square. Default: `True`.
     """
 
+    focal_length: Tensor
+    wavelength: Tensor
+
     def __init__(
         self,
         shape: Vector2,

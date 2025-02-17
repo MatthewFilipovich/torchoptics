@@ -26,6 +26,8 @@ class Modulator(ModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    modulation_profile: Tensor
+
     def __init__(
         self,
         modulation_profile: Tensor,
@@ -51,6 +53,8 @@ class PhaseModulator(ModulationElement):
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
+
+    phase: Tensor
 
     def __init__(
         self,
@@ -83,6 +87,8 @@ class AmplitudeModulator(ModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    amplitude: Tensor
+
     def __init__(
         self,
         amplitude: Tensor,
@@ -97,7 +103,7 @@ class AmplitudeModulator(ModulationElement):
     @property
     def modulation_profile(self) -> Tensor:
         """Returns the amplitude modulation profile."""
-        return self.amplitude.cdouble()
+        return self.amplitude.cdouble()  # type: ignore
 
 
 def _validate_input_tensor(name, tensor):
