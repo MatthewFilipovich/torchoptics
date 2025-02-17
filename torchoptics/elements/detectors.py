@@ -79,6 +79,7 @@ class IntensityDetector(Element):
     """
 
     _weight_is_complex = False
+    weight: Tensor
 
     def __init__(
         self,

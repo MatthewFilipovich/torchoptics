@@ -44,6 +44,9 @@ class Waveplate(PolarizedModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    phi: Tensor
+    theta: Tensor
+
     def __init__(
         self,
         shape: Vector2,
@@ -95,6 +98,8 @@ class QuarterWaveplate(PolarizedModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    theta: Tensor
+
     def __init__(
         self,
         shape: Vector2,
@@ -143,6 +148,8 @@ class HalfWaveplate(PolarizedModulationElement):
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
+
+    theta: Tensor
 
     def __init__(
         self,

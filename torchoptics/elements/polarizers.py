@@ -36,6 +36,8 @@ class LinearPolarizer(PolarizedModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    theta: Tensor
+
     def __init__(
         self,
         shape: Vector2,

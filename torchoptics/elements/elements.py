@@ -64,7 +64,7 @@ class ModulationElement(Element):
         Returns:
             Field: The modulated field."""
         self.validate_field_geometry(field)
-        return field.modulate(self.modulation_profile)
+        return field.modulate(self.modulation_profile)  # type: ignore  # TODO: temporary fix for mypy issue
 
     def visualize(self, **kwargs) -> Any:
         """
@@ -74,7 +74,7 @@ class ModulationElement(Element):
             **kwargs: Additional keyword arguments for visualization.
         """
         kwargs.update({"symbol": r"$\mathcal{M}$"})
-        return self._visualize(self.modulation_profile, **kwargs)
+        return self._visualize(self.modulation_profile, **kwargs)  # type: ignore  # TODO: temporary fix
 
 
 class PolarizedModulationElement(Element):
@@ -101,7 +101,7 @@ class PolarizedModulationElement(Element):
         Returns:
             PolarizedField: The modulated polarized field."""
         self.validate_field_geometry(field)
-        return field.polarized_modulate(self.polarized_modulation_profile)
+        return field.polarized_modulate(self.polarized_modulation_profile)  # type: ignore  # TODO: temporary
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """
@@ -112,4 +112,4 @@ class PolarizedModulationElement(Element):
             **kwargs: Additional keyword arguments for visualization.
         """
         kwargs.update({"symbol": "$J$"})
-        return self._visualize(self.polarized_modulation_profile, index, **kwargs)
+        return self._visualize(self.polarized_modulation_profile, index, **kwargs)  # type: ignore  # TODO:

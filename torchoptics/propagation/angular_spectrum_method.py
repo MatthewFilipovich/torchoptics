@@ -37,7 +37,7 @@ def asm_propagation(field: Field, propagation_plane: PlanarGeometry) -> Field:
     return propagated_field
 
 
-def calculate_transfer_function(field: Field, propagation_distance: PlanarGeometry) -> Tensor:
+def calculate_transfer_function(field: Field, propagation_distance: Tensor) -> Tensor:
     """Calculate the transfer function for ASM propagation."""
     # pylint: disable=not-callable
     padded_input_shape = torch.tensor(field.shape) * (2 * torch.tensor(field.asm_pad_factor) + 1)

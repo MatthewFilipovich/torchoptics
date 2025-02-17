@@ -45,6 +45,11 @@ class BeamSplitter(Element):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    theta: Tensor
+    phi_0: Tensor
+    phi_r: Tensor
+    phi_t: Tensor
+
     def __init__(
         self,
         shape: Vector2,

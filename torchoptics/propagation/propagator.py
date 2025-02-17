@@ -124,7 +124,7 @@ def is_dim_propagation(field: Field, propagation_plane: PlanarGeometry) -> bool:
         return True
     if field.propagation_method in ("ASM", "ASM_FRESNEL"):
         return False
-    abs_propagation_distance = abs(propagation_plane.z - field.z)
+    abs_propagation_distance = (propagation_plane.z - field.z).abs().item()
     return calculate_min_dim_propagation_distance(field) < abs_propagation_distance
 
 
@@ -145,7 +145,7 @@ def calculate_min_dim_propagation_distance(field: Field) -> float:
     - :math:`\Delta` is the spacing of the field.
     - :math:`\lambda` is the wavelength of the field.
     """
-    return float((field.length() * field.spacing).max() / field.wavelength)
+    return ((field.length() * field.spacing).max() / field.wavelength).item()
 
 
 def calculate_power(field: Field) -> torch.Tensor:

@@ -23,6 +23,7 @@ repos:
     hooks:
       - id: mypy
         files: "^torchoptics/"
+        additional_dependencies: [torch==2.6.0]
 
   - repo: https://github.com/kynan/nbstripout
     rev: 0.8.1
@@ -30,5 +31,5 @@ repos:
       - id: nbstripout
         args:
           - --keep-output
-          - --extra-keys 
+          - --extra-keys
           - metadata.kernelspec metadata.language_info

@@ -26,6 +26,8 @@ class PolarizedModulator(PolarizedModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    polarized_modulation_profile: Tensor
+
     def __init__(
         self,
         polarized_modulation_profile: Tensor,
@@ -53,6 +55,8 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
+
+    phase: Tensor
 
     def __init__(
         self,
@@ -85,6 +89,8 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
+    amplitude: Tensor
+
     def __init__(
         self,
         amplitude: Tensor,
@@ -99,7 +105,7 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
     @property
     def polarized_modulation_profile(self) -> Tensor:
         """Returns the polarized modulation profile as a complex tensor."""
-        return self.amplitude.cdouble()
+        return self.amplitude.cdouble()  # type: ignore
 
 
 def _validate_input_tensor(tensor, name):
