@@ -4,15 +4,14 @@ from typing import Optional
 
 from torch import Tensor
 
-from ..config import get_default_wavelength
 from ..profiles import lens
 from ..type_defs import Scalar, Vector2
-from .elements import ModulationElement
+from .elements import PolychromaticModulationElement
 
 __all__ = ["Lens"]
 
 
-class Lens(ModulationElement):
+class Lens(PolychromaticModulationElement):
     r"""
     Lens element.
 
@@ -27,10 +26,8 @@ class Lens(ModulationElement):
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        z (Scalar): Position along the z-axis. Default: `0`.
         focal_length (Scalar): Focal length of the lens.
-        wavelength (Optional[Scalar]): Wavelength used for lens operation. Default: if `None`, uses a
-        global default (see :meth:`torchoptics.config.set_default_wavelength()`).
+        z (Scalar): Position along the z-axis. Default: `0`.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
@@ -39,39 +36,23 @@ class Lens(ModulationElement):
     """
 
     focal_length: Tensor
-    wavelength: Tensor
 
     def __init__(
         self,
         shape: Vector2,
         focal_length: Scalar,
         z: Scalar = 0,
-        wavelength: Optional[Scalar] = None,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
         is_circular_lens: bool = True,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("focal_length", focal_length, ())
-        self.register_optics_property(
-            "wavelength",
-            get_default_wavelength() if wavelength is None else wavelength,
-            (),
-            validate_positive=True,
-        )
         self.is_circular_lens = is_circular_lens
 
-    @property
-    def modulation_profile(self) -> Tensor:
-        """Returns the phase modulation profile of the lens."""
+    def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
         return lens(
-            self.shape,
-            self.focal_length,
-            self.z,
-            self.wavelength,
-            self.spacing,
-            None,  # Offset is not used in lens profile
-            self.is_circular_lens,
+            self.shape, self.focal_length, self.z, wavelength, self.spacing, None, self.is_circular_lens
         )
 
     @property

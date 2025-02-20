@@ -138,29 +138,31 @@ class TestModulatorClasses(unittest.TestCase):
     def test_modulator_initialization(self):
         modulator = Modulator(self.complex_tensor, self.z)
         self.assertIsInstance(modulator(self.field), Field)
-        self.assertTrue(torch.equal(modulator.modulation_profile, self.complex_tensor))
+        self.assertTrue(torch.equal(modulator.modulation_profile(), self.complex_tensor))
 
     def test_phase_modulator_initialization_and_profile(self):
         phase_modulator = PhaseModulator(self.phase_profile, self.z)
         expected_profile = torch.exp(1j * self.phase_profile).cdouble()
-        self.assertTrue(torch.allclose(phase_modulator.modulation_profile, expected_profile))
+        self.assertTrue(torch.allclose(phase_modulator.modulation_profile(), expected_profile))
         self.assertIsInstance(phase_modulator(self.field), Field)
 
     def test_amplitude_modulator_initialization_and_profile(self):
         amplitude_modulator = AmplitudeModulator(self.amplitude_profile, self.z)
         expected_profile = self.amplitude_profile.cdouble()
-        self.assertTrue(torch.allclose(amplitude_modulator.modulation_profile, expected_profile))
+        self.assertTrue(torch.allclose(amplitude_modulator.modulation_profile(), expected_profile))
         self.assertIsInstance(amplitude_modulator(self.field), Field)
 
     def test_phase_modulation_profile_consistency(self):
         phase_modulator = PhaseModulator(self.phase_profile, self.z)
         modulator = Modulator(torch.exp(1j * self.phase_profile), self.z)
-        self.assertTrue(torch.allclose(modulator.modulation_profile, phase_modulator.modulation_profile))
+        self.assertTrue(torch.allclose(modulator.modulation_profile(), phase_modulator.modulation_profile()))
 
     def test_amplitude_modulation_profile_consistency(self):
         amplitude_modulator = AmplitudeModulator(self.amplitude_profile, self.z)
         modulator = Modulator(self.amplitude_profile.cdouble(), self.z)
-        self.assertTrue(torch.allclose(modulator.modulation_profile, amplitude_modulator.modulation_profile))
+        self.assertTrue(
+            torch.allclose(modulator.modulation_profile(), amplitude_modulator.modulation_profile())
+        )
 
     def test_error_on_invalid_tensor_input(self):
         with self.assertRaises(TypeError):
@@ -200,19 +202,19 @@ class TestPolarizedModulatorClasses(unittest.TestCase):
         modulator = PolarizedModulator(self.polarized_modulation_profile, self.z)
         self.assertIsInstance(modulator(self.polarized_field), PolarizedField)
         self.assertTrue(
-            torch.equal(modulator.polarized_modulation_profile, self.polarized_modulation_profile)
+            torch.equal(modulator.polarized_modulation_profile(), self.polarized_modulation_profile)
         )
 
     def test_polarized_phase_modulator_initialization_and_profile(self):
         phase_modulator = PolarizedPhaseModulator(self.phase_profile, self.z)
         expected_profile = torch.exp(1j * self.phase_profile).to(dtype=torch.cdouble)
-        self.assertTrue(torch.allclose(phase_modulator.polarized_modulation_profile, expected_profile))
+        self.assertTrue(torch.allclose(phase_modulator.polarized_modulation_profile(), expected_profile))
         self.assertIsInstance(phase_modulator(self.polarized_field), PolarizedField)
 
     def test_polarized_amplitude_modulator_initialization_and_profile(self):
         amplitude_modulator = PolarizedAmplitudeModulator(self.amplitude_profile, self.z)
         expected_profile = self.amplitude_profile.cdouble()
-        self.assertTrue(torch.allclose(amplitude_modulator.polarized_modulation_profile, expected_profile))
+        self.assertTrue(torch.allclose(amplitude_modulator.polarized_modulation_profile(), expected_profile))
         self.assertIsInstance(amplitude_modulator(self.polarized_field), PolarizedField)
 
     def test_phase_modulation_profile_consistency(self):
@@ -220,7 +222,7 @@ class TestPolarizedModulatorClasses(unittest.TestCase):
         modulator = PolarizedModulator(torch.exp(1j * self.phase_profile), self.z)
         self.assertTrue(
             torch.allclose(
-                modulator.polarized_modulation_profile, phase_modulator.polarized_modulation_profile
+                modulator.polarized_modulation_profile(), phase_modulator.polarized_modulation_profile()
             )
         )
 
@@ -229,7 +231,7 @@ class TestPolarizedModulatorClasses(unittest.TestCase):
         modulator = PolarizedModulator(self.amplitude_profile.cdouble(), self.z)
         self.assertTrue(
             torch.allclose(
-                modulator.polarized_modulation_profile, amplitude_modulator.polarized_modulation_profile
+                modulator.polarized_modulation_profile(), amplitude_modulator.polarized_modulation_profile()
             )
         )
 
@@ -261,7 +263,7 @@ class TestPolarizers(unittest.TestCase):
         spacing = 1
         polarizer = LinearPolarizer(shape, theta, spacing=spacing)
         self.assertEqual(polarizer.shape, shape)
-        polarized_modulation_profile = polarizer.polarized_modulation_profile
+        polarized_modulation_profile = polarizer.polarized_modulation_profile()
         expected_matrix = (
             torch.tensor(
                 [
@@ -285,7 +287,7 @@ class TestPolarizers(unittest.TestCase):
         spacing = 1
         polarizer = LeftCircularPolarizer(shape, spacing=spacing)
         self.assertEqual(polarizer.shape, shape)
-        polarization_modulation_profile = polarizer.polarized_modulation_profile
+        polarization_modulation_profile = polarizer.polarized_modulation_profile()
         expected_matrix = (
             torch.tensor([[0.5, -0.5j], [0.5j, 0.5]], dtype=torch.cdouble)
             .unsqueeze(-1)
@@ -314,13 +316,13 @@ class TestLens(unittest.TestCase):
         focal_length = 50.0
         wavelength = 500e-9
         spacing = 1e-5
-        lens = Lens(shape, focal_length, 0, wavelength, spacing)
+        lens = Lens(shape, focal_length, 0, spacing)
         self.assertEqual(lens.shape, shape)
         self.assertEqual(lens.focal_length, focal_length)
         self.assertTrue(lens.is_circular_lens)
         with self.assertRaises(TypeError):
             lens.is_circular_lens = "not a bool"
-        self.assertTrue(lens.modulation_profile.dtype == torch.cdouble)
+        self.assertTrue(lens.modulation_profile(wavelength).dtype == torch.cdouble)
         self.assertTrue("is_circular_lens=True" in repr(lens))
         field = Field(torch.ones(3, *shape), wavelength=wavelength, spacing=spacing)
         output_field = lens(field)
@@ -347,7 +349,7 @@ class TestWaveplates(unittest.TestCase):
         theta = torch.tensor(0.0)
         spacing = 1
         waveplate = Waveplate(shape, phi, theta, spacing=spacing)
-        polarized_modulation_profile = waveplate.polarized_modulation_profile
+        polarized_modulation_profile = waveplate.polarized_modulation_profile()
         expected_matrix = (
             torch.tensor(
                 [
@@ -369,7 +371,7 @@ class TestWaveplates(unittest.TestCase):
         theta = torch.tensor(torch.pi / 4)
         spacing = 1
         waveplate = Waveplate(shape, phi, theta, spacing=spacing)
-        polarized_modulation_profile = waveplate.polarized_modulation_profile
+        polarized_modulation_profile = waveplate.polarized_modulation_profile()
         expected_matrix = 0.5 * torch.tensor(
             [
                 [1 + 1j, 1 - 1j, 0],
@@ -388,7 +390,7 @@ class TestWaveplates(unittest.TestCase):
         qwp = QuarterWaveplate(shape, theta, spacing=spacing)
         waveplate = Waveplate(shape, torch.pi / 2, theta, spacing=spacing)
         self.assertTrue(
-            torch.allclose(qwp.polarized_modulation_profile, waveplate.polarized_modulation_profile)
+            torch.allclose(qwp.polarized_modulation_profile(), waveplate.polarized_modulation_profile())
         )
 
     def test_half_waveplate_profile(self):
@@ -399,7 +401,7 @@ class TestWaveplates(unittest.TestCase):
         hwp = HalfWaveplate(shape, theta, spacing=spacing)
         waveplate = Waveplate(shape, torch.pi, theta, spacing=spacing)
         self.assertTrue(
-            torch.allclose(hwp.polarized_modulation_profile, waveplate.polarized_modulation_profile)
+            torch.allclose(hwp.polarized_modulation_profile(), waveplate.polarized_modulation_profile())
         )
 
 

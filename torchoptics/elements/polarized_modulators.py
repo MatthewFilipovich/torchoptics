@@ -26,20 +26,21 @@ class PolarizedModulator(PolarizedModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    polarized_modulation_profile: Tensor
+    polarized_modulation: Tensor
 
     def __init__(
         self,
-        polarized_modulation_profile: Tensor,
+        polarized_modulation: Tensor,
         z: Scalar = 0,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor(polarized_modulation_profile, "polarized_modulation_profile")
-        super().__init__(polarized_modulation_profile.shape[2:], z, spacing, offset)
-        self.register_optics_property(
-            "polarized_modulation_profile", polarized_modulation_profile, is_complex=True
-        )
+        _validate_input_tensor(polarized_modulation, "polarized_modulation")
+        super().__init__(polarized_modulation.shape[2:], z, spacing, offset)
+        self.register_optics_property("polarized_modulation", polarized_modulation, is_complex=True)
+
+    def polarized_modulation_profile(self) -> Tensor:
+        return self.polarized_modulation
 
 
 class PolarizedPhaseModulator(PolarizedModulationElement):
@@ -69,9 +70,7 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
         super().__init__(phase.shape[2:], z, spacing, offset)
         self.register_optics_property("phase", phase)
 
-    @property
     def polarized_modulation_profile(self) -> Tensor:
-        """Returns the polarized modulation profile as a complex tensor."""
         return torch.exp(1j * self.phase)
 
 
@@ -102,9 +101,7 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         super().__init__(amplitude.shape[2:], z, spacing, offset)
         self.register_optics_property("amplitude", amplitude)
 
-    @property
     def polarized_modulation_profile(self) -> Tensor:
-        """Returns the polarized modulation profile as a complex tensor."""
         return self.amplitude.cdouble()  # type: ignore
 
 
