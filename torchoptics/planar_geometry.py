@@ -7,7 +7,7 @@ from typing import Any, Optional
 import torch
 from torch import Tensor
 
-from .config import get_default_spacing
+from .config import spacing_or_default
 from .functional import initialize_tensor, meshgrid2d
 from .optics_module import OpticsModule
 from .type_defs import Scalar, Vector2
@@ -48,11 +48,7 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
         )
         self.register_optics_property("z", z, ())
         self.register_optics_property(
-            "spacing",
-            get_default_spacing() if spacing is None else spacing,
-            (2,),
-            validate_positive=True,
-            fill_value=True,
+            "spacing", spacing_or_default(spacing), (2,), validate_positive=True, fill_value=True
         )
         self.register_optics_property("offset", (0, 0) if offset is None else offset, (2,))
 

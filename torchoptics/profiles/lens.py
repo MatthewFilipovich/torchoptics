@@ -4,7 +4,7 @@ from typing import Optional
 
 import torch
 
-from ..config import get_default_wavelength
+from ..config import wavelength_or_default
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar, Vector2
 
@@ -44,7 +44,7 @@ def lens(
         is_circular_lens (bool): If `True`, the lens is circular and the phase profile is set to zero outside
             the lens diameter, otherwise lens is square. Default: `True`.
     """
-    wavelength = wavelength if wavelength is not None else get_default_wavelength()
+    wavelength = wavelength_or_default(wavelength)
 
     planar_geometry = PlanarGeometry(shape, z, spacing, offset)
     x, y = planar_geometry.meshgrid()

@@ -6,7 +6,7 @@ from typing import Callable, Optional
 import torch
 from torch import Tensor
 
-from ..config import get_default_wavelength
+from ..config import wavelength_or_default
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Vector2
 
@@ -197,7 +197,7 @@ def get_wavelength(wavelength, waist_z):
     """Get the wavelength of the beam."""
     if waist_z == 0:  # Wavelength does not matter at the waist (can be None)
         return wavelength
-    return wavelength if wavelength is not None else get_default_wavelength()
+    return wavelength_or_default(wavelength)
 
 
 def calculate_coordinates(shape, waist_z, spacing, offset):

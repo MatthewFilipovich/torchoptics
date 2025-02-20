@@ -6,7 +6,7 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..config import get_default_wavelength
+from ..config import wavelength_or_default
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar, Vector2
 
@@ -47,10 +47,10 @@ def bessel(
         Tensor: The generated zeroth-order Bessel beam profile.
 
     """
-    wavelength = wavelength if wavelength is not None else get_default_wavelength()
+    wavelength = wavelength_or_default(wavelength)
 
     # Calculate the wave number k and its radial component
-    k = 2 * torch.pi / wavelength  # type: ignore
+    k = 2 * torch.pi / wavelength
     k_r = k * math.sin(cone_angle)
 
     # Generate the planar grid
