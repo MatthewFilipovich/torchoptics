@@ -5,18 +5,16 @@ repos:
       - id: black
         files: "^(torchoptics|tests)/"
 
-  - repo: local
+  - repo: https://github.com/PyCQA/pylint
+    rev: v3.3.3
     hooks:
       - id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [python]
         args: [
             "-rn", # Only display messages
             "-sn", # Don't display the score
           ]
         files: "^torchoptics/"
+        additional_dependencies: [torch==2.6.0]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v1.15.0"
