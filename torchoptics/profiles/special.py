@@ -8,13 +8,13 @@ from torch.special import bessel_j1  # Bessel function of the first kind
 
 from ..functional import initialize_tensor
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2
+from ..type_defs import Vector2, Scalar
 
 __all__ = ["airy", "sinc"]
 
 
 def airy(
-    shape: Vector2, scale: float, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2, scale: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
 ) -> Tensor:
     r"""
     Generates an Airy pattern profile.
@@ -32,7 +32,7 @@ def airy(
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        scale (float): A scaling factor that determines the size of the Airy disk.
+        scale (Scalar): A scaling factor that determines the size of the Airy disk.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default.
         offset (Optional[Vector2]): Center coordinates of the profile. Default: `(0, 0)`.

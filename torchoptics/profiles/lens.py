@@ -49,7 +49,7 @@ def lens(
     planar_geometry = PlanarGeometry(shape, z, spacing, offset)
     x, y = planar_geometry.meshgrid()
     radial_dist = torch.sqrt(x**2 + y**2)
-    phase_profile = torch.exp(-1j * torch.pi / (wavelength * focal_length) * radial_dist**2)  # type: ignore
+    phase_profile = torch.exp(-1j * torch.pi / (wavelength * focal_length) * radial_dist**2)
 
     if is_circular_lens:
         lens_diameter = min(planar_geometry.length(use_grid_points=True))

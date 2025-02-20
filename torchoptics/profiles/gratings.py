@@ -6,17 +6,17 @@ from typing import Optional
 import torch
 
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2
+from ..type_defs import Vector2, Scalar
 
 __all__ = ["blazed_grating", "sinusoidal_amplitude_grating", "sinusoidal_phase_grating"]
 
 
 def blazed_grating(
     shape: Vector2,
-    period: float,
+    period: Scalar,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
-    theta: float = 0,
+    theta: Scalar = 0,
 ) -> torch.Tensor:
     r"""
     Generates a blazed grating profile.
@@ -33,11 +33,11 @@ def blazed_grating(
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        period (float): The grating period (distance between adjacent grooves).
+        period (Scalar): The grating period (distance between adjacent grooves).
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
-        theta (float): The angle of the grating in radians. Default: `0`.
+        theta (Scalar): The angle of the grating in radians. Default: `0`.
 
 
     Returns:
@@ -51,11 +51,11 @@ def blazed_grating(
 
 def sinusoidal_amplitude_grating(
     shape: Vector2,
-    m: float,
-    period: float,
+    m: Scalar,
+    period: Scalar,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
-    theta: float = 0,
+    theta: Scalar = 0,
 ) -> torch.Tensor:
     r"""
     Generates a sinusoidal amplitude grating profile.
@@ -73,12 +73,12 @@ def sinusoidal_amplitude_grating(
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        m (float): The amplitude contrast.
-        period (float): The grating period (distance between adjacent grooves).
+        m (Scalar): The amplitude contrast.
+        period (Scalar): The grating period (distance between adjacent grooves).
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
-        theta (float): The angle of the grating in radians. Default: `0`.
+        theta (Scalar): The angle of the grating in radians. Default: `0`.
 
     Returns:
         Tensor: The generated transmission function.
@@ -91,11 +91,11 @@ def sinusoidal_amplitude_grating(
 
 def sinusoidal_phase_grating(
     shape: Vector2,
-    m: float,
-    period: float,
+    m: Scalar,
+    period: Scalar,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
-    theta: float = 0,
+    theta: Scalar = 0,
 ) -> torch.Tensor:
     r"""
     Generates a sinusoidal phase grating profile.
@@ -113,12 +113,12 @@ def sinusoidal_phase_grating(
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        m (float): The phase contrast.
-        period (float): The grating period (distance between adjacent grooves).
+        m (Scalar): The phase contrast.
+        period (Scalar): The grating period (distance between adjacent grooves).
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
-        theta (float): The angle of the grating in radians. Default: `0`.
+        theta (Scalar): The angle of the grating in radians. Default: `0`.
 
     Returns:
         Tensor: The generated transmission function.

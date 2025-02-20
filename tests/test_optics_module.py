@@ -3,7 +3,9 @@ import unittest
 import torch
 from torch import Tensor
 
-from torchoptics import OpticsModule, Param
+from torchoptics import OpticsModule
+
+from torch.nn import Parameter
 
 
 class TestOpticsModule(unittest.TestCase):
@@ -15,11 +17,13 @@ class TestOpticsModule(unittest.TestCase):
     def test_register_property_as_parameter(self):
         module = OpticsModule()
         value = torch.tensor([1.0, 2.0, 3.0])
-        module.register_optics_property("prop1", Param(value))
+        module.register_optics_property("prop1", Parameter(value))
         self.assertTrue(hasattr(module, "prop1"))
         self.assertIsInstance(module.prop1, Tensor)
         self.assertTrue(module.prop1.requires_grad)
         self.assertIn("prop1", dict(module.named_parameters()))
+        self.assertTrue(torch.equal(module.prop1, value))
+        self.assertFalse(module.prop1 is value)  # Ensure a copy is made
 
     def test_register_property_as_buffer(self):
         module = OpticsModule()
@@ -84,17 +88,6 @@ class TestOpticsModule(unittest.TestCase):
         self.assertFalse(module.prop1.requires_grad)
         self.assertIn("prop1", dict(module.named_buffers()))
 
-    def test_register_trainable_property_from_sequence(self):
-        module = OpticsModule()
-        value = [1.0, 2.0, 3.0]
-        module.register_optics_property("prop1", Param(value), shape=(3,))
-        self.assertTrue(hasattr(module, "prop1"))
-        self.assertIsInstance(module.prop1, Tensor)
-        expected_tensor = torch.tensor([1.0, 2.0, 3.0], dtype=torch.double)
-        self.assertTrue(torch.equal(module.prop1, expected_tensor))
-        self.assertTrue(module.prop1.requires_grad)
-        self.assertIn("prop1", dict(module.named_parameters()))
-
     def test_register_property_with_none_shape(self):
         module = OpticsModule()
         value = torch.tensor([1.0, 2.0, 3.0])
@@ -107,7 +100,7 @@ class TestOpticsModule(unittest.TestCase):
     def test_register_trainable_property_with_none_shape(self):
         module = OpticsModule()
         value = torch.tensor([1.0, 2.0, 3.0])
-        module.register_optics_property("prop1", Param(value))
+        module.register_optics_property("prop1", Parameter(value))
         self.assertTrue(hasattr(module, "prop1"))
         self.assertIsInstance(module.prop1, Tensor)
         self.assertTrue(module.prop1.requires_grad)
@@ -132,8 +125,8 @@ class TestOpticsModule(unittest.TestCase):
 
     def test_set_trainable_property_via_setattr(self):
         module = OpticsModule()
-        initial_value = [1.0, 2.0, 3.0]
-        module.register_optics_property("prop1", Param(initial_value), shape=(3,))
+        initial_value = torch.tensor([1.0, 2.0, 3.0])
+        module.register_optics_property("prop1", Parameter(initial_value), shape=(3,))
         new_value = [4.0, 5.0, 6.0]
         # Prevents RuntimeError: a leaf Variable that requires grad is being used in an in-place operation.
         with torch.no_grad():

@@ -8,7 +8,7 @@ from torch import Tensor
 
 from ..config import wavelength_or_default
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2
+from ..type_defs import Vector2, Scalar
 
 __all__ = ["hermite_gaussian", "gaussian"]
 
@@ -17,9 +17,9 @@ def hermite_gaussian(
     shape: Vector2,
     m: int,
     n: int,
-    waist_radius: float,
-    wavelength: Optional[float] = None,
-    waist_z: float = 0,
+    waist_radius: Scalar,
+    wavelength: Optional[Scalar] = None,
+    waist_z: Scalar = 0,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
@@ -71,7 +71,7 @@ def hermite_gaussian(
         m (int): The mode number in the first planar dimension.
         n (int): The mode number in the second planar dimension.
         waist_radius: The radius of the beam waist.
-        wavelength (float, optional): The wavelength of the beam. Default: if `None`, uses a global default
+        wavelength (Scalar, optional): The wavelength of the beam. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
         waist_z: Position of beam waist along the z-axis. Default: `0`.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
@@ -105,9 +105,9 @@ def hermite_gaussian(
 
 def gaussian(
     shape: Vector2,
-    waist_radius: float,
-    wavelength: Optional[float] = None,
-    waist_z: float = 0,
+    waist_radius: Scalar,
+    wavelength: Optional[Scalar] = None,
+    waist_z: Scalar = 0,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
@@ -150,7 +150,7 @@ def gaussian(
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         waist_radius: The radius of the beam waist.
-        wavelength (float, optional): The wavelength of the beam. Default: if `None`, uses a global default
+        wavelength (Scalar, optional): The wavelength of the beam. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
         waist_z: Position of beam waist along the z-axis. Default: `0`.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if

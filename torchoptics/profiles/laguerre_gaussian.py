@@ -6,7 +6,7 @@ from typing import Callable, Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Vector2
+from ..type_defs import Vector2, Scalar
 from .hermite_gaussian import calculate_beam_properties
 
 __all__ = ["laguerre_gaussian"]
@@ -16,9 +16,9 @@ def laguerre_gaussian(
     shape: Vector2,
     p: int,
     l: int,
-    waist_radius: float,
-    wavelength: Optional[float] = None,
-    waist_z: float = 0,
+    waist_radius: Scalar,
+    wavelength: Optional[Scalar] = None,
+    waist_z: Scalar = 0,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
@@ -70,7 +70,7 @@ def laguerre_gaussian(
         p (int): The radial mode number.
         l (int): The azimuthal mode number.
         waist_radius: The radius of the beam waist.
-        wavelength (float, optional): The wavelength of the beam. Default: if `None`, uses a global default
+        wavelength (Scalar, optional): The wavelength of the beam. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
         waist_z: Position of beam waist along the z-axis. Default: `0`.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if

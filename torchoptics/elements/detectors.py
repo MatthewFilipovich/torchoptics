@@ -6,7 +6,6 @@ from torch import Tensor
 from torch.nn.functional import linear
 
 from ..fields import Field
-from ..param import Param
 from ..type_defs import Scalar, Vector2
 from .elements import Element
 
@@ -120,7 +119,7 @@ class IntensityDetector(Element):
 
     @staticmethod
     def _validate_weight(tensor):
-        if not isinstance(tensor, (Tensor, Param)):
+        if not isinstance(tensor, Tensor):
             raise TypeError(f"Expected weight to be a tensor, but got {type(tensor).__name__}")
         if tensor.dim() != 3:
             raise ValueError(f"Expected weight to be a 3D tensor, but got {tensor.dim()}D")
