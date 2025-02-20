@@ -64,7 +64,7 @@ def spacing_or_default(spacing: Optional[Vector2]) -> Tensor:
     return (
         get_default_spacing()
         if spacing is None
-        else initialize_tensor("spacing", spacing, (2,), validate_positive=True)
+        else initialize_tensor("spacing", spacing, (2,), validate_positive=True, fill_value=True)
     )
 
 
