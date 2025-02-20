@@ -4,7 +4,7 @@ from typing import Optional
 
 from torch.nn import Module, ModuleList
 
-from .elements import Element, IdentityElement, ModulationElement, PolarizedModulationElement
+from .elements import Element, IdentityElement
 from .fields import Field
 from .planar_geometry import PlanarGeometry
 from .type_defs import Scalar, Vector2
@@ -99,8 +99,8 @@ class System(Module):
         Returns:
             Field: Output field after propagating to the plane.
         """
-        output_element = IdentityElement(shape, z, spacing, offset).to(field.data.device)
-        return self._forward(field, output_element)
+        last_element = IdentityElement(shape, z, spacing, offset).to(field.data.device)
+        return self._forward(field, last_element)
 
     def measure_at_z(self, field: Field, z: Scalar) -> Field:
         """
@@ -134,48 +134,50 @@ class System(Module):
         """Returns the elements sorted by their z position."""
         return tuple(sorted(self.elements, key=lambda element: element.z.item()))
 
-    def elements_in_field_path(self, field: Field, output_element: Optional[Element]) -> tuple[Element, ...]:
+    def elements_in_field_path(self, field: Field, last_element: Optional[Element]) -> tuple[Element, ...]:
         """
         Returns the elements along the field path.
 
         Args:
             field (Field): Input field.
-            output_element (Optional[Element]): Output element.
+            last_element (Optional[Element]): Last element of the system.
 
         Returns:
             tuple[Element]: Elements along the field path.
         """
         elements_in_path = [element for element in self.sorted_elements() if field.z <= element.z]
-        if output_element:
-            elements_in_path = [element for element in elements_in_path if element.z <= output_element.z]
+
+        if last_element:
+            if last_element.z < field.z:
+                raise ValueError(f"Field z ({field.z}) is greater than last element z ({last_element.z}).")
+
+            elements_in_path = [element for element in elements_in_path if element.z <= last_element.z]
+
+            # Remove trailing IdentityElement before appending last_element
             if elements_in_path and isinstance(elements_in_path[-1], IdentityElement):
                 elements_in_path.pop()
-            elements_in_path.append(output_element)
 
-        self._validate_elements_in_field_path(field, elements_in_path)
+            elements_in_path.append(last_element)
+
+        if not elements_in_path:
+            raise ValueError("No elements found in the field path.")
+        if not all(isinstance(element, Element) for element in elements_in_path):
+            raise TypeError("All elements in the field path must be instances of Element.")
+
         return tuple(elements_in_path)
 
-    def _validate_elements_in_field_path(self, field, elements_in_path):
-        if not elements_in_path:
-            raise ValueError("Expected system to contain at least one element.")
-        if elements_in_path[-1].z < field.z:
-            raise ValueError(
-                f"Expected last element z ({elements_in_path[-1].z}) to be greater than field z ({field.z})."
-            )
-        if not all(
-            isinstance(element, (ModulationElement, PolarizedModulationElement))
-            for element in elements_in_path[:-1]
-        ):
-            raise TypeError(
-                "Expected all elements in field path, except for the last one, to be type "
-                "BaseModulationElement or BasePolarizedModulationElement."
-            )
-        if not isinstance(elements_in_path[-1], Element):
-            raise TypeError("Expected the last element to be type Element.")
+    def _forward(self, field: Field, last_element: Optional[Element] = None) -> Field:
+        """Propagates the field through the system to the last element, if provided."""
+        elements = self.elements_in_field_path(field, last_element)
 
-    def _forward(self, field: Field, output_element: Optional[Element] = None) -> Field:
-        """Propagates the field through the system to the output element if provided."""
-        for element in self.elements_in_field_path(field, output_element):
+        for i, element in enumerate(elements):
             field = field.propagate_to_plane(element)
             field = element(field)
+
+            if not isinstance(field, Field) and i < len(elements) - 1:
+                raise TypeError(
+                    f"Expected all elements in the field path, except for the last, to return a Field. "
+                    f"Element at index {i} ({type(element).__name__}) returned {type(field).__name__}."
+                )
+
         return field
