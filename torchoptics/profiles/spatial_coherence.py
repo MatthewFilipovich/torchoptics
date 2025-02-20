@@ -7,7 +7,7 @@ from torch import Tensor
 
 from ..functional import outer2d
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2
+from ..type_defs import Vector2, Scalar
 
 
 def schell_model(
@@ -60,8 +60,8 @@ def schell_model(
 
 def gaussian_schell_model(
     shape: Vector2,
-    waist_radius: float,
-    coherence_width: float,
+    waist_radius: Scalar,
+    coherence_width: Scalar,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
@@ -84,8 +84,8 @@ def gaussian_schell_model(
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        waist_radius (float): The beam waist radius.
-        coherence_width (float): The coherence width.
+        waist_radius (Scalar): The beam waist radius.
+        coherence_width (Scalar): The coherence width.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Offset coordinates of the pattern. Default: `(0, 0)`.

@@ -15,7 +15,7 @@ __all__ = ["bessel"]
 
 def bessel(
     shape: Vector2,
-    cone_angle: float,
+    cone_angle: Scalar,
     wavelength: Optional[Scalar] = None,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
@@ -36,7 +36,7 @@ def bessel(
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        cone_angle (float): The cone angle in radians.
+        cone_angle (Scalar): The cone angle in radians.
         wavelength (Scalar, optional): The wavelength of the beam. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if

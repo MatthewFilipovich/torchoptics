@@ -35,7 +35,7 @@ class BeamSplitter(Element):
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        z (float): Position along the z-axis. Default: `0`. 
+        z (Scalar): Position along the z-axis. Default: `0`. 
         theta (Scalar): Angle relating the transmitted and reflected beams.
         phi_0 (Scalar): Global phase shift.
         phi_r (Scalar): Reflection phase shift.

@@ -7,7 +7,7 @@ from torch import Tensor
 
 from ..functional import initialize_tensor
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2
+from ..type_defs import Vector2, Scalar
 
 __all__ = ["checkerboard", "circle", "rectangle", "square"]
 
@@ -50,14 +50,14 @@ def checkerboard(
 
 
 def circle(
-    shape: Vector2, radius: float, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2, radius: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
 ) -> Tensor:
     """
     Generates a circular profile.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        radius (float): The radius of the circle.
+        radius (Scalar): The radius of the circle.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the profile. Default: `(0, 0)`.
@@ -92,14 +92,14 @@ def rectangle(
 
 
 def square(
-    shape: Vector2, side: float, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2, side: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
 ) -> Tensor:
     """
     Generates a square profile.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        side (float): The side length of the square.
+        side (Scalar): The side length of the square.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the profile. Default: `(0, 0)`.

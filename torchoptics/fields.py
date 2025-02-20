@@ -195,12 +195,12 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         modulated_data = self.data * modulation_profile
         return self.copy(data=modulated_data)
 
-    def normalize(self, normalized_power: float = 1.0) -> Field:
+    def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         """
         Normalizes the field to a specified power.
 
         Args:
-            normalized_power (float): The normalized power. Default: `1.0`.
+            normalized_power (Scalar): The normalized power. Default: `1.0`.
 
         Returns:
             Field: Normalized field.
