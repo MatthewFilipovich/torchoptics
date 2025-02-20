@@ -57,3 +57,21 @@ def set_default_wavelength(value: Scalar) -> None:
         >>> torchoptics.set_default_wavelength(700e-6)
     """
     Config.wavelength = initialize_tensor("wavelength", value, (), validate_positive=True)
+
+
+def spacing_or_default(spacing: Optional[Vector2]) -> Tensor:
+    """Gets the spacing or the default value if ``spacing`` is ``None``."""
+    return (
+        get_default_spacing()
+        if spacing is None
+        else initialize_tensor("spacing", spacing, (2,), validate_positive=True, fill_value=True)
+    )
+
+
+def wavelength_or_default(wavelength: Optional[Scalar]) -> Tensor:
+    """Gets the wavelength or the default value if ``wavelength`` is ``None``."""
+    return (
+        get_default_wavelength()
+        if wavelength is None
+        else initialize_tensor("wavelength", wavelength, (), validate_positive=True)
+    )

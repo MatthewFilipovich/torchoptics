@@ -7,7 +7,7 @@ from typing import Any, Optional
 import torch
 from torch import Tensor
 
-from .config import get_default_wavelength
+from .config import wavelength_or_default
 from .functional import calculate_centroid, calculate_std, initialize_tensor, inner2d, outer2d
 from .param import Param
 from .planar_geometry import PlanarGeometry
@@ -55,10 +55,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         super().__init__(data.shape[-2:], z, spacing, offset)
         self.register_optics_property("data", data, is_complex=True)
         self.register_optics_property(
-            "wavelength",
-            get_default_wavelength() if wavelength is None else wavelength,
-            (),
-            validate_positive=True,
+            "wavelength", wavelength_or_default(wavelength), (), validate_positive=True
         )
 
         self.propagation_method = propagation_method
