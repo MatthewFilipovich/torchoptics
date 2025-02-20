@@ -10,7 +10,7 @@ from ..param import Param
 from ..type_defs import Scalar, Vector2
 from .elements import ModulationElement, PolychromaticModulationElement
 
-__all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator"]
+__all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator", "PolychromaticPhaseModulator"]
 
 
 class Modulator(ModulationElement):

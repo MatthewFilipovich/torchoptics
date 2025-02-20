@@ -157,6 +157,16 @@ class TestModulatorClasses(unittest.TestCase):
         modulator = Modulator(torch.exp(1j * self.phase_profile), self.z)
         self.assertTrue(torch.allclose(modulator.modulation_profile(), phase_modulator.modulation_profile()))
 
+    def test_polychromatic_phase_modulator(self):
+        optical_path_length = torch.rand((10, 12), dtype=torch.double)
+        polychromatic_modulator = PolychromaticPhaseModulator(optical_path_length, self.z)
+        wavelength = 700e-9
+        expected_profile = torch.exp(2j * torch.pi / wavelength * optical_path_length)
+        self.assertTrue(
+            torch.allclose(polychromatic_modulator.modulation_profile(wavelength), expected_profile)
+        )
+        self.assertIsInstance(polychromatic_modulator(self.field), Field)
+
     def test_amplitude_modulation_profile_consistency(self):
         amplitude_modulator = AmplitudeModulator(self.amplitude_profile, self.z)
         modulator = Modulator(self.amplitude_profile.cdouble(), self.z)
@@ -184,6 +194,12 @@ class TestModulatorClasses(unittest.TestCase):
     def test_visualization(self):
         modulator = Modulator(self.complex_tensor, self.z)
         fig = modulator.visualize(show=False, return_fig=True)
+        self.assertIsInstance(fig, plt.Figure)
+
+    def test_polychromatic_visualization(self):
+        optical_path_length = torch.rand((10, 12), dtype=torch.double)
+        polychromatic_modulator = PolychromaticPhaseModulator(optical_path_length, self.z)
+        fig = polychromatic_modulator.visualize(700e-9, show=False, return_fig=True)
         self.assertIsInstance(fig, plt.Figure)
 
 
