@@ -49,9 +49,7 @@ class LinearPolarizer(PolarizedModulationElement):
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, ())
 
-    @property
     def polarized_modulation_profile(self) -> Tensor:
-        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)
         tensor[0, 0] = torch.cos(self.theta) ** 2
         tensor[0, 1] = torch.cos(self.theta) * torch.sin(self.theta)
@@ -83,9 +81,7 @@ class LeftCircularPolarizer(PolarizedModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    @property
     def polarized_modulation_profile(self) -> Tensor:
-        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)
         tensor[0, 0] = 0.5
         tensor[0, 1] = -0.5j  # type: ignore
@@ -117,9 +113,7 @@ class RightCircularPolarizer(PolarizedModulationElement):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    @property
     def polarized_modulation_profile(self) -> Tensor:
-        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)
         tensor[0, 0] = 0.5
         tensor[0, 1] = 0.5j  # type: ignore

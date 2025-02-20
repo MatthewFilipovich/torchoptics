@@ -5,11 +5,12 @@ from typing import Optional
 import torch
 from torch import Tensor
 
+from ..config import wavelength_or_default
 from ..param import Param
 from ..type_defs import Scalar, Vector2
-from .elements import ModulationElement
+from .elements import ModulationElement, PolychromaticModulationElement
 
-__all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator"]
+__all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator", "PolychromaticPhaseModulator"]
 
 
 class Modulator(ModulationElement):
@@ -19,25 +20,28 @@ class Modulator(ModulationElement):
     The modulator is described by a complex modulation profile.
 
     Args:
-        modulation_profile (Tensor): Complex modulation profile.
+        modulation (Tensor): Complex modulation profile.
         z (Scalar): Position along the z-axis. Default: `0`.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    modulation_profile: Tensor
+    modulation: Tensor
 
     def __init__(
         self,
-        modulation_profile: Tensor,
+        modulation: Tensor,
         z: Scalar = 0,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor("modulation_profile", modulation_profile)
-        super().__init__(modulation_profile.shape, z, spacing, offset)
-        self.register_optics_property("modulation_profile", modulation_profile, is_complex=True)
+        _validate_input_tensor("modulation", modulation)
+        super().__init__(modulation.shape, z, spacing, offset)
+        self.register_optics_property("modulation", modulation, is_complex=True)
+
+    def modulation_profile(self) -> Tensor:
+        return self.modulation
 
 
 class PhaseModulator(ModulationElement):
@@ -67,9 +71,7 @@ class PhaseModulator(ModulationElement):
         super().__init__(phase.shape, z, spacing, offset)
         self.register_optics_property("phase", phase)
 
-    @property
     def modulation_profile(self) -> Tensor:
-        """Returns the phase modulation profile."""
         return torch.exp(1j * self.phase)
 
 
@@ -100,10 +102,40 @@ class AmplitudeModulator(ModulationElement):
         super().__init__(amplitude.shape, z, spacing, offset)
         self.register_optics_property("amplitude", amplitude)
 
-    @property
     def modulation_profile(self) -> Tensor:
-        """Returns the amplitude modulation profile."""
         return self.amplitude.cdouble()  # type: ignore
+
+
+class PolychromaticPhaseModulator(PolychromaticModulationElement):
+    r"""
+    Phase-only modulator element that modules the field based on the optical path length.
+
+    :math:`\phi = \exp(2j \pi / \lambda \cdot \text{opl})`
+
+    Args:
+        optical_path_length (Tensor): Optical path length (real-valued tensor).
+        z (Scalar): Position along the z-axis. Default: `0`.
+        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
+        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+    """
+
+    optical_path_length: Tensor
+
+    def __init__(
+        self,
+        optical_path_length: Tensor,
+        z: Scalar = 0,
+        spacing: Optional[Vector2] = None,
+        offset: Optional[Vector2] = None,
+    ) -> None:
+        _validate_input_tensor("optical_path_length", optical_path_length)
+        super().__init__(optical_path_length.shape, z, spacing, offset)
+        self.register_optics_property("optical_path_length", optical_path_length)
+
+    def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
+        wavelength = wavelength_or_default(wavelength)
+        return torch.exp(2j * torch.pi / wavelength * self.optical_path_length)
 
 
 def _validate_input_tensor(name, tensor):

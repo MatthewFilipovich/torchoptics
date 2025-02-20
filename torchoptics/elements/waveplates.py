@@ -60,9 +60,7 @@ class Waveplate(PolarizedModulationElement):
         self.register_optics_property("phi", phi, ())
         self.register_optics_property("theta", theta, ())
 
-    @property
     def polarized_modulation_profile(self) -> Tensor:
-        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)
         tensor[0, 0] = torch.cos(self.theta) ** 2 + torch.exp(1j * self.phi) * torch.sin(self.theta) ** 2
         tensor[0, 1] = (1 - torch.exp(1j * self.phi)) * torch.cos(self.theta) * torch.sin(self.theta)
@@ -111,9 +109,7 @@ class QuarterWaveplate(PolarizedModulationElement):
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, ())
 
-    @property
     def polarized_modulation_profile(self) -> Tensor:
-        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)
         tensor[0, 0] = torch.cos(self.theta) ** 2 + 1j * torch.sin(self.theta) ** 2
         tensor[0, 1] = (1 - 1j) * torch.cos(self.theta) * torch.sin(self.theta)
@@ -162,9 +158,7 @@ class HalfWaveplate(PolarizedModulationElement):
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, ())
 
-    @property
     def polarized_modulation_profile(self) -> Tensor:
-        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)
         tensor[0, 0] = torch.cos(self.theta) ** 2 - torch.sin(self.theta) ** 2
         tensor[0, 1] = 2 * torch.cos(self.theta) * torch.sin(self.theta)

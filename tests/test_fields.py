@@ -361,3 +361,7 @@ class TestSpatialCoherence(unittest.TestCase):
         self.assertTrue(
             torch.allclose(spatial_coherence.power(), torch.tensor(normalized_power, dtype=torch.double))
         )
+
+    def test_visualization(self):
+        fig = self.spatial_coherence.visualize(return_fig=True, show=False)
+        self.assertIsInstance(fig, plt.Figure)

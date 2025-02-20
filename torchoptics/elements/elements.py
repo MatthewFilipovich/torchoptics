@@ -1,9 +1,13 @@
 """This module contains the base classes for the optical elements."""
 
-from typing import Any
+from abc import ABC, abstractmethod
+from typing import Any, Optional
+
+from torch import Tensor
 
 from ..fields import Field, PolarizedField
 from ..planar_geometry import PlanarGeometry
+from ..type_defs import Scalar
 
 __all__ = ["Element", "ModulationElement", "PolarizedModulationElement"]
 
@@ -40,7 +44,7 @@ class Element(PlanarGeometry):  # pylint: disable=abstract-method
             )
 
 
-class ModulationElement(Element):
+class ModulationElement(Element, ABC):
     """
     Base class for elements that modulate the field.
 
@@ -64,7 +68,7 @@ class ModulationElement(Element):
         Returns:
             Field: The modulated field."""
         self.validate_field_geometry(field)
-        return field.modulate(self.modulation_profile)  # type: ignore  # TODO: temporary fix for mypy issue
+        return field.modulate(self.modulation_profile())
 
     def visualize(self, **kwargs) -> Any:
         """
@@ -74,7 +78,52 @@ class ModulationElement(Element):
             **kwargs: Additional keyword arguments for visualization.
         """
         kwargs.update({"symbol": r"$\mathcal{M}$"})
-        return self._visualize(self.modulation_profile, **kwargs)  # type: ignore  # TODO: temporary fix
+        return self._visualize(self.modulation_profile(), **kwargs)
+
+    @abstractmethod
+    def modulation_profile(self) -> Tensor:
+        """Returns the modulation profile."""
+
+
+class PolychromaticModulationElement(Element):
+    """
+    Base class for elements that modulate the field based on the wavelength.
+
+    The :meth:`modulation_profile` property must be implemented by the subclass.
+
+    Args:
+        shape (Vector2): Number of grid points along the planar dimensions.
+        z (Scalar): Position along the z-axis. Default: `0`.
+        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
+        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+    """
+
+    def forward(self, field: Field) -> Field:
+        """
+        Modulates the field.
+
+        Args:
+            field (Field): The field to modulate.
+
+        Returns:
+            Field: The modulated field."""
+        self.validate_field_geometry(field)
+        return field.modulate(self.modulation_profile(field.wavelength))
+
+    def visualize(self, wavelength: Optional[Scalar] = None, **kwargs) -> Any:
+        """
+        Visualizes the modulation profile.
+
+        Args:
+            **kwargs: Additional keyword arguments for visualization.
+        """
+        kwargs.update({"symbol": r"$\mathcal{M}$"})
+        return self._visualize(self.modulation_profile(wavelength), **kwargs)
+
+    @abstractmethod
+    def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
+        """Returns the modulation profile for the given wavelength."""
 
 
 class PolarizedModulationElement(Element):
@@ -101,7 +150,7 @@ class PolarizedModulationElement(Element):
         Returns:
             PolarizedField: The modulated polarized field."""
         self.validate_field_geometry(field)
-        return field.polarized_modulate(self.polarized_modulation_profile)  # type: ignore  # TODO: temporary
+        return field.polarized_modulate(self.polarized_modulation_profile())
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """
@@ -112,4 +161,8 @@ class PolarizedModulationElement(Element):
             **kwargs: Additional keyword arguments for visualization.
         """
         kwargs.update({"symbol": "$J$"})
-        return self._visualize(self.polarized_modulation_profile, index, **kwargs)  # type: ignore  # TODO:
+        return self._visualize(self.polarized_modulation_profile(), index, **kwargs)
+
+    @abstractmethod
+    def polarized_modulation_profile(self) -> Tensor:
+        """Returns the polarized modulation profile."""
