@@ -11,7 +11,6 @@ from torchoptics.config import (
 )
 from torchoptics.fields import CoherenceField, Field, PolarizedField
 from torchoptics.optics_module import OpticsModule
-from torchoptics.param import Param
 from torchoptics.planar_geometry import PlanarGeometry
 from torchoptics.system import System
 from torchoptics.visualization import visualize_tensor

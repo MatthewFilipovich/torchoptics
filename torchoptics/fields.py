@@ -9,7 +9,6 @@ from torch import Tensor
 
 from .config import wavelength_or_default
 from .functional import calculate_centroid, calculate_std, initialize_tensor, inner2d, outer2d
-from .param import Param
 from .planar_geometry import PlanarGeometry
 from .propagation import VALID_INTERPOLATION_MODES, VALID_PROPAGATION_METHODS, propagator
 from .type_defs import Scalar, Vector2
@@ -280,7 +279,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         return self.__class__(**properties)  # type: ignore
 
     def _validate_data(self, tensor: Tensor) -> None:
-        if not isinstance(tensor, (Tensor, Param)):
+        if not isinstance(tensor, Tensor):
             raise TypeError(f"Expected data to be a tensor, but got {type(tensor).__name__}.")
         if tensor.dim() < self._data_min_dim:
             raise ValueError(

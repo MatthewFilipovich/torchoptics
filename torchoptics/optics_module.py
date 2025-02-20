@@ -6,7 +6,6 @@ from torch import Tensor
 from torch.nn import Module, Parameter
 
 from .functional import initialize_tensor
-from .param import Param
 
 __all__ = ["OpticsModule"]
 
@@ -19,12 +18,13 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
     PyTorch parameters or buffers. These properties are validated and registered using
     :meth:`register_optics_property()`::
 
-        from torchoptics import OpticsModule, Param
+        from torchoptics import OpticsModule
+        from torch.nn import Parameter
 
         class MyOpticsModule(OpticsModule):
             def __init__(self, trainable_property, non_trainable_property):
                 super().__init__()
-                self.register_optics_property("trainable_property", Param(trainable_property), shape=())
+                self.register_optics_property("trainable_property", Parameter(trainable_property), shape=())
                 self.register_optics_property("non_trainable_property", non_trainable_property, shape=())
 
     Once the properties are registered, they can be updated using :meth:`set_optics_property()`.
@@ -91,8 +91,7 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
         """
         if not self._initialized:
             raise AttributeError("Cannot register optics property before __init__() call.")
-        is_param = isinstance(value, Param)
-        value = value.data if is_param else value
+        is_param = isinstance(value, Parameter)
         if shape is None:
             if not isinstance(value, Tensor):
                 raise ValueError(f"shape must be provided if {name} is not a tensor.")

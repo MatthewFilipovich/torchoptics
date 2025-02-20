@@ -6,7 +6,6 @@ import torch
 from torch import Tensor
 
 from ..config import wavelength_or_default
-from ..param import Param
 from ..type_defs import Scalar, Vector2
 from .elements import ModulationElement, PolychromaticModulationElement
 
@@ -139,7 +138,7 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
 
 
 def _validate_input_tensor(name, tensor):
-    if not isinstance(tensor, (Tensor, Param)):
+    if not isinstance(tensor, Tensor):
         raise TypeError(f"Expected {name} to be a tensor, but got {type(tensor).__name__}")
     if tensor.dim() != 2:
         raise ValueError(f"Expected {name} to be a 2D tensor, but got {tensor.dim()}D")
