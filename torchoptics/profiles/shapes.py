@@ -67,7 +67,7 @@ def circle(
     """
     x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
-    return r <= radius  # type: ignore[attr-defined]
+    return r <= radius
 
 
 def rectangle(
@@ -88,7 +88,7 @@ def rectangle(
     """
     x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
     side = initialize_tensor("side", side, (2,), validate_positive=True, fill_value=True)
-    return (x.abs() <= side[0] / 2) & (y.abs() <= side[1] / 2)  # type: ignore
+    return (x.abs() <= side[0] / 2) & (y.abs() <= side[1] / 2)
 
 
 def square(

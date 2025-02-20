@@ -107,7 +107,7 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
         }
         self._optics_property_configs[name] = property_config
 
-        tensor = initialize_tensor(value=value, **property_config)  # type: ignore
+        tensor = initialize_tensor(value=value, **property_config)  # type: ignore[arg-type]
         if is_param:
             self.register_parameter(name, Parameter(tensor))
         else:

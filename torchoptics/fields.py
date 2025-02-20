@@ -58,7 +58,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         )
 
         self.propagation_method = propagation_method
-        self.asm_pad_factor = asm_pad_factor  # type: ignore
+        self.asm_pad_factor = asm_pad_factor  # type: ignore[assignment]
         self.interpolation_mode = interpolation_mode
 
     @property
@@ -276,7 +276,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             "interpolation_mode": self.interpolation_mode,
         }
         properties.update(kwargs)
-        return self.__class__(**properties)  # type: ignore
+        return self.__class__(**properties)  # type: ignore[arg-type]
 
     def _validate_data(self, tensor: Tensor) -> None:
         if not isinstance(tensor, Tensor):
@@ -321,7 +321,7 @@ class PolarizedField(Field):  # pylint: disable=abstract-method
             Field: Modulated field.
         """
         modulated_data = (self.data.unsqueeze(-4) * polarized_modulation_profile).sum(-3)
-        return self.copy(data=modulated_data)  # type: ignore
+        return self.copy(data=modulated_data)  # type: ignore[return-value]
 
     def polarized_split(self) -> tuple[PolarizedField, PolarizedField, PolarizedField]:
         """
@@ -333,7 +333,7 @@ class PolarizedField(Field):  # pylint: disable=abstract-method
         fields = tuple(self.copy(data=torch.zeros_like(self.data)) for _ in range(3))
         for i in range(3):
             fields[i].data.select(-3, i).copy_(self.data.select(-3, i))
-        return fields  # type: ignore
+        return fields  # type: ignore[return-value]
 
     def _validate_data(self, tensor: Tensor) -> None:
         super()._validate_data(tensor)
