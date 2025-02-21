@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Optional
 
 import torch
@@ -56,13 +55,6 @@ def propagator(
         is_dim = is_dim_propagation(field, propagation_plane)
         propagation_func = dim_propagation if is_dim else asm_propagation
         propagated_field = propagation_func(field, propagation_plane)
-
-        if is_dim and torch.any(calculate_power(field) < calculate_power(propagated_field)):
-            warnings.warn(
-                f"Field power increased during propagation from z={field.z} to z={output_plane.z}.\n"
-                "Consider using different geometries or asm propagation method.",
-                category=RuntimeWarning,
-            )
         field = propagated_field
 
     if not output_plane.is_same_geometry(field):  # Interpolate to output plane geometry
