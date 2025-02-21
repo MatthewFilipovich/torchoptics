@@ -3,12 +3,32 @@ TorchOptics Documentation
 
 .. toctree::
    :maxdepth: 1
+   :caption: Introduction
    :hidden:
 
    introduction
    getting_started/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Tutorials
+   :hidden:
+
    tutorials/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Reference
+   :hidden:
+
    API <autoapi/torchoptics/index>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Background
+   :hidden:
+
+   background
 
 .. image:: _static/torchoptics_logo.png
    :width: 700px
