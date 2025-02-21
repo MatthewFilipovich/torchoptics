@@ -6,8 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "torchoptics"
-copyright = "2024, Matthew Filipovich"
+project = "TorchOptics"
+copyright = "2024-2025, Matthew Filipovich"
 author = "Matthew Filipovich"
 
 # -- General configuration ---------------------------------------------------
@@ -43,7 +43,6 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 html_favicon = "_static/favicon.png"
-
 
 
 # -- Custom configuration ----------------------------------------------------
