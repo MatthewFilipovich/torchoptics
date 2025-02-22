@@ -96,8 +96,8 @@ def initialize_tensor(
     shape: Sequence,
     is_complex: bool = False,
     is_integer: bool = False,
-    validate_positive: bool = False,
-    validate_non_negative: bool = False,
+    is_positive: bool = False,
+    is_non_negative: bool = False,
     fill_value: bool = False,
 ) -> Tensor:
     """
@@ -109,8 +109,8 @@ def initialize_tensor(
         shape (Sequence): The shape of the tensor.
         is_complex (bool, optional): If `True`, the tensor is complex. Default: `False`.
         is_integer (bool, optional): If `True`, the tensor is integer. Default: `False`.
-        validate_positive (bool, optional): If `True`, validates the tensor is positive. Default: `False`.
-        validate_non_negative (bool, optional): If `True`, validates the tensor is non-negative. Default:
+        is_positive (bool, optional): If `True`, validates the tensor is positive. Default: `False`.
+        is_non_negative (bool, optional): If `True`, validates the tensor is non-negative. Default:
             `False`.
         fill_value (bool, optional): If `True`, fills the tensor with the value. Default: `False`.
     """
@@ -126,9 +126,9 @@ def initialize_tensor(
         raise ValueError(f"Expected {name} to have shape {shape}, but got {tensor.shape}.")
     if is_integer and not torch.all(tensor == torch.floor(tensor)):
         raise ValueError(f"Expected {name} to contain integer values, but found non-integer values.")
-    if validate_positive and not torch.all(tensor > 0):
+    if is_positive and not torch.all(tensor > 0):
         raise ValueError(f"Expected {name} to contain positive values, but found non-positive values.")
-    if validate_non_negative and not torch.all(tensor >= 0):
+    if is_non_negative and not torch.all(tensor >= 0):
         raise ValueError(f"Expected {name} to contain non-negative values, but found negative values.")
 
     if is_integer:

@@ -56,10 +56,10 @@ class TestOpticsModule(unittest.TestCase):
         module.register_optics_property("prop1", value, is_complex=True)
         self.assertTrue(module.prop1.is_complex())
 
-    def test_validate_positive(self):
+    def test_is_positive(self):
         module = OpticsModule()
         value = torch.tensor([1.0, 2.0, 3.0])
-        module.register_optics_property("prop1", value, validate_positive=True)
+        module.register_optics_property("prop1", value, is_positive=True)
         invalid_value = torch.tensor([-1.0, 2.0, 3.0])
         with self.assertRaises(ValueError):
             module.set_optics_property("prop1", invalid_value)
