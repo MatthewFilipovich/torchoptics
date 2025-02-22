@@ -1,4 +1,4 @@
 sphinx-autoapi
-sphinx_rtd_theme
+pydata-sphinx-theme
 sphinx-copybutton
 myst-nb
