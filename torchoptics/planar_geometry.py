@@ -44,11 +44,11 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
     ) -> None:
         super().__init__()
         self._shape = torch.Size(
-            initialize_tensor("shape", shape, (2,), is_integer=True, validate_positive=True, fill_value=True)
+            initialize_tensor("shape", shape, (2,), is_integer=True, is_positive=True, fill_value=True)
         )
         self.register_optics_property("z", z, ())
         self.register_optics_property(
-            "spacing", spacing_or_default(spacing), (2,), validate_positive=True, fill_value=True
+            "spacing", spacing_or_default(spacing), (2,), is_positive=True, fill_value=True
         )
         self.register_optics_property("offset", (0, 0) if offset is None else offset, (2,))
 

@@ -64,8 +64,8 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
         value: Any,
         shape: Optional[Sequence] = None,
         is_complex: bool = False,
-        validate_positive: bool = False,
-        validate_non_negative: bool = False,
+        is_positive: bool = False,
+        is_non_negative: bool = False,
         fill_value: bool = False,
     ) -> None:
         """
@@ -77,9 +77,9 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
             shape (Optional[Sequence]): Shape of the property tensor. Required if value is not a tensor.
                 Default: `None`.
             is_complex (bool): Whether the property tensor is complex. Default: `False`.
-            validate_positive (bool): Whether to validate that the property tensor contains only positive
+            is_positive (bool): Whether to validate that the property tensor contains only positive
                 values. Default: `False`.
-            validate_non_negative (bool): Whether to validate that the property tensor contains only
+            is_non_negative (bool): Whether to validate that the property tensor contains only
                 non-negative. Default: `False`.
             fill_value (bool): Whether to fill the tensor with the initial value if it is a scalar.
                 Default: `False`.
@@ -101,8 +101,8 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
             "name": name,
             "shape": shape,
             "is_complex": is_complex,
-            "validate_positive": validate_positive,
-            "validate_non_negative": validate_non_negative,
+            "is_positive": is_positive,
+            "is_non_negative": is_non_negative,
             "fill_value": fill_value,
         }
         self._optics_property_configs[name] = property_config
