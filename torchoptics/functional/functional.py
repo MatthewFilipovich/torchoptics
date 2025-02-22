@@ -93,12 +93,12 @@ def fftfreq_grad(n: int, d: Tensor) -> Tensor:
 def initialize_tensor(
     name: str,
     value: Any,
-    shape: Sequence,
+    is_scalar: bool = False,
+    is_vector2: bool = False,
     is_complex: bool = False,
     is_integer: bool = False,
     is_positive: bool = False,
     is_non_negative: bool = False,
-    fill_value: bool = False,
 ) -> Tensor:
     """
     Initializes a tensor with validation checks.
@@ -106,33 +106,44 @@ def initialize_tensor(
     Args:
         name (str): The name of the tensor.
         value (Any): The value to initialize the tensor with.
-        shape (Sequence): The shape of the tensor.
+        is_scalar (bool): If `True`, the tensor is a scalar.
+        is_vector2 (bool): If `True`, the tensor is a 2D vector.
         is_complex (bool, optional): If `True`, the tensor is complex. Default: `False`.
         is_integer (bool, optional): If `True`, the tensor is integer. Default: `False`.
         is_positive (bool, optional): If `True`, validates the tensor is positive. Default: `False`.
-        is_non_negative (bool, optional): If `True`, validates the tensor is non-negative. Default:
-            `False`.
-        fill_value (bool, optional): If `True`, fills the tensor with the value. Default: `False`.
+        is_non_negative (bool, optional): If `True`, validates the tensor is non-negative. Default: `False`.
     """
     if is_complex and is_integer:
         raise ValueError("Expected is_complex and is_integer to be mutually exclusive, but both are True.")
+    if is_scalar and is_vector2:
+        raise ValueError("Expected is_scalar and is_vector2 to be mutually exclusive, but both are True.")
 
-    dtype = torch.cdouble if is_complex else torch.double
-    tensor = value.to(dtype).clone() if isinstance(value, Tensor) else torch.tensor(value, dtype=dtype)
-
-    if fill_value and tensor.numel() == 1:
-        tensor = torch.full(shape, tensor.item())
-    if tensor.shape != shape:
-        raise ValueError(f"Expected {name} to have shape {shape}, but got {tensor.shape}.")
-    if is_integer and not torch.all(tensor == torch.floor(tensor)):
+    value_dtype = torch.as_tensor(value).dtype
+    if is_integer and value_dtype not in (torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8):
         raise ValueError(f"Expected {name} to contain integer values, but found non-integer values.")
+
+    dtype = torch.int if is_integer else torch.cdouble if is_complex else torch.double
+    tensor = value.clone().to(dtype) if isinstance(value, Tensor) else torch.tensor(value, dtype=dtype)
+
+    if is_scalar:
+        if tensor.numel() != 1:
+            raise ValueError(f"Expected {name} to be a scalar, but got a tensor with shape {tensor.shape}.")
+        tensor = tensor.squeeze()
+
+    if is_vector2:
+        if tensor.numel() == 1:  # Convert scalar to 2D vector
+            tensor = torch.full((2,), tensor.item())
+        if tensor.numel() != 2:
+            raise ValueError(
+                f"Expected {name} to be a 2D vector, but got a tensor with shape {tensor.shape}."
+            )
+        tensor = tensor.squeeze()
+
     if is_positive and not torch.all(tensor > 0):
         raise ValueError(f"Expected {name} to contain positive values, but found non-positive values.")
     if is_non_negative and not torch.all(tensor >= 0):
         raise ValueError(f"Expected {name} to contain non-negative values, but found negative values.")
 
-    if is_integer:
-        tensor = tensor.to(torch.int)
     return tensor
 
 

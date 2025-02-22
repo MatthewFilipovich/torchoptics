@@ -47,7 +47,7 @@ class LinearPolarizer(PolarizedModulationElement):
         offset: Optional[Vector2] = None,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
-        self.register_optics_property("theta", theta, ())
+        self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)

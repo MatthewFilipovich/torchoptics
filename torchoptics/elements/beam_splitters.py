@@ -62,10 +62,10 @@ class BeamSplitter(Element):
         offset: Optional[Vector2] = None,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
-        self.register_optics_property("theta", theta, ())
-        self.register_optics_property("phi_0", phi_0, ())
-        self.register_optics_property("phi_r", phi_r, ())
-        self.register_optics_property("phi_t", phi_t, ())
+        self.register_optics_property("theta", theta, is_scalar=True)
+        self.register_optics_property("phi_0", phi_0, is_scalar=True)
+        self.register_optics_property("phi_r", phi_r, is_scalar=True)
+        self.register_optics_property("phi_t", phi_t, is_scalar=True)
 
     @property
     def transfer_matrix(self) -> Tensor:

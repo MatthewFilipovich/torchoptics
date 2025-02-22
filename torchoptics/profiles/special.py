@@ -76,6 +76,6 @@ def sinc(
         Tensor: The generated sinc profile.
     """
     x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
-    scale = initialize_tensor("scale", scale, (2,), fill_value=True, is_positive=True)
+    scale = initialize_tensor("scale", scale, is_vector2=True, is_positive=True)
     sinc_pattern = torch.sinc(x / scale[0]) * torch.sinc(y / scale[1]) / (scale[0] * scale[1]) ** 0.5
     return sinc_pattern

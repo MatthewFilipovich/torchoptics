@@ -47,7 +47,7 @@ class Lens(PolychromaticModulationElement):
         is_circular_lens: bool = True,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
-        self.register_optics_property("focal_length", focal_length, ())
+        self.register_optics_property("focal_length", focal_length, is_scalar=True)
         self.is_circular_lens = is_circular_lens
 
     def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
