@@ -53,7 +53,9 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         self._validate_data(data)
         super().__init__(data.shape[-2:], z, spacing, offset)
         self.register_optics_property("data", data, is_complex=True)
-        self.register_optics_property("wavelength", wavelength_or_default(wavelength), (), is_positive=True)
+        self.register_optics_property(
+            "wavelength", wavelength_or_default(wavelength), is_scalar=True, is_positive=True
+        )
 
         self.propagation_method = propagation_method
         self.asm_pad_factor = asm_pad_factor  # type: ignore[assignment]
@@ -82,7 +84,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
     @asm_pad_factor.setter
     def asm_pad_factor(self, value: Vector2) -> None:
         tensor = initialize_tensor(
-            "asm_pad_factor", value, (2,), is_integer=True, is_non_negative=True, fill_value=True
+            "asm_pad_factor", value, is_vector2=True, is_integer=True, is_non_negative=True
         )
         self._asm_pad_factor = (tensor[0].item(), tensor[1].item())
 

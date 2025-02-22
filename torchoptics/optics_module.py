@@ -1,8 +1,7 @@
 """This module defines the OpticsModule class."""
 
-from typing import Any, Optional, Sequence
+from typing import Any
 
-from torch import Tensor
 from torch.nn import Module, Parameter
 
 from .functional import initialize_tensor
@@ -62,11 +61,11 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
         self,
         name: str,
         value: Any,
-        shape: Optional[Sequence] = None,
+        is_scalar: bool = False,
+        is_vector2: bool = False,
         is_complex: bool = False,
         is_positive: bool = False,
         is_non_negative: bool = False,
-        fill_value: bool = False,
     ) -> None:
         """
         Registers an optics property as a PyTorch parameter or buffer.
@@ -74,36 +73,25 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
         Args:
             name (str): Name of the optics property.
             value (Any): Initial value of the property.
-            shape (Optional[Sequence]): Shape of the property tensor. Required if value is not a tensor.
-                Default: `None`.
+            is_scalar (bool): Whether the property tensor is a scalar. Default: `False`.
+            is_vector2 (bool): Whether the property tensor is a 2D vector. Default: `False`.
             is_complex (bool): Whether the property tensor is complex. Default: `False`.
             is_positive (bool): Whether to validate that the property tensor contains only positive
                 values. Default: `False`.
             is_non_negative (bool): Whether to validate that the property tensor contains only
                 non-negative. Default: `False`.
-            fill_value (bool): Whether to fill the tensor with the initial value if it is a scalar.
-                Default: `False`.
-
-        Raises:
-            AttributeError: If called before the class is initialized.
-            ValueError: If shape is not provided and value is not a tensor, or if the value does not match the
-                property's conditions.
         """
         if not self._initialized:
             raise AttributeError("Cannot register optics property before __init__() call.")
         is_param = isinstance(value, Parameter)
-        if shape is None:
-            if not isinstance(value, Tensor):
-                raise ValueError(f"shape must be provided if {name} is not a tensor.")
-            shape = value.shape
 
         property_config = {
             "name": name,
-            "shape": shape,
+            "is_scalar": is_scalar,
+            "is_vector2": is_vector2,
             "is_complex": is_complex,
             "is_positive": is_positive,
             "is_non_negative": is_non_negative,
-            "fill_value": fill_value,
         }
         self._optics_property_configs[name] = property_config
 
@@ -128,6 +116,11 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
         if self._initialized and name in self._optics_property_configs:
             updated_tensor = initialize_tensor(value=value, **self._optics_property_configs[name])
             attr_tensor = getattr(self, name)
+            if updated_tensor.shape != attr_tensor.shape:
+                raise ValueError(
+                    f"Cannot set {name} with shape {updated_tensor.shape}. "
+                    f"Expected shape: {attr_tensor.shape}."
+                )
             attr_tensor.copy_(updated_tensor)
         else:
             raise AttributeError(f"Cannot set unknown optics property: {name}.")

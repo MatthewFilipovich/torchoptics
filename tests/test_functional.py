@@ -142,9 +142,9 @@ class TestMeshgrid2D(unittest.TestCase):
 class TestInitializetensor(unittest.TestCase):
     def test_initialize_tensor(self):
         with self.assertRaises(ValueError):
-            initialize_tensor("name", 1.0, (), is_complex=True, is_integer=True)
+            initialize_tensor("name", 1.0, is_scalar=True, is_complex=True, is_integer=True)
         with self.assertRaises(ValueError):
-            initialize_tensor("name", 1.1, (), is_complex=False, is_integer=True)
+            initialize_tensor("name", 1.1, is_scalar=True, is_complex=False, is_integer=True)
 
 
 if __name__ == "__main__":
