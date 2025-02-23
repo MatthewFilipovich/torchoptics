@@ -7,6 +7,7 @@ from torch import Tensor
 
 from ..config import wavelength_or_default
 from ..type_defs import Scalar, Vector2
+from ..utils import validate_tensor_dim
 from .elements import ModulationElement, PolychromaticModulationElement
 
 __all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator", "PolychromaticPhaseModulator"]
@@ -35,7 +36,7 @@ class Modulator(ModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor("modulation", modulation)
+        validate_tensor_dim(modulation, "modulation", 2)
         super().__init__(modulation.shape, z, spacing, offset)
         self.register_optics_property("modulation", modulation, is_complex=True)
 
@@ -66,7 +67,7 @@ class PhaseModulator(ModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor("phase", phase)
+        validate_tensor_dim(phase, "phase", 2)
         super().__init__(phase.shape, z, spacing, offset)
         self.register_optics_property("phase", phase)
 
@@ -97,7 +98,7 @@ class AmplitudeModulator(ModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor("amplitude", amplitude)
+        validate_tensor_dim(amplitude, "amplitude", 2)
         super().__init__(amplitude.shape, z, spacing, offset)
         self.register_optics_property("amplitude", amplitude)
 
@@ -128,17 +129,10 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor("optical_path_length", optical_path_length)
+        validate_tensor_dim(optical_path_length, "optical_path_length", 2)
         super().__init__(optical_path_length.shape, z, spacing, offset)
         self.register_optics_property("optical_path_length", optical_path_length)
 
     def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
         wavelength = wavelength_or_default(wavelength)
         return torch.exp(2j * torch.pi / wavelength * self.optical_path_length)
-
-
-def _validate_input_tensor(name, tensor):
-    if not isinstance(tensor, Tensor):
-        raise TypeError(f"Expected {name} to be a tensor, but got {type(tensor).__name__}")
-    if tensor.dim() != 2:
-        raise ValueError(f"Expected {name} to be a 2D tensor, but got {tensor.dim()}D")

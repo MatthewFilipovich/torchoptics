@@ -7,6 +7,7 @@ from torch.nn.functional import linear
 
 from ..fields import Field
 from ..type_defs import Scalar, Vector2
+from ..utils import validate_tensor_dim
 from .elements import Element
 
 __all__ = ["Detector", "IntensityDetector", "FieldDetector"]
@@ -44,7 +45,7 @@ class Detector(Element):
         Returns:
             Tensor: The power per cell area.
         """
-        self.validate_field_geometry(field)
+        self.validate_field_geometry(field)  # TODO: Move this to utils?
         return field.intensity() * self.cell_area()
 
 
@@ -87,7 +88,7 @@ class IntensityDetector(Element):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        self._validate_weight(weight)
+        validate_tensor_dim(weight, "weight", 3)
         super().__init__(weight.shape[1:], z, spacing, offset)
         self.register_optics_property("weight", weight, is_complex=self._weight_is_complex)
 
@@ -101,7 +102,7 @@ class IntensityDetector(Element):
         Returns:
             Tensor: The weighted power.
         """
-        self.validate_field_geometry(field)
+        self.validate_field_geometry(field)  # TODO: Move this to utils?
         intensity_flat, weight_flat = field.intensity().flatten(-2), self.weight.flatten(-2)
         return linear(intensity_flat, weight_flat) * self.cell_area()  # pylint: disable=not-callable
 
@@ -116,13 +117,6 @@ class IntensityDetector(Element):
         """
         kwargs.update({"symbol": r"$\mathcal{W}_{" + str(index[-1]) + r"}$"})
         return self._visualize(self.weight, index, **kwargs)
-
-    @staticmethod
-    def _validate_weight(tensor):
-        if not isinstance(tensor, Tensor):
-            raise TypeError(f"Expected weight to be a tensor, but got {type(tensor).__name__}")
-        if tensor.dim() != 3:
-            raise ValueError(f"Expected weight to be a 3D tensor, but got {tensor.dim()}D")
 
 
 class FieldDetector(IntensityDetector):
@@ -168,7 +162,7 @@ class FieldDetector(IntensityDetector):
         Returns:
             Tensor: The weighted power after applying the inner product and calculating the magnitude squared.
         """
-        self.validate_field_geometry(field)
+        self.validate_field_geometry(field)  # TODO: Move this to utils?
         data_flat, weight_flat = field.data.flatten(-2), self.weight.flatten(-2)
         inner_prod = linear(data_flat, weight_flat) * self.cell_area()  # pylint: disable=not-callable
         return inner_prod.abs().square()
