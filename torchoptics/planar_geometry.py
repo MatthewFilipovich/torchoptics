@@ -8,9 +8,10 @@ import torch
 from torch import Tensor
 
 from .config import spacing_or_default
-from .functional import initialize_tensor, meshgrid2d
+from .functional import meshgrid2d
 from .optics_module import OpticsModule
 from .type_defs import Scalar, Vector2
+from .utils import initialize_tensor
 from .visualization import visualize_tensor
 
 __all__ = ["PlanarGeometry"]

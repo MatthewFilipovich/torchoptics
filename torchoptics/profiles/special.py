@@ -6,9 +6,9 @@ import torch
 from torch import Tensor
 from torch.special import bessel_j1  # Bessel function of the first kind
 
-from ..functional import initialize_tensor
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2, Scalar
+from ..type_defs import Scalar, Vector2
+from ..utils import initialize_tensor
 
 __all__ = ["airy", "sinc"]
 

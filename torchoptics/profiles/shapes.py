@@ -5,9 +5,9 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..functional import initialize_tensor
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2, Scalar
+from ..type_defs import Scalar, Vector2
+from ..utils import initialize_tensor
 
 __all__ = ["checkerboard", "circle", "rectangle", "square"]
 
