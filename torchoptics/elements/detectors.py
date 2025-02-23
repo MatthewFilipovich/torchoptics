@@ -45,7 +45,7 @@ class Detector(Element):
         Returns:
             Tensor: The power per cell area.
         """
-        self.validate_field_geometry(field)  # TODO: Move this to utils?
+        self.validate_field(field)  # TODO: Move this to utils?
         return field.intensity() * self.cell_area()
 
 
@@ -102,7 +102,7 @@ class IntensityDetector(Element):
         Returns:
             Tensor: The weighted power.
         """
-        self.validate_field_geometry(field)  # TODO: Move this to utils?
+        self.validate_field(field)  # TODO: Move this to utils?
         intensity_flat, weight_flat = field.intensity().flatten(-2), self.weight.flatten(-2)
         return linear(intensity_flat, weight_flat) * self.cell_area()  # pylint: disable=not-callable
 
@@ -162,7 +162,7 @@ class FieldDetector(IntensityDetector):
         Returns:
             Tensor: The weighted power after applying the inner product and calculating the magnitude squared.
         """
-        self.validate_field_geometry(field)  # TODO: Move this to utils?
+        self.validate_field(field)  # TODO: Move this to utils?
         data_flat, weight_flat = field.data.flatten(-2), self.weight.flatten(-2)
         inner_prod = linear(data_flat, weight_flat) * self.cell_area()  # pylint: disable=not-callable
         return inner_prod.abs().square()

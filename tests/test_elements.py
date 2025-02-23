@@ -429,7 +429,7 @@ class TestElement(unittest.TestCase):
         spacing = 1
         element = Element(shape, z, spacing=spacing)
         with self.assertRaises(TypeError):
-            element.validate_field_geometry("not a field")
+            element.validate_field("not a field")
         field = Field(torch.ones(3, *shape), wavelength=700e-9, spacing=spacing, z=2)
         with self.assertRaises(ValueError):
-            element.validate_field_geometry(field)
+            element.validate_field(field)
