@@ -4,7 +4,7 @@ from typing import Any
 
 from torch.nn import Module, Parameter
 
-from .functional import initialize_tensor
+from .utils import initialize_tensor
 
 __all__ = ["OpticsModule"]
 

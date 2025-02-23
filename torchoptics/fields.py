@@ -8,10 +8,11 @@ import torch
 from torch import Tensor
 
 from .config import wavelength_or_default
-from .functional import calculate_centroid, calculate_std, initialize_tensor, inner2d, outer2d
+from .functional import calculate_centroid, calculate_std, inner2d, outer2d
 from .planar_geometry import PlanarGeometry
 from .propagation import VALID_INTERPOLATION_MODES, VALID_PROPAGATION_METHODS, propagator
 from .type_defs import Scalar, Vector2
+from .utils import initialize_tensor
 
 __all__ = ["Field", "PolarizedField", "CoherenceField"]
 

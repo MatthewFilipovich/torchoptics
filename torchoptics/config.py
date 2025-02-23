@@ -4,8 +4,8 @@ from typing import Optional
 
 from torch import Tensor
 
-from .functional import initialize_tensor
 from .type_defs import Scalar, Vector2
+from .utils import initialize_tensor
 
 __all__ = ["get_default_spacing", "set_default_spacing", "get_default_wavelength", "set_default_wavelength"]
 
