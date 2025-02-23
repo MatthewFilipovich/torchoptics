@@ -6,6 +6,7 @@ import torch
 from torch import Tensor
 
 from ..type_defs import Scalar, Vector2
+from ..utils import validate_tensor_dim
 from .elements import PolarizedModulationElement
 
 __all__ = ["PolarizedModulator", "PolarizedPhaseModulator", "PolarizedAmplitudeModulator"]
@@ -34,7 +35,7 @@ class PolarizedModulator(PolarizedModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor(polarized_modulation, "polarized_modulation")
+        _validate_tensor(polarized_modulation, "polarized_modulation")
         super().__init__(polarized_modulation.shape[2:], z, spacing, offset)
         self.register_optics_property("polarized_modulation", polarized_modulation, is_complex=True)
 
@@ -65,7 +66,7 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor(phase, "phase")
+        _validate_tensor(phase, "phase")
         super().__init__(phase.shape[2:], z, spacing, offset)
         self.register_optics_property("phase", phase)
 
@@ -96,7 +97,7 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        _validate_input_tensor(amplitude, "amplitude")
+        _validate_tensor(amplitude, "amplitude")
         super().__init__(amplitude.shape[2:], z, spacing, offset)
         self.register_optics_property("amplitude", amplitude)
 
@@ -104,11 +105,8 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         return self.amplitude.cdouble()  # type: ignore
 
 
-def _validate_input_tensor(tensor, name):
-    if not isinstance(tensor, Tensor):
-        raise TypeError(f"Expected {name} to be a tensor, but got {type(tensor).__name__}")
-    if tensor.dim() != 4:
-        raise ValueError(f"Expected {name} to be a 4D tensor, but got {tensor.dim()}D")
+def _validate_tensor(tensor, name):
+    validate_tensor_dim(tensor, name, 4)
     if tensor.shape[:2] != (3, 3):
         raise ValueError(
             f"Expected first two dimensions of {name} to have shape (3, 3), but got {tensor.shape[:2]}"
