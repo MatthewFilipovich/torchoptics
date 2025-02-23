@@ -26,7 +26,7 @@ class Element(PlanarGeometry):  # pylint: disable=abstract-method
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    def validate_field_geometry(self, field: Field) -> None:
+    def validate_field(self, field: Field) -> None:
         """
         Validates that the field has the same geometry as the element.
 
@@ -67,7 +67,7 @@ class ModulationElement(Element, ABC):
 
         Returns:
             Field: The modulated field."""
-        self.validate_field_geometry(field)
+        self.validate_field(field)
         return field.modulate(self.modulation_profile())
 
     def visualize(self, **kwargs) -> Any:
@@ -108,7 +108,7 @@ class PolychromaticModulationElement(Element):
 
         Returns:
             Field: The modulated field."""
-        self.validate_field_geometry(field)
+        self.validate_field(field)
         return field.modulate(self.modulation_profile(field.wavelength))
 
     def visualize(self, wavelength: Optional[Scalar] = None, **kwargs) -> Any:
@@ -149,7 +149,7 @@ class PolarizedModulationElement(Element):
 
         Returns:
             PolarizedField: The modulated polarized field."""
-        self.validate_field_geometry(field)
+        self.validate_field(field)
         return field.polarized_modulate(self.polarized_modulation_profile())
 
     def visualize(self, *index: int, **kwargs) -> Any:

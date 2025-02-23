@@ -23,5 +23,5 @@ class IdentityElement(Element):
 
     def forward(self, field: Field) -> Field:
         """Returns the input field without modification."""
-        self.validate_field_geometry(field)
+        self.validate_field(field)
         return field

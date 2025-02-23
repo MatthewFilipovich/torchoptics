@@ -88,11 +88,11 @@ class BeamSplitter(Element):
         Returns:
             tuple[Field, Field]: The split fields.
         """
-        self.validate_field_geometry(field)
+        self.validate_field(field)
         output_data0 = field.data * self.transfer_matrix[0, 0]
         output_data1 = field.data * self.transfer_matrix[1, 0]
         if other:
-            self.validate_field_geometry(other)
+            self.validate_field(other)
             output_data0 += other.data * self.transfer_matrix[0, 1]
             output_data1 += other.data * self.transfer_matrix[1, 1]
 
@@ -116,7 +116,7 @@ class PolarizingBeamSplitter(Element):
         Returns:
             tuple[PolarizedField, PolarizedField]: The split fields.
         """
-        self.validate_field_geometry(field)
+        self.validate_field(field)
         if not torch.all(field.data.select(-3, 2) == 0):
             raise ValueError("Polarized field cannot have z polarization.")
         return field.polarized_split()[:2]
