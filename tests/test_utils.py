@@ -1,4 +1,4 @@
-from unittest import TestCase
+import unittest
 
 from torchoptics.utils import *
 
