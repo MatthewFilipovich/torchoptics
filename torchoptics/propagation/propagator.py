@@ -138,8 +138,3 @@ def calculate_min_dim_propagation_distance(field: Field) -> float:
     - :math:`\lambda` is the wavelength of the field.
     """
     return ((field.length() * field.spacing).max() / field.wavelength).item()
-
-
-def calculate_power(field: Field) -> torch.Tensor:
-    """Function is necessary to properly calculate power for SpatialCoherence objects."""
-    return field.data.abs().square().sum(dim=(-1, -2)) * field.cell_area()
