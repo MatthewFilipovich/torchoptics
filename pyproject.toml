@@ -15,6 +15,16 @@ dependencies = [
     "matplotlib",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "pylint",
+    "mypy",
+    "pytest",
+    "jupyter"
+]
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
@@ -31,6 +41,10 @@ Tracker = "https://github.com/MatthewFilipovich/torchoptics/issues"
 
 [tool.black]
 line-length = 110
+
+[tool.isort]
+profile = "black"
+line_length = 110
 
 [tool.mypy]
 ignore_missing_imports = true
