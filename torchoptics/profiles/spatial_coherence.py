@@ -47,7 +47,7 @@ def schell_model(
         torch.Tensor: A 4D tensor representing the mutual coherence function
         :math:`\Gamma(x_1, y_1, x_2, y_2)`.
     """
-    x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     intensity = intensity_func(x, y)
 
     # Compute pairwise differences for coherence function

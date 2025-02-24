@@ -33,7 +33,7 @@ def checkerboard(
     Returns:
         Tensor: The generated checkerboard pattern with internal padding.
     """
-    x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     tile_length = initialize_tensor("tile_length", tile_length, is_vector2=True, is_positive=True)
     num_tiles = initialize_tensor("num_tiles", num_tiles, is_vector2=True, is_integer=True, is_positive=True)
 
@@ -63,7 +63,7 @@ def circle(
     Returns:
         Tensor: The generated circular profile.
     """
-    x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
     return r <= radius
 
@@ -84,7 +84,7 @@ def rectangle(
     Returns:
         Tensor: The generated rectangle profile.
     """
-    x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     side = initialize_tensor("side", side, is_vector2=True, is_positive=True)
     return (x.abs() <= side[0] / 2) & (y.abs() <= side[1] / 2)
 
