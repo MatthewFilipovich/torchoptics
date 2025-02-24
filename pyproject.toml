@@ -41,11 +41,12 @@ classifiers = [
 [project.optional-dependencies]
 dev = [
   "black",
+  "coverage",
   "isort",
-  "pylint",
   "mypy",
-  "pytest",
-  "jupyter"
+  "pre-commit",
+  "pylint",
+  "scipy"
 ]
 
 [project.urls]
