@@ -6,33 +6,47 @@ build-backend = "setuptools.build_meta"
 name = "torchoptics"
 version = "0.1.0"
 dependencies = [
-    "torch",
-    "matplotlib",
+  "torch",
+  "matplotlib"
 ]
 requires-python = ">=3.9"
 authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
 description = "Python library for differentiable Fourier optics simulations with PyTorch."
 readme = "README.md"
-license = {text = "MIT"}
+license = {file = "LICENSE"}
+keywords = [
+  "Fourier optics",
+  "PyTorch",
+  "machine learning",
+  "physics",
+  "microscopy",
+  "imaging",
+  "diffraction",
+  "holography",
+  "computational optics",
+  "wave optics",
+  "optical neural networks",
+  "inverse design",
+  "differentiable optics"
+]
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-    "Intended Audience :: Science/Research",
-    "Intended Audience :: Education",
-    "Topic :: Scientific/Engineering :: Physics",
-    "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Education",
+  "Topic :: Scientific/Engineering :: Physics",
+  "License :: OSI Approved :: MIT License"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "black",
-    "isort",
-    "pylint",
-    "mypy",
-    "pytest",
-    "jupyter"
+  "black",
+  "isort",
+  "pylint",
+  "mypy",
+  "pytest",
+  "jupyter"
 ]
-
 
 [project.urls]
 Homepage = "https://github.com/MatthewFilipovich/torchoptics"
@@ -42,26 +56,27 @@ Tracker = "https://github.com/MatthewFilipovich/torchoptics/issues"
 [tool.black]
 line-length = 110
 
+[tool.coverage.report]
+omit = ["tests/*"]
+exclude_lines = [
+  "if TYPE_CHECKING:"
+]
+
+[tool.coverage.run]
+omit = ["tests/*"]
+
 [tool.isort]
 profile = "black"
 line_length = 110
 
 [tool.pylint]
-[tool.pylint."messages control"]
-disable = [
-    "too-many-arguments",
-    "too-few-public-methods",
-    "too-many-positional-arguments"
-]
 
 [tool.pylint.format]
 max-line-length = 110
 
-[tool.coverage.run]
-omit = ["tests/*"]
-
-[tool.coverage.report]
-omit = ["tests/*"]
-exclude_lines = [
-    "if TYPE_CHECKING:"
+[tool.pylint."messages control"]
+disable = [
+  "too-many-arguments",
+  "too-few-public-methods",
+  "too-many-positional-arguments"
 ]
