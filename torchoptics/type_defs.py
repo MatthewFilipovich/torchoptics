@@ -4,7 +4,6 @@ from typing import Sequence, Union
 
 from torch import Tensor
 
-
 __all__ = ["Scalar", "Vector2"]
 
 Scalar = Union[int, float, Tensor]

@@ -8,7 +8,7 @@ from torch import Tensor
 
 from ..config import wavelength_or_default
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2, Scalar
+from ..type_defs import Scalar, Vector2
 
 __all__ = ["hermite_gaussian", "gaussian"]
 

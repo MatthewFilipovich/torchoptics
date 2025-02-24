@@ -2,10 +2,9 @@ import unittest
 
 import torch
 from torch import Tensor
+from torch.nn import Parameter
 
 from torchoptics import OpticsModule
-
-from torch.nn import Parameter
 
 
 class TestOpticsModule(unittest.TestCase):

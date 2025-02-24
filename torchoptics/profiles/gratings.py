@@ -6,7 +6,7 @@ from typing import Optional
 import torch
 
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2, Scalar
+from ..type_defs import Scalar, Vector2
 
 __all__ = ["blazed_grating", "sinusoidal_amplitude_grating", "sinusoidal_phase_grating"]
 

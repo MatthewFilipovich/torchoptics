@@ -5,23 +5,48 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "torchoptics"
 version = "0.1.0"
+dependencies = [
+  "torch",
+  "matplotlib"
+]
+requires-python = ">=3.9"
+authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
 description = "Python library for differentiable Fourier optics simulations with PyTorch."
 readme = "README.md"
-license = {text = "MIT"}
-authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
-requires-python = ">=3.9"
-dependencies = [
-    "torch",
-    "matplotlib",
+license = {file = "LICENSE"}
+keywords = [
+  "Fourier optics",
+  "PyTorch",
+  "machine learning",
+  "physics",
+  "microscopy",
+  "imaging",
+  "diffraction",
+  "holography",
+  "computational optics",
+  "wave optics",
+  "optical neural networks",
+  "inverse design",
+  "differentiable optics"
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Education",
+  "Topic :: Scientific/Engineering :: Physics",
+  "License :: OSI Approved :: MIT License"
 ]
 
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-    "Intended Audience :: Science/Research",
-    "Intended Audience :: Education",
-    "Topic :: Scientific/Engineering :: Physics",
-    "License :: OSI Approved :: MIT License",
+[project.optional-dependencies]
+dev = [
+  "black",
+  "coverage",
+  "isort",
+  "mypy",
+  "pre-commit",
+  "pylint",
+  "scipy"
 ]
 
 [project.urls]
@@ -32,9 +57,27 @@ Tracker = "https://github.com/MatthewFilipovich/torchoptics/issues"
 [tool.black]
 line-length = 110
 
-[tool.mypy]
-ignore_missing_imports = true
+[tool.coverage.report]
+omit = ["tests/*"]
+exclude_lines = [
+  "if TYPE_CHECKING:"
+]
 
-[[tool.mypy.overrides]]
-module = "matplotlib.*"
-ignore_errors = true
+[tool.coverage.run]
+omit = ["tests/*"]
+
+[tool.isort]
+profile = "black"
+line_length = 110
+
+[tool.pylint]
+
+[tool.pylint.format]
+max-line-length = 110
+
+[tool.pylint."messages control"]
+disable = [
+  "too-many-arguments",
+  "too-few-public-methods",
+  "too-many-positional-arguments"
+]

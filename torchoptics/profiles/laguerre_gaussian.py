@@ -6,7 +6,7 @@ from typing import Callable, Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Vector2, Scalar
+from ..type_defs import Scalar, Vector2
 from .hermite_gaussian import calculate_beam_properties
 
 __all__ = ["laguerre_gaussian"]
