@@ -44,7 +44,7 @@ def blazed_grating(
         Tensor: The generated transmission function.
     """
 
-    x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     phase = 2 * torch.pi * (x * math.cos(theta) + y * math.sin(theta)) / period
     return torch.exp(1j * phase)
 
@@ -84,7 +84,7 @@ def sinusoidal_amplitude_grating(
         Tensor: The generated transmission function.
     """
 
-    x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     amplitude = 0.5 + m / 2 * torch.cos(2 * torch.pi * (x * math.cos(theta) + y * math.sin(theta)) / period)
     return amplitude
 
@@ -124,6 +124,6 @@ def sinusoidal_phase_grating(
         Tensor: The generated transmission function.
     """
 
-    x, y = PlanarGeometry(shape, 0, spacing, offset).meshgrid()
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     phase = m / 2 * torch.sin(2 * torch.pi * (x * math.cos(theta) + y * math.sin(theta)) / period)
     return torch.exp(1j * phase)

@@ -14,7 +14,6 @@ __all__ = ["lens"]
 def lens(
     shape: Vector2,
     focal_length: Scalar,
-    z: Scalar = 0,
     wavelength: Optional[Scalar] = None,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
@@ -34,7 +33,6 @@ def lens(
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        z (Scalar): Position along the z-axis. Default: `0`.
         focal_length (Scalar): Focal length of the lens.
         wavelength (Optional[Scalar]): Wavelength used for lens operation. Default: if `None`, uses a
             global default (see :meth:`torchoptics.config.set_default_wavelength()`).
@@ -46,7 +44,7 @@ def lens(
     """
     wavelength = wavelength_or_default(wavelength)
 
-    planar_geometry = PlanarGeometry(shape, z, spacing, offset)
+    planar_geometry = PlanarGeometry(shape, spacing=spacing, offset=offset)
     x, y = planar_geometry.meshgrid()
     radial_dist = torch.sqrt(x**2 + y**2)
     phase_profile = torch.exp(-1j * torch.pi / (wavelength * focal_length) * radial_dist**2)
