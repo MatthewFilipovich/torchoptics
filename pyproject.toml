@@ -5,14 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "torchoptics"
 version = "0.1.0"
-description = "Python library for differentiable Fourier optics simulations with PyTorch."
-readme = "README.md"
-license = {text = "MIT"}
-authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
-requires-python = ">=3.9"
 dependencies = [
     "torch",
     "matplotlib",
+]
+requires-python = ">=3.9"
+authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
+description = "Python library for differentiable Fourier optics simulations with PyTorch."
+readme = "README.md"
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: MIT License",
 ]
 
 [project.optional-dependencies]
@@ -25,14 +33,6 @@ dev = [
     "jupyter"
 ]
 
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
-    "Intended Audience :: Science/Research",
-    "Intended Audience :: Education",
-    "Topic :: Scientific/Engineering :: Physics",
-    "License :: OSI Approved :: MIT License",
-]
 
 [project.urls]
 Homepage = "https://github.com/MatthewFilipovich/torchoptics"
