@@ -57,16 +57,7 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
         else:
             super().__setattr__(name, value)
 
-    def register_optics_property(
-        self,
-        name: str,
-        value: Any,
-        is_scalar: bool = False,
-        is_vector2: bool = False,
-        is_complex: bool = False,
-        is_positive: bool = False,
-        is_non_negative: bool = False,
-    ) -> None:
+    def register_optics_property(self, name: str, value: Any, **kwargs) -> None:
         """
         Registers an optics property as a PyTorch parameter or buffer.
 
@@ -83,20 +74,10 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
         """
         if not self._initialized:
             raise AttributeError("Cannot register optics property before __init__() call.")
-        is_param = isinstance(value, Parameter)
+        tensor = initialize_tensor(name, value, **kwargs)
+        self._optics_property_configs[name] = kwargs
 
-        property_config = {
-            "name": name,
-            "is_scalar": is_scalar,
-            "is_vector2": is_vector2,
-            "is_complex": is_complex,
-            "is_positive": is_positive,
-            "is_non_negative": is_non_negative,
-        }
-        self._optics_property_configs[name] = property_config
-
-        tensor = initialize_tensor(value=value, **property_config)  # type: ignore[arg-type]
-        if is_param:
+        if isinstance(value, Parameter):
             self.register_parameter(name, Parameter(tensor))
         else:
             self.register_buffer(name, tensor)
@@ -114,7 +95,7 @@ class OpticsModule(Module):  # pylint: disable=abstract-method
             ValueError: If the value does not match the property's conditions.
         """
         if self._initialized and name in self._optics_property_configs:
-            updated_tensor = initialize_tensor(value=value, **self._optics_property_configs[name])
+            updated_tensor = initialize_tensor(name, value, **self._optics_property_configs[name])
             attr_tensor = getattr(self, name)
             if updated_tensor.shape != attr_tensor.shape:
                 raise ValueError(
