@@ -1,4 +1,9 @@
+-r requirements.txt
+
+black
+coverage
+isort
+mypy
 pre-commit
 pylint
-black
 scipy
