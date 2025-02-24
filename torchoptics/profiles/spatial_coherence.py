@@ -7,7 +7,7 @@ from torch import Tensor
 
 from ..functional import outer2d
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Vector2, Scalar
+from ..type_defs import Scalar, Vector2
 
 
 def schell_model(
