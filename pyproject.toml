@@ -46,9 +46,22 @@ line-length = 110
 profile = "black"
 line_length = 110
 
-[tool.mypy]
-ignore_missing_imports = true
+[tool.pylint]
+[tool.pylint."messages control"]
+disable = [
+    "too-many-arguments",
+    "too-few-public-methods",
+    "too-many-positional-arguments"
+]
 
-[[tool.mypy.overrides]]
-module = "matplotlib.*"
-ignore_errors = true
+[tool.pylint.format]
+max-line-length = 110
+
+[tool.coverage.run]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+omit = ["tests/*"]
+exclude_lines = [
+    "if TYPE_CHECKING:"
+]

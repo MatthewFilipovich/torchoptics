@@ -4,7 +4,7 @@ from typing import Any, Optional, Sequence
 
 import matplotlib.pyplot as plt
 import torch
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+from mpl_toolkits.axes_grid1 import make_axes_locatable  # type: ignore
 from torch import Tensor
 
 __all__ = ["visualize_tensor"]

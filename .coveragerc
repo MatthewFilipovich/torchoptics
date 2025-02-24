@@ -1,9 +1,0 @@
-[run]
-omit =
-    tests/*
-
-[report]
-omit =
-    tests/*
-exclude_lines =
-    if TYPE_CHECKING:

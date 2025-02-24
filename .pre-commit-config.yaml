@@ -22,14 +22,14 @@ repos:
             "-sn", # Don't display the score
           ]
         files: "^torchoptics/"
-        additional_dependencies: [torch==2.6.0]
+        additional_dependencies: [torch, matplotlib]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v1.15.0"
     hooks:
       - id: mypy
         files: "^torchoptics/"
-        additional_dependencies: [torch==2.6.0]
+        additional_dependencies: [torch, matplotlib]
 
   - repo: https://github.com/kynan/nbstripout
     rev: 0.8.1
