@@ -1,4 +1,4 @@
-Tutorials
+Examples
 =========
 
 This section provides tutorials and example simulations using the TorchOptics library.
