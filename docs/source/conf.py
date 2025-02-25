@@ -34,7 +34,10 @@ autoapi_options = [
     "show-module-summary",
     "imported-members",
 ]
-intersphinx_mapping = {"torch": ("https://pytorch.org/docs/stable/", None)}
+intersphinx_mapping = {
+    "torch": ("https://pytorch.org/docs/stable/", None),
+    "python": ("https://docs.python.org/3", None),
+}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -43,6 +46,20 @@ html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 
 html_favicon = "_static/favicon.png"
+html_logo = "_static/torchoptics_logo.png"
+html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/MatthewFilipovich/torchoptics",
+            "icon": "fa-brands fa-github",
+            "type": "fontawesome",
+        },
+    ],
+    "primary_sidebar_end": [],
+}
+
+html_sidebars = {"**": ["sidebar-nav-bs"]}
 
 
 # -- Custom configuration ----------------------------------------------------
