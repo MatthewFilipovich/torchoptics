@@ -6,7 +6,8 @@ from typing import Callable, Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Scalar, Vector2
+from ..type_defs import Int, Scalar, Vector2
+from ..utils import initialize_tensor
 from .hermite_gaussian import calculate_beam_properties
 
 __all__ = ["laguerre_gaussian"]
@@ -14,8 +15,8 @@ __all__ = ["laguerre_gaussian"]
 
 def laguerre_gaussian(
     shape: Vector2,
-    p: int,
-    l: int,
+    p: Int,
+    l: Int,
     waist_radius: Scalar,
     wavelength: Optional[Scalar] = None,
     waist_z: Scalar = 0,
@@ -81,6 +82,9 @@ def laguerre_gaussian(
         Tensor: The generated Laguerre-Gaussian profile.
     """
     # pylint: disable=too-many-locals
+    p = initialize_tensor("p", p, is_scalar=True, is_integer=True, is_non_negative=True)
+    l = initialize_tensor("l", l, is_scalar=True, is_integer=True)
+    waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)
 
     x, y, phase_shift, wz, waist_ratio = calculate_beam_properties(
         (p, l), waist_radius, shape, wavelength, waist_z, spacing, offset, False
@@ -88,7 +92,7 @@ def laguerre_gaussian(
 
     r = torch.sqrt(x**2 + y**2) * 2.0**0.5 / wz
     phi = torch.atan2(y, x)
-    normalization_constant = math.sqrt(
+    normalization_constant = torch.sqrt(
         2 * math.factorial(p) / (torch.pi * math.factorial(p + abs(l))) / waist_radius**2
     )
 
@@ -103,7 +107,7 @@ def laguerre_gaussian(
     )
 
 
-def laguerre_poly(p: int, l: int) -> Callable[[torch.Tensor], torch.Tensor]:
+def laguerre_poly(p: Int, l: Int) -> Callable[[torch.Tensor], torch.Tensor]:
     """Compute the generalized Laguerre polynomial L_p^l(x)."""
 
     def poly(x):

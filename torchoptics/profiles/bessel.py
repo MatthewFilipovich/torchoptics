@@ -1,6 +1,5 @@
 """This module defines a function to generate the bessel beam profile."""
 
-import math
 from typing import Optional
 
 import torch
@@ -9,6 +8,7 @@ from torch import Tensor
 from ..config import wavelength_or_default
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar, Vector2
+from ..utils import initialize_tensor
 
 __all__ = ["bessel"]
 
@@ -48,12 +48,11 @@ def bessel(
 
     """
     wavelength = wavelength_or_default(wavelength)
+    cone_angle = initialize_tensor("cone_angle", cone_angle, is_scalar=True)
 
-    # Calculate the wave number k and its radial component
     k = 2 * torch.pi / wavelength
-    k_r = k * math.sin(cone_angle)
+    k_r = k * torch.sin(cone_angle)
 
-    # Generate the planar grid
     x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
 

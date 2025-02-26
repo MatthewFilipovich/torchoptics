@@ -8,15 +8,16 @@ from torch import Tensor
 
 from ..config import wavelength_or_default
 from ..planar_geometry import PlanarGeometry
-from ..type_defs import Scalar, Vector2
+from ..type_defs import Int, Scalar, Vector2
+from ..utils import initialize_tensor
 
 __all__ = ["hermite_gaussian", "gaussian"]
 
 
 def hermite_gaussian(
     shape: Vector2,
-    m: int,
-    n: int,
+    m: Int,
+    n: Int,
     waist_radius: Scalar,
     wavelength: Optional[Scalar] = None,
     waist_z: Scalar = 0,
@@ -83,13 +84,17 @@ def hermite_gaussian(
     """
     # pylint: disable=too-many-locals
 
+    m = initialize_tensor("m", m, is_scalar=True, is_integer=True, is_non_negative=True)
+    n = initialize_tensor("n", n, is_scalar=True, is_integer=True, is_non_negative=True)
+    waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)
+
     x, y, phase_shift, wz, waist_ratio = calculate_beam_properties(
         (m, n), waist_radius, shape, wavelength, waist_z, spacing, offset, True
     )
 
     u_x = 2.0**0.5 * x / wz
     u_y = 2.0**0.5 * y / wz
-    normalization_constant = math.sqrt(
+    normalization_constant = torch.sqrt(
         2.0 ** (1 - m - n) / (math.factorial(m) * math.factorial(n) * torch.pi * waist_radius**2)
     )
 
@@ -164,7 +169,7 @@ def gaussian(
     return hermite_gaussian(shape, 0, 0, waist_radius, wavelength, waist_z, spacing, offset)
 
 
-def hermite_poly(n: int) -> Callable[[Tensor], Tensor]:
+def hermite_poly(n: Int) -> Callable[[Tensor], Tensor]:
     """Compute the Hermite polynomial of order n using an iterative approach."""
 
     def poly(x: Tensor) -> Tensor:
