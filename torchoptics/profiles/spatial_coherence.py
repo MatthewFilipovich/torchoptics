@@ -8,6 +8,7 @@ from torch import Tensor
 from ..functional import outer2d
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar, Vector2
+from ..utils import initialize_tensor
 
 
 def schell_model(
@@ -104,4 +105,5 @@ def gaussian_schell_model(
         return 2 / (torch.pi * waist_radius**2) * torch.exp(-(2 * (x**2 + y**2)) / waist_radius**2)
 
     # Use the general Schell model to compute the coherence profile
+    waist_radius = initialize_tensor("waist_radius", waist_radius, is_positive=True)
     return schell_model(shape, intensity_func, coherence_func, spacing, offset)

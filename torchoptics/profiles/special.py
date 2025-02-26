@@ -40,6 +40,7 @@ def airy(
     Returns:
         Tensor: The generated Airy profile.
     """
+    scale = initialize_tensor("scale", scale, is_scalar=True, is_positive=True)
     x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
     scaled_r = r / scale
@@ -75,7 +76,7 @@ def sinc(
     Returns:
         Tensor: The generated sinc profile.
     """
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     scale = initialize_tensor("scale", scale, is_vector2=True, is_positive=True)
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     sinc_pattern = torch.sinc(x / scale[0]) * torch.sinc(y / scale[1]) / (scale[0] * scale[1]) ** 0.5
     return sinc_pattern
