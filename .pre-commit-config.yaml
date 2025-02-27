@@ -37,5 +37,3 @@ repos:
       - id: nbstripout
         args:
           - --keep-output
-          - --extra-keys
-          - metadata.kernelspec metadata.language_info
