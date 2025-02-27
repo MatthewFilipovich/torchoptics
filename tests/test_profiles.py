@@ -393,5 +393,35 @@ class TestBesselProfile(unittest.TestCase):
         self.assertTrue(torch.all(self.profile.abs() <= 1))
 
 
+class TestZernikeProfile(unittest.TestCase):
+    def setUp(self):
+        self.shape = (100, 100)
+        self.radius = 50.0
+        self.spacing = (1.0, 1.0)
+        self.offset = (0.0, 0.0)
+        self.n = 3
+        self.m = 1
+
+    def test_zernike_profile(self):
+        profile = zernike(
+            shape=self.shape,
+            n=self.n,
+            m=self.m,
+            radius=self.radius,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        self.assertEqual(profile.shape, self.shape)
+        self.assertFalse(torch.is_complex(profile))
+        self.assertTrue(torch.all(profile >= -1))
+        self.assertTrue(torch.all(profile <= 1))
+
+    def test_invalid_zernike_parameters(self):
+        with self.assertRaises(ValueError):
+            zernike(shape=self.shape, n=2, m=3, radius=self.radius, spacing=self.spacing, offset=self.offset)
+        with self.assertRaises(ValueError):
+            zernike(shape=self.shape, n=3, m=2, radius=self.radius, spacing=self.spacing, offset=self.offset)
+
+
 if __name__ == "__main__":
     unittest.main()
