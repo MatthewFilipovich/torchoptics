@@ -223,6 +223,19 @@ class TestShapes(unittest.TestCase):
         self.assertEqual(profile.shape, self.shape)
         self.assertTrue(torch.all((profile == 0) | (profile == 1)))
 
+    def test_triangle(self):
+        base = 10.0
+        height = 20.0
+        profile = shapes.triangle(
+            shape=self.shape,
+            base=base,
+            height=height,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        self.assertEqual(profile.shape, self.shape)
+        self.assertTrue(torch.all((profile == 0) | (profile == 1)))
+
 
 class TestGratings(unittest.TestCase):
     def setUp(self):
@@ -233,43 +246,46 @@ class TestGratings(unittest.TestCase):
 
     def test_blazed_grating(self):
         period = 10.0
+        height = 2.0
         profile = gratings.blazed_grating(
             shape=self.shape,
             period=period,
             spacing=self.spacing,
             offset=self.offset,
             theta=self.theta,
+            height=height,
         )
         self.assertEqual(profile.shape, self.shape)
-        self.assertTrue(torch.is_complex(profile))
+        self.assertFalse(torch.is_complex(profile))
 
-    def test_sinusoidal_amplitude_grating(self):
+    def test_sinusoidal_grating(self):
         period = 10.0
-        m = 0.5
-        profile = gratings.sinusoidal_amplitude_grating(
+        height = 1.0
+        profile = gratings.sinusoidal_grating(
             shape=self.shape,
-            m=m,
+            period=period,
+            height=height,
+            spacing=self.spacing,
+            offset=self.offset,
+            theta=self.theta,
+        )
+        self.assertEqual(profile.shape, self.shape)
+        self.assertFalse(torch.is_complex(profile))
+        self.assertTrue(torch.all(profile >= -height))
+        self.assertTrue(torch.all(profile <= height))
+
+    def test_binary_grating(self):
+        period = 10.0
+        profile = gratings.binary_grating(
+            shape=self.shape,
             period=period,
             spacing=self.spacing,
             offset=self.offset,
             theta=self.theta,
         )
         self.assertEqual(profile.shape, self.shape)
-        self.assertTrue(torch.all((profile >= 0) & (profile <= 1)))
-
-    def test_sinusoidal_phase_grating(self):
-        period = 10.0
-        m = 0.5
-        profile = gratings.sinusoidal_phase_grating(
-            shape=self.shape,
-            m=m,
-            period=period,
-            spacing=self.spacing,
-            offset=self.offset,
-            theta=self.theta,
-        )
-        self.assertEqual(profile.shape, self.shape)
-        self.assertTrue(torch.is_complex(profile))
+        self.assertFalse(torch.is_complex(profile))
+        self.assertTrue(torch.all((profile == 0) | (profile == 1)))
 
 
 class TestSpecialProfiles(unittest.TestCase):

@@ -9,7 +9,7 @@ from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["checkerboard", "circle", "rectangle", "square"]
+__all__ = ["checkerboard", "circle", "rectangle", "square", "triangle"]
 
 
 def checkerboard(
@@ -33,9 +33,9 @@ def checkerboard(
     Returns:
         Tensor: The generated checkerboard pattern with internal padding.
     """
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     tile_length = initialize_tensor("tile_length", tile_length, is_vector2=True, is_positive=True)
     num_tiles = initialize_tensor("num_tiles", num_tiles, is_vector2=True, is_integer=True, is_positive=True)
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
 
     x_tile = (x + (tile_length[0] / 2 if num_tiles[0] % 2 == 1 else 0)) // tile_length[0]
     y_tile = (y + (tile_length[1] / 2 if num_tiles[1] % 2 == 1 else 0)) // tile_length[1]
@@ -63,6 +63,7 @@ def circle(
     Returns:
         Tensor: The generated circular profile.
     """
+    radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
     x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
     return r <= radius
@@ -84,8 +85,8 @@ def rectangle(
     Returns:
         Tensor: The generated rectangle profile.
     """
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     side = initialize_tensor("side", side, is_vector2=True, is_positive=True)
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     return (x.abs() <= side[0] / 2) & (y.abs() <= side[1] / 2)
 
 
@@ -106,3 +107,45 @@ def square(
         Tensor: The generated square profile.
     """
     return rectangle(shape, (side, side), spacing, offset)
+
+
+def triangle(
+    shape: Vector2,
+    base: Scalar,
+    height: Scalar,
+    spacing: Optional[Vector2] = None,
+    offset: Optional[Vector2] = None,
+    theta: Scalar = 0,
+) -> Tensor:
+    """
+    Generates a triangular profile.
+
+    Args:
+        shape (Vector2): Number of grid points along the planar dimensions.
+        base (Scalar): The base length of the triangle.
+        height (Scalar): The height of the triangle.
+        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
+        offset (Optional[Vector2]): Center coordinates of the profile. Default: `(0, 0)`.
+        theta (Scalar): The angle of rotation of the triangle in radians. Default: `0`.
+
+    Returns:
+        Tensor: The generated triangular profile.
+    """
+    base = initialize_tensor("base", base, is_scalar=True, is_positive=True)
+    height = initialize_tensor("height", height, is_scalar=True, is_positive=True)
+    theta = initialize_tensor("theta", theta, is_scalar=True)
+    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
+
+    theta -= torch.pi / 2
+    x_rot = x * torch.cos(theta) - y * torch.sin(theta)
+    y_rot = x * torch.sin(theta) + y * torch.cos(theta)
+
+    triangle_profile = (
+        (y_rot >= -height / 2)
+        & (y_rot <= height / 2)
+        & (x_rot.abs() <= base / 2)
+        & (y_rot <= height / 2 - (2 * height / base) * x_rot.abs())
+    )
+
+    return triangle_profile
