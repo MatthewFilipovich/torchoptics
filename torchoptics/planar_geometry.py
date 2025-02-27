@@ -44,7 +44,7 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
         offset: Optional[Vector2] = None,
     ) -> None:
         super().__init__()
-        self._shape = torch.Size(
+        self._shape = tuple(
             initialize_tensor("shape", shape, is_vector2=True, is_integer=True, is_positive=True)
         )
         self.register_optics_property("z", z, is_scalar=True)
@@ -54,7 +54,7 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
         self.register_optics_property("offset", (0, 0) if offset is None else offset, is_vector2=True)
 
     @property
-    def shape(self) -> torch.Size:
+    def shape(self) -> tuple[int, int]:
         """Returns the shape of the plane."""
         return self._shape
 
