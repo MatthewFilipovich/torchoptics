@@ -1,14 +1,61 @@
 """This module defines functions to generate grating profiles."""
 
-import math
 from typing import Optional
 
 import torch
 
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar, Vector2
+from ..utils import initialize_tensor
 
-__all__ = ["blazed_grating", "sinusoidal_amplitude_grating", "sinusoidal_phase_grating"]
+__all__ = ["binary_grating", "blazed_grating", "sinusoidal_grating"]
+
+
+def binary_grating(
+    shape: Vector2,
+    period: Scalar,
+    spacing: Optional[Vector2] = None,
+    offset: Optional[Vector2] = None,
+    height: Scalar = 1,
+    theta: Scalar = 0,
+    duty_cycle: Scalar = 0.5,
+) -> torch.Tensor:
+    r"""
+    Generates a binary grating profile.
+
+    The binary grating profile is defined by the following equation:
+
+    .. math::
+        \psi(x, y) = 
+        \begin{cases} 
+        0 & \text{if } \mod \left(\frac{x \cos \theta + y \sin \theta}{\Lambda}, 1\right) < d \\
+        h & \text{otherwise} 
+        \end{cases}
+
+    where:
+
+    - :math:`h` is the height of the grating,
+    - :math:`\Lambda` is the period of the grating,
+    - :math:`\theta` is the angle of the grating, and
+    - :math:`d` is the duty cycle of the grating.
+
+    Args:
+        shape (Vector2): Number of grid points along the planar dimensions.
+        period (Scalar): The grating period (distance between adjacent grooves).
+        duty_cycle (Scalar): The duty cycle of the grating. Default: `0.5`.
+        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
+        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        height (Scalar): The height of the grating. Default: `1`.
+        theta (Scalar): The angle of the grating in radians. Default: `0`.
+
+    Returns:
+        Tensor: The generated transmission function.
+    """
+
+    duty_cycle = initialize_tensor("duty_cycle", duty_cycle, is_scalar=True)
+    grating = blazed_grating(shape, period, spacing, offset, 1, theta)
+    return torch.where(grating < duty_cycle, 0, height)
 
 
 def blazed_grating(
@@ -16,6 +63,7 @@ def blazed_grating(
     period: Scalar,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
+    height: Scalar = 1,
     theta: Scalar = 0,
 ) -> torch.Tensor:
     r"""
@@ -24,10 +72,11 @@ def blazed_grating(
     The blazed grating profile is defined by the following equation:
 
     .. math::
-        \mathcal{M}(x, y) = \exp\left( i \frac{2\pi}{\Lambda} (x \cos(\theta) + y \sin(\theta)) \right)
+        \psi(x, y) = h \cdot \mod \left(\frac{x \cos \theta + y \sin \theta}{\Lambda}, 1\right)
 
     where:
 
+    - :math:`h` is the height of the grating,
     - :math:`\Lambda` is the period of the grating, and
     - :math:`\theta` is the angle of the grating.
 
@@ -37,93 +86,63 @@ def blazed_grating(
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        height (Scalar): The height of the grating. Default: `1`.
         theta (Scalar): The angle of the grating in radians. Default: `0`.
-
 
     Returns:
         Tensor: The generated transmission function.
     """
 
+    period = initialize_tensor("period", period, is_scalar=True)
+    height = initialize_tensor("height", height, is_scalar=True)
+    theta = initialize_tensor("theta", theta, is_scalar=True)
     x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
-    phase = 2 * torch.pi * (x * math.cos(theta) + y * math.sin(theta)) / period
-    return torch.exp(1j * phase)
+
+    grating = ((x * torch.cos(theta) + y * torch.sin(theta)) / period) % 1
+    grating = grating.where(grating < 1 - 1e-10, 0)  # Avoid numerical issues from modulus
+    return height * grating
 
 
-def sinusoidal_amplitude_grating(
+def sinusoidal_grating(
     shape: Vector2,
-    m: Scalar,
     period: Scalar,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
+    height: Scalar = 1,
     theta: Scalar = 0,
 ) -> torch.Tensor:
     r"""
-    Generates a sinusoidal amplitude grating profile.
+    Generates a sinusoidal grating profile.
 
-    The sinusoidal amplitude grating profile is defined by the following equation:
+    The sinusoidal grating profile is defined by the following equation:
 
     .. math::
-        \mathcal{M}(x, y) = \frac{1}{2} + \frac{m}{2} \cos\left(2\pi \frac{x \cos(\theta)
-        + y \sin(\theta)}{\Lambda}\right)
+        \psi(x, y) = h \left(\frac{1}{2} + \frac{1}{2} \cos\left(\frac{2 \pi}{\Lambda} (x \cos \theta
+        + y \sin \theta)\right)\right)
 
     where:
 
-    - :math:`m` is the amplitude contrast (:math:`0-1`), and
-    - :math:`\Lambda` is the period of the grating.
+    - :math:`h` is the height of the grating,
+    - :math:`\Lambda` is the period of the grating, and
+    - :math:`\theta` is the angle of the grating.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        m (Scalar): The amplitude contrast.
         period (Scalar): The grating period (distance between adjacent grooves).
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        height (Scalar): The height of the grating. Default: `1`.
         theta (Scalar): The angle of the grating in radians. Default: `0`.
 
     Returns:
         Tensor: The generated transmission function.
     """
 
+    period = initialize_tensor("period", period, is_scalar=True)
+    height = initialize_tensor("height", height, is_scalar=True)
+    theta = initialize_tensor("theta", theta, is_scalar=True)
     x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
-    amplitude = 0.5 + m / 2 * torch.cos(2 * torch.pi * (x * math.cos(theta) + y * math.sin(theta)) / period)
-    return amplitude
 
-
-def sinusoidal_phase_grating(
-    shape: Vector2,
-    m: Scalar,
-    period: Scalar,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
-    theta: Scalar = 0,
-) -> torch.Tensor:
-    r"""
-    Generates a sinusoidal phase grating profile.
-
-    The sinusoidal phase grating profile is defined by the following equation:
-
-    .. math::
-        \mathcal{M}(x, y) = \exp\left( i \frac{m}{2} \sin\left(2\pi \frac{x \cos(\theta)
-        + y \sin(\theta)}{\Lambda}\right) \right)
-
-    where:
-
-    - :math:`m` is the phase contrast (:math:`0-2\pi`), and
-    - :math:`\Lambda` is the period of the grating.
-
-    Args:
-        shape (Vector2): Number of grid points along the planar dimensions.
-        m (Scalar): The phase contrast.
-        period (Scalar): The grating period (distance between adjacent grooves).
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
-            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
-        theta (Scalar): The angle of the grating in radians. Default: `0`.
-
-    Returns:
-        Tensor: The generated transmission function.
-    """
-
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
-    phase = m / 2 * torch.sin(2 * torch.pi * (x * math.cos(theta) + y * math.sin(theta)) / period)
-    return torch.exp(1j * phase)
+    grating = 0.5 + 0.5 * torch.cos(2 * torch.pi * (x * torch.cos(theta) + y * torch.sin(theta)) / period)
+    return height * grating
