@@ -2,3 +2,4 @@ sphinx-autoapi
 pydata-sphinx-theme
 sphinx-copybutton
 myst-nb
+sphinx-gallery

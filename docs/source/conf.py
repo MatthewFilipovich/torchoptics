@@ -19,9 +19,8 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx_copybutton",
-    "myst_nb",
+    "sphinx_gallery.gen_gallery",
 ]
-nb_execution_mode = "off"
 
 autoapi_member_order = "alphabetical"
 autoapi_dirs = ["../../torchoptics"]
@@ -37,6 +36,11 @@ autoapi_options = [
 intersphinx_mapping = {
     "torch": ("https://pytorch.org/docs/stable/", None),
     "python": ("https://docs.python.org/3", None),
+}
+
+sphinx_gallery_conf = {
+    "examples_dirs": "../../examples",
+    "gallery_dirs": "auto_examples",
 }
 
 # -- Options for HTML output -------------------------------------------------
@@ -55,11 +59,18 @@ html_theme_options = {
             "icon": "fa-brands fa-github",
             "type": "fontawesome",
         },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/torchoptics",
+            "icon": "fa-solid fa-box",
+        },
     ],
     "primary_sidebar_end": [],
+    "secondary_sidebar_items": ["page-toc", "sg_download_links", "sg_launcher_links"],
 }
 
 html_sidebars = {"**": ["sidebar-nav-bs"]}
+html_static_path = ["_static"]
 
 
 # -- Custom configuration ----------------------------------------------------
@@ -70,5 +81,6 @@ def skip_modules(app, what, name, obj, skip, options):
     return skip
 
 
-def setup(sphinx):
-    sphinx.connect("autoapi-skip-member", skip_modules)
+def setup(app):
+    app.connect("autoapi-skip-member", skip_modules)
+    app.add_css_file("hide_links.css")  # Custom CSS to hide jupyter links
