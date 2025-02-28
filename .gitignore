@@ -181,3 +181,7 @@ venv*/
 .DS_Store
 .vscode
 data/
+
+# sphinx-gallery
+auto_examples/
+sg_execution_times.rst
