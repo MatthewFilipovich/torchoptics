@@ -3,7 +3,7 @@
    :hidden:
 
    getting_started/index
-   tutorials/index
+   auto_examples/index
    Reference <reference/index>
    background/index
 
