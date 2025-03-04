@@ -108,9 +108,19 @@ class AmplitudeModulator(ModulationElement):
 
 class PolychromaticPhaseModulator(PolychromaticModulationElement):
     r"""
-    Phase-only modulator element that modules the field based on the optical path length.
+    Phase-only modulator element that modulates the optical field based on the optical path length (OPL).
 
-    :math:`\phi = \exp(2j \pi / \lambda \cdot \text{opl})`
+    The modulation is applied according to:
+
+    .. math::
+        \mathcal{M}(x, y) = \exp\left(i \frac{2 \pi}{\lambda} \cdot \text{OPL}\right)
+
+    where:
+
+    - :math:`\mathcal{M}` is the modulation profile applied to the optical field.
+    - :math:`\lambda` is the wavelength of the light.
+    - :math:`\text{OPL}` is the optical path length, accounting for both the physical distance and the
+      refractive index of the medium.
 
     Args:
         optical_path_length (Tensor): Optical path length (real-valued tensor).
