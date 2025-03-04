@@ -1,3 +1,10 @@
+.. raw:: html
+
+   <style>
+   .bd-sidebar-secondary {
+       display: none;
+   }
+   </style>
 
 .. toctree::
    :hidden:
@@ -7,30 +14,53 @@
    Reference <reference/index>
    background/index
 
-   
-.. image:: _static/torchoptics_logo.png
-   :width: 700px
-   :align: center
-
-*TorchOptics is an open-source Python library for differentiable Fourier optics simulations with PyTorch.*
+TorchOptics Documentation
+==========================
 
 .. note::
     **Documentation is currently being developed.** For detailed information about the library, please refer to the `arXiv paper <https://arxiv.org/abs/2411.18591>`_.
 
-Key Features
-============
 
-- **Differentiable Fourier Optics Simulations**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
-- **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
-- **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
-- **Wide Range of Optical Elements and Spatial Profiles**: Includes standard elements like lenses and modulators, along with commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams.
-- **Polarized Light Simulation**: Simulates polarized light interactions using matrix Fourier optics with Jones calculus.
-- **Spatial Coherence Support**: Models optical fields with arbitrary spatial coherence through the mutual coherence function.
+Key Features
+------------
+
+.. grid:: 1 2 2 3
+   :gutter: 2
+
+   .. grid-item-card:: :fas:`wave-square` **Differentiable Fourier Optics Simulations**
+      :class-card: sd-bg-light sd-border sd-shadow
+
+      A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
+
+   .. grid-item-card:: :fab:`pytorch` **Built on PyTorch**
+      :class-card: sd-bg-light sd-border sd-shadow
+
+      Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
+
+   .. grid-item-card:: :fas:`cogs` **End-to-End Optimization**
+      :class-card: sd-bg-light sd-border sd-shadow
+
+      Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
+
+   .. grid-item-card:: :fas:`project-diagram` **Wide Range of Optical Elements and Spatial Profiles**
+      :class-card: sd-bg-light sd-border sd-shadow
+
+      Includes standard elements like lenses and modulators, along with commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams.
+
+   .. grid-item-card:: :fas:`lightbulb` **Polarized Light Simulation**
+      :class-card: sd-bg-light sd-border sd-shadow
+
+      Simulates polarized light interactions using matrix Fourier optics with Jones calculus.
+
+   .. grid-item-card:: :fas:`eye` **Spatial Coherence Support**
+      :class-card: sd-bg-light sd-border sd-shadow
+
+      Models optical fields with arbitrary spatial coherence through the mutual coherence function.
 
 Our research paper, available on `arXiv <https://arxiv.org/abs/2411.18591>`_, introduces the TorchOptics library and provides a comprehensive review of its features and applications.
 
 Installation
-============
+------------
 
 TorchOptics and its dependencies can be installed using `pip <https://pypi.org/project/torchoptics/>`_:
 
@@ -46,7 +76,7 @@ To install the library in development mode, first clone the GitHub repository an
     pip install -e ./torchoptics
 
 Usage
-=====
+-----
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/MatthewFilipovich/torchoptics/blob/main/docs/source/tutorials/4f_system.ipynb
@@ -110,7 +140,7 @@ This example demonstrates simulating a 4f imaging system using TorchOptics. The 
    Propagation of the intensity distribution.
 
 Contributing
-============
+--------------
 
 We welcome all bug reports and suggestions for future features and enhancements, which can be filed as GitHub issues. To contribute a feature:
 
@@ -121,13 +151,13 @@ We welcome all bug reports and suggestions for future features and enhancements,
 5. Submit a Pull Request.
 
 Citing TorchOptics
-===================
+-------------------
 
 If you are using TorchOptics for research purposes, we kindly request that you cite the following paper:
 
     M.J. Filipovich and A.I. Lvovsky, *TorchOptics: An open-source Python library for differentiable Fourier optics simulations*, arXiv preprint `arXiv:2411.18591 <https://arxiv.org/abs/2411.18591>`_ (2024).
 
 License
-=======
+-------
 
 TorchOptics is distributed under the MIT License. See the `LICENSE <https://github.com/MatthewFilipovich/torchoptics/blob/main/LICENSE>`_ file for more details.
