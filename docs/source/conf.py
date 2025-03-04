@@ -20,6 +20,7 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx_copybutton",
     "sphinx_gallery.gen_gallery",
+    "sphinx_design",
 ]
 
 autoapi_member_order = "alphabetical"
@@ -48,6 +49,7 @@ sphinx_gallery_conf = {
 
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
+html_title = "TorchOptics"
 
 html_favicon = "_static/favicon.png"
 html_logo = "_static/torchoptics_logo.png"
