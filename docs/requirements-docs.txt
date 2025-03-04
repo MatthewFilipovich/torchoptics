@@ -3,3 +3,4 @@ pydata-sphinx-theme
 sphinx-copybutton
 myst-nb
 sphinx-gallery
+sphinx-design
