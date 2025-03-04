@@ -10,7 +10,7 @@ from ..functional import plane_sample
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar, Vector2
 from .angular_spectrum_method import asm_propagation
-from .direct_integration_method import dim_propagation
+from .direct_integration_method import calculate_grid_bounds, dim_propagation
 
 if TYPE_CHECKING:
     from ..fields import Field
@@ -18,9 +18,12 @@ if TYPE_CHECKING:
 __all__ = [
     "propagator",
     "get_propagation_plane",
-    "is_dim_propagation",
-    "calculate_min_dim_propagation_distance",
+    "is_asm",
+    "calculate_critical_propagation_distance",
 ]
+
+VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_FRESNEL", "ASM", "ASM_FRESNEL", "DIM", "DIM_FRESNEL"}
+VALID_INTERPOLATION_MODES = {"none", "bilinear", "bicubic", "nearest"}
 
 
 def propagator(
@@ -29,6 +32,9 @@ def propagator(
     z: Scalar,
     spacing: Optional[Vector2],
     offset: Optional[Vector2],
+    propagation_method: str,
+    asm_pad_factor: Vector2,
+    interpolation_mode: str,
 ) -> Field:
     """
     Propagates the field through free-space to a plane defined by the input parameters.
@@ -48,17 +54,20 @@ def propagator(
     Returns:
         Field: Output field after propagating to the plane.
     """
+    validate_propagation_method(propagation_method)
+    validate_interpolation_mode(interpolation_mode)
+
     output_plane = PlanarGeometry(shape, z, spacing, offset).to(field.data.device)
 
     if output_plane.z != field.z:  # Propagate to output plane z
         propagation_plane = get_propagation_plane(field, output_plane)
-        is_dim = is_dim_propagation(field, propagation_plane)
-        propagation_func = dim_propagation if is_dim else asm_propagation
-        propagated_field = propagation_func(field, propagation_plane)
-        field = propagated_field
+        if is_asm(field, propagation_plane, propagation_method):
+            field = asm_propagation(field, propagation_plane, propagation_method, asm_pad_factor)
+        else:
+            field = dim_propagation(field, propagation_plane, propagation_method)
 
     if not output_plane.is_same_geometry(field):  # Interpolate to output plane geometry
-        transformed_data = plane_sample(field.data, field, output_plane, field.interpolation_mode)
+        transformed_data = plane_sample(field.data, field, output_plane, interpolation_mode)
         field = field.copy(data=transformed_data, spacing=output_plane.spacing, offset=output_plane.offset)
 
     return field
@@ -101,40 +110,67 @@ def get_propagation_plane(field: Field, output_plane: PlanarGeometry) -> PlanarG
     return PlanarGeometry(propagation_shape, output_plane.z, field.spacing, output_plane.offset)
 
 
-def is_dim_propagation(field: Field, propagation_plane: PlanarGeometry) -> bool:
-    """
-    Returns whether propagation using DIM should be used.
+def is_asm(field: Field, propagation_plane: PlanarGeometry, propagation_method: str):
+    """Returns whether propagation using ASM should be used.
 
-    Returns `True` if :attr:`field.propagation_method` is `"DIM"` or `"DIM_FRESNEL"`.
+    Returns `True` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_FRESNEL"`.
 
-    Returns `False` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_FRESNEL"`.
+    Returns `False` if :attr:`field.propagation_method` is `"DIM"` or `"DIM_FRESNEL"`.
 
     If :attr:`field.propagation_method` is `"auto"`, the propagation method is determined based on the
-    condition set in :func:`calculate_min_dim_propagation_distance`.
+    condition set in :func:`calculate_critical_propagation_distance`.
     """
-    if field.propagation_method in ("DIM", "DIM_FRESNEL"):
-        return True
-    if field.propagation_method in ("ASM", "ASM_FRESNEL"):
+    if propagation_method.upper() in ("DIM", "DIM_FRESNEL"):
         return False
-    abs_propagation_distance = (propagation_plane.z - field.z).abs().item()
-    return calculate_min_dim_propagation_distance(field) < abs_propagation_distance
+    if propagation_method.upper() in ("ASM", "ASM_FRESNEL"):
+        return True
+
+    # Auto: Determine propagation method based on critical propagation distance
+    critical_z = calculate_critical_propagation_distance(field, propagation_plane)
+    z = (propagation_plane.z - field.z).abs()
+    return torch.all(critical_z < z)
 
 
-def calculate_min_dim_propagation_distance(field: Field) -> float:
+def calculate_critical_propagation_distance(field: Field, propagation_plane: PlanarGeometry) -> torch.Tensor:
     r"""
-    Calculates the minimum distance required for accurate simulation using DIM.
+    Calculates the critical propagation distance for determining the propagation method.
 
     The minimum distance is calculated using the criteria from D. Voelz's textbook "Computational Fourier
     Optics: A MATLAB Tutorial" (2011):
 
     .. math::
-        z \geq L \Delta / \lambda,
+        z_c = \frac{L \Delta}{\lambda},
 
     where:
 
-    - :math:`z` is the propagation distance.
-    - :math:`L` is the maximum length of the field.
+    - :math:`z_c` is the critical propagation distance.
+    - :math:`L` is the maximum difference between grid bounds of the field and propagation planes.
     - :math:`\Delta` is the spacing of the field.
     - :math:`\lambda` is the wavelength of the field.
+
+    The returned value is a tensor of shape (2,) containing the critical distances in both planar dimensions.
     """
-    return ((field.length() * field.spacing).max() / field.wavelength).item()
+    grid_bounds_abs = calculate_grid_bounds(field, propagation_plane).abs()
+    max_length = torch.stack([max(grid_bounds_abs[:2]), max(grid_bounds_abs[2:])])
+    return 2 * max_length * field.spacing / field.wavelength
+
+
+def validate_propagation_method(value: str) -> None:
+    """Validate the propagation method."""
+    if not isinstance(value, str):
+        raise TypeError(f"Expected propagation_method to be a string, but got {type(value).__name__}.")
+
+    if value.upper() not in VALID_PROPAGATION_METHODS:
+        raise ValueError(
+            f"Expected propagation_method to be one of {VALID_PROPAGATION_METHODS}, but got {value}."
+        )
+
+
+def validate_interpolation_mode(value: str) -> None:
+    """Validate the interpolation mode."""
+    if not isinstance(value, str):
+        raise TypeError(f"Expected interpolation_mode to be a string, but got {type(value).__name__}.")
+    if value.lower() not in VALID_INTERPOLATION_MODES:
+        raise ValueError(
+            f"Expected interpolation_mode to be one of {VALID_INTERPOLATION_MODES}, but got {value}."
+        )

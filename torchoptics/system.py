@@ -66,16 +66,21 @@ class System(Module):
     def __len__(self):
         return len(self.elements)
 
-    def forward(self, field: Field) -> Field:
+    def forward(self, field: Field, **prop_kwargs) -> Field:
         """
         Propagates the field through the system.
 
         Args:
             field (Field): Input field.
+            propagation_method (str): The propagation method to use. Default: `"AUTO"`.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
+            interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating through the system."""
-        return self._forward(field)
+        return self._forward(field, None, **prop_kwargs)
 
     def measure(
         self,
@@ -84,6 +89,7 @@ class System(Module):
         z: Scalar,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
+        **prop_kwargs,
     ) -> Field:
         """
         Propagates the field through the system to a plane defined by the input parameters.
@@ -95,14 +101,19 @@ class System(Module):
             spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default:
                 if `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
             offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+            propagation_method (str): The propagation method to use. Default: `"AUTO"`.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
+            interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
         """
         last_element = IdentityElement(shape, z, spacing, offset).to(field.data.device)
-        return self._forward(field, last_element)
+        return self._forward(field, last_element, **prop_kwargs)
 
-    def measure_at_z(self, field: Field, z: Scalar) -> Field:
+    def measure_at_z(self, field: Field, z: Scalar, **prop_kwargs) -> Field:
         """
         Propagates the field through the system to a plane at a specific z position.
 
@@ -111,24 +122,34 @@ class System(Module):
         Args:
             field (Field): Input field.
             z (Scalar): Position along the z-axis.
+            propagation_method (str): The propagation method to use. Default: `"AUTO"`.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
+            interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
         """
-        return self.measure(field, field.shape, z, field.spacing, field.offset)
+        return self.measure(field, field.shape, z, field.spacing, field.offset, **prop_kwargs)
 
-    def measure_at_plane(self, field: Field, plane: PlanarGeometry) -> Field:
+    def measure_at_plane(self, field: Field, plane: PlanarGeometry, **prop_kwargs) -> Field:
         """
         Propagates the field through the system to a plane defined by a :class:`PlanarGeometry` object.
 
         Args:
             field (Field): Input field.
             plane (PlanarGeometry): Plane geometry.
+            propagation_method (str): The propagation method to use. Default: `"AUTO"`.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
+            interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
         """
-        return self.measure(field, plane.shape, plane.z, plane.spacing, plane.offset)
+        return self.measure(field, plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
 
     def sorted_elements(self) -> tuple[Element, ...]:
         """Returns the elements sorted by their z position."""
@@ -166,12 +187,12 @@ class System(Module):
 
         return tuple(elements_in_path)
 
-    def _forward(self, field: Field, last_element: Optional[Element] = None) -> Field:
+    def _forward(self, field: Field, last_element: Optional[Element], **prop_kwargs) -> Field:
         """Propagates the field through the system to the last element, if provided."""
         elements = self.elements_in_field_path(field, last_element)
 
         for i, element in enumerate(elements):
-            field = field.propagate_to_plane(element)
+            field = field.propagate_to_plane(element, **prop_kwargs)
             field = element(field)
 
             if not isinstance(field, Field) and i < len(elements) - 1:

@@ -10,9 +10,8 @@ from torch import Tensor
 from .config import wavelength_or_default
 from .functional import calculate_centroid, calculate_std, inner2d, outer2d
 from .planar_geometry import PlanarGeometry
-from .propagation import VALID_INTERPOLATION_MODES, VALID_PROPAGATION_METHODS, propagator
+from .propagation import propagator
 from .type_defs import Scalar, Vector2
-from .utils import initialize_tensor
 
 __all__ = ["Field", "PolarizedField", "CoherenceField"]
 
@@ -29,10 +28,6 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
-        propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-        asm_pad_factor (Vector2): The padding factor along planar dimensions for angular spectrum method (ASM)
-            propagation. Default: `2`.
-        interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
     """
 
     _data_min_dim = 2
@@ -46,9 +41,6 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         z: Scalar = 0,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
-        propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
-        interpolation_mode: str = "nearest",
     ) -> None:
 
         self._validate_data(data)
@@ -56,60 +48,6 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         self.register_optics_property("data", data, is_complex=True)
         self.register_optics_property(
             "wavelength", wavelength_or_default(wavelength), is_scalar=True, is_positive=True
-        )
-
-        self.propagation_method = propagation_method
-        self.asm_pad_factor = asm_pad_factor  # type: ignore[assignment]
-        self.interpolation_mode = interpolation_mode
-
-    @property
-    def propagation_method(self) -> str:
-        """Returns the propagation method."""
-        return self._propagation_method
-
-    @propagation_method.setter
-    def propagation_method(self, value: str) -> None:
-        if not isinstance(value, str):
-            raise TypeError(f"Expected propagation_method to be a string, but got {type(value).__name__}.")
-        if value.upper() not in VALID_PROPAGATION_METHODS:
-            raise ValueError(
-                f"Expected propagation_method to be one of {VALID_PROPAGATION_METHODS}, but got {value}."
-            )
-        self._propagation_method = value.upper()
-
-    @property
-    def asm_pad_factor(self) -> tuple:
-        """Returns the padding factor for angular spectrum method (ASM) propagation."""
-        return self._asm_pad_factor
-
-    @asm_pad_factor.setter
-    def asm_pad_factor(self, value: Vector2) -> None:
-        tensor = initialize_tensor(
-            "asm_pad_factor", value, is_vector2=True, is_integer=True, is_non_negative=True
-        )
-        self._asm_pad_factor = (tensor[0].item(), tensor[1].item())
-
-    @property
-    def interpolation_mode(self) -> str:
-        """Returns the interpolation mode."""
-        return self._interpolation_mode
-
-    @interpolation_mode.setter
-    def interpolation_mode(self, value: str) -> None:
-        if not isinstance(value, str):
-            raise TypeError(f"Expected interpolation_mode to be a string, but got {type(value).__name__}.")
-        if value.lower() not in VALID_INTERPOLATION_MODES:
-            raise ValueError(
-                f"Expected interpolation_mode to be one of {VALID_INTERPOLATION_MODES}, but got {value}."
-            )
-        self._interpolation_mode = value.lower()
-
-    def extra_repr(self) -> str:
-        return (
-            super().extra_repr()
-            + f", propagation_method={self.propagation_method}"
-            + f", asm_pad_factor=({self.asm_pad_factor[0]}, {self.asm_pad_factor[1]})"
-            + f", interpolation_mode={self.interpolation_mode})"
         )
 
     def intensity(self) -> Tensor:
@@ -134,6 +72,9 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         z: Scalar,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
+        propagation_method: str = "AUTO",
+        asm_pad_factor: Vector2 = 2,
+        interpolation_mode: str = "nearest",
     ) -> Field:
         """
         Propagates the field through free-space to a plane defined by the input parameters.
@@ -145,13 +86,20 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default:
                 if `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
             offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+            propagation_method (str): The propagation method to use. Default: `"AUTO"`.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
+            interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
         """
-        return propagator(self, shape, z, spacing, offset)
+        return propagator(
+            self, shape, z, spacing, offset, propagation_method, asm_pad_factor, interpolation_mode
+        )
 
-    def propagate_to_z(self, z: Scalar) -> Field:
+    def propagate_to_z(self, z: Scalar, **prop_kwargs) -> Field:
         """
         Propagates the field through free-space to a plane at a specific z position.
 
@@ -160,20 +108,30 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         Args:
             field (Field): Input field.
             z (Scalar): Position along the z-axis.
+            propagation_method (str): The propagation method to use. Default: `"AUTO"`.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
+            interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
         """
 
-        return self.propagate(self.shape, z, self.spacing, self.offset)
+        return self.propagate(self.shape, z, self.spacing, self.offset, **prop_kwargs)
 
-    def propagate_to_plane(self, plane: PlanarGeometry) -> Field:
+    def propagate_to_plane(self, plane: PlanarGeometry, **prop_kwargs) -> Field:
         """
         Propagates the field through free-space to a plane defined by a :class:`PlanarGeometry` object.
 
         Args:
             field (Field): Input field.
             plane (PlanarGeometry): Plane geometry.
+            propagation_method (str): The propagation method to use. Default: `"AUTO"`.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
+            interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
@@ -181,7 +139,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
 
         if not isinstance(plane, PlanarGeometry):
             raise TypeError(f"Expected plane to be a PlanarGeometry, but got {type(plane).__name__}.")
-        return self.propagate(plane.shape, plane.z, plane.spacing, plane.offset)
+        return self.propagate(plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
 
     def modulate(self, modulation_profile: Tensor) -> Field:
         """
@@ -272,9 +230,6 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             "z": self.z,
             "spacing": self.spacing,
             "offset": self.offset,
-            "propagation_method": self.propagation_method,
-            "asm_pad_factor": self.asm_pad_factor,
-            "interpolation_mode": self.interpolation_mode,
         }
         properties.update(kwargs)
         return self.__class__(**properties)  # type: ignore[arg-type]
@@ -300,10 +255,6 @@ class PolarizedField(Field):  # pylint: disable=abstract-method
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
-        propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-        asm_pad_factor (Vector2): The padding factor along planar dimensions for angular spectrum method (ASM)
-            propagation. Default: `2`.
-        interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
     """
 
     _data_min_dim = 3
@@ -357,10 +308,6 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
-        propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-        asm_pad_factor (Vector2): The padding factor along planar dimensions for angular spectrum method (ASM)
-            propagation. Default: `2`.
-        interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
     """
 
     _data_min_dim = 4
@@ -378,12 +325,21 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         z: Scalar,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
+        propagation_method: str = "AUTO",
+        asm_pad_factor: Vector2 = 2,
+        interpolation_mode: str = "nearest",
     ) -> Field:
         def adjoint(data: Tensor):
             return data.conj().transpose(-1, -3).transpose(-2, -4)
 
         def prop(data: Tensor, output_plane_geometry: dict):
-            return propagator(self.copy(data=data), **output_plane_geometry).data
+            return propagator(
+                self.copy(data=data),
+                **output_plane_geometry,
+                propagation_method=propagation_method,
+                asm_pad_factor=asm_pad_factor,
+                interpolation_mode=interpolation_mode,
+            ).data
 
         # Define the geometry of the output plane for propagation.
         output_geometry = PlanarGeometry(shape, z, spacing, offset).geometry
