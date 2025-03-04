@@ -28,11 +28,7 @@ class TestField(unittest.TestCase):
         self.assertTrue(torch.equal(pg.offset, torch.tensor([0.0, 0.0], dtype=torch.double)))
         self.assertTrue(torch.equal(pg.wavelength, torch.tensor(0.3, dtype=torch.double)))
         with self.assertRaises(TypeError):
-            Field(torch.ones(10, 10), spacing=1, wavelength=1, propagation_method=None)
-        with self.assertRaises(ValueError):
-            Field(torch.ones(10, 10), spacing=1, wavelength=1, propagation_method="Incorrect")
-        with self.assertRaises(TypeError):
-            Field("Wrong type", spacing=1, wavelength=1, interpolation_mode=None)
+            Field("Wrong type", spacing=1, wavelength=1)
         with self.assertRaises(ValueError):
             Field(torch.ones(10), spacing=1, wavelength=1)
 
@@ -96,9 +92,13 @@ class TestField(unittest.TestCase):
                     square_field.cdouble(),
                     spacing=spacing,
                     wavelength=wavelength,
-                    propagation_method=propagation_method,
                 ).to(device)
-                output_field = input_field.propagate((shape, shape), propagation_distance, spacing=spacing)
+                output_field = input_field.propagate(
+                    (shape, shape),
+                    propagation_distance,
+                    spacing=spacing,
+                    propagation_method=propagation_method,
+                )
                 x = np.linspace(-spacing * shape / 2, spacing * shape / 2, shape)
                 L = (shape - 1) * spacing
                 N_f = (L / 2) ** 2 / (wavelength * propagation_distance)
@@ -121,9 +121,13 @@ class TestField(unittest.TestCase):
                 square_field,
                 spacing=spacing,
                 wavelength=wavelength,
+            )
+            output_field = input_field.propagate(
+                (shape, shape),
+                propagation_distance,
+                spacing=spacing,
                 propagation_method=propagation_method,
             )
-            output_field = input_field.propagate((shape, shape), propagation_distance, spacing=spacing)
 
             offset = (100 * spacing, -30 * spacing)
             offset_input_field = Field(
@@ -131,15 +135,32 @@ class TestField(unittest.TestCase):
                 spacing=spacing,
                 wavelength=wavelength,
                 offset=offset,
-                propagation_method=propagation_method,
             )
             offset_output_field = offset_input_field.propagate(
-                (shape, shape), propagation_distance, spacing=spacing
+                (shape, shape), propagation_distance, spacing=spacing, propagation_method=propagation_method
             )
 
             self.assertTrue(
                 torch.allclose(offset_output_field.data[100:, :-30], output_field.data[:-100, 30:])
             )
+
+    def test_propagation_methods(self):
+        shape = 201
+        spacing = 5e-6
+        wavelength = 800e-9
+        propagation_distance = 0.05
+
+        square_field = torch.ones(shape, shape, dtype=torch.cdouble)
+        input_field = Field(
+            square_field,
+            spacing=spacing,
+            wavelength=wavelength,
+        )
+
+        with self.assertRaises(TypeError):
+            input_field.propagate_to_z(propagation_distance, propagation_method=None)
+        with self.assertRaises(ValueError):
+            input_field.propagate_to_z(propagation_distance, propagation_method="Wrong")
 
     def test_asm_propagation(self):
         shape = 201
@@ -152,25 +173,35 @@ class TestField(unittest.TestCase):
             square_field,
             spacing=spacing,
             wavelength=wavelength,
+        )
+
+        # Should not fail
+        input_field.propagate(
+            (shape, shape),
+            propagation_distance,
+            spacing=input_field.spacing,
+            offset=None,
             propagation_method="ASM",
             asm_pad_factor=0,
         )
 
-        # Should not fail
-        input_field.propagate((shape, shape), propagation_distance, spacing=input_field.spacing, offset=None)
-
         with self.assertRaises(ValueError):  # Should fail: propagation outside bounds
             input_field.propagate(
-                (shape, shape), propagation_distance, spacing=input_field.spacing, offset=(1e-8, 0)
+                (shape, shape),
+                propagation_distance,
+                spacing=input_field.spacing,
+                offset=(1e-8, 0),
+                asm_pad_factor=0,
             )
 
     def test_asm_pad_factor(self):
+        field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
         with self.assertRaises(ValueError):
-            Field(torch.ones(10, 10), spacing=1, wavelength=1, asm_pad_factor=(1, 2, 3))
+            field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, 2, 3))
         with self.assertRaises(ValueError):
-            Field(torch.ones(10, 10), spacing=1, wavelength=1, asm_pad_factor=(1, -2))
+            field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, -2))
         with self.assertRaises(ValueError):
-            Field(torch.ones(10, 10), spacing=1, wavelength=1, asm_pad_factor=(1, 2.2))
+            field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, 2.2))
 
         shape = (100, 200)
         spacing = 5e-6
@@ -183,8 +214,6 @@ class TestField(unittest.TestCase):
             square_field1,
             spacing=spacing,
             wavelength=wavelength,
-            propagation_method="ASM",
-            asm_pad_factor=asm_pad_factor,
         )
 
         square_field2 = torch.zeros(
@@ -202,12 +231,22 @@ class TestField(unittest.TestCase):
             square_field2,
             spacing=spacing,
             wavelength=wavelength,
+        )
+
+        output_field1 = input_field1.propagate(
+            (shape[0], shape[1]),
+            propagation_distance,
+            spacing=spacing,
+            propagation_method="ASM",
+            asm_pad_factor=asm_pad_factor,
+        )
+        output_field2 = input_field2.propagate(
+            (shape[0], shape[1]),
+            propagation_distance,
+            spacing=spacing,
             propagation_method="ASM",
             asm_pad_factor=0,
         )
-
-        output_field1 = input_field1.propagate((shape[0], shape[1]), propagation_distance, spacing=spacing)
-        output_field2 = input_field2.propagate((shape[0], shape[1]), propagation_distance, spacing=spacing)
 
         self.assertTrue(torch.allclose(output_field1.data, output_field2.data))
 
@@ -219,20 +258,12 @@ class TestField(unittest.TestCase):
         field = Field(data, wavelength, spacing=spacing)
 
         for mode in ["nearest", "bilinear", "bicubic"]:
-            field.interpolation_mode = mode
-            self.assertEqual(field.interpolation_mode, mode)
+            field.propagate_to_z(1, interpolation_mode=mode)  # Should not raise an error
 
         with self.assertRaises(ValueError):
-            field.interpolation_mode = "invalid_mode"
+            field.propagate_to_z(1, interpolation_mode="invalid_mode")
         with self.assertRaises(TypeError):
-            field.interpolation_mode = None
-
-    def test_repr(self):
-        field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
-        repr_str = repr(field)
-        self.assertTrue("propagation_method" in repr_str)
-        self.assertTrue("asm_pad_factor" in repr_str)
-        self.assertTrue("interpolation_mode" in repr_str)
+            field.propagate_to_z(1, interpolation_mode=None)
 
     def test_propagate_methods(self):
         field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
