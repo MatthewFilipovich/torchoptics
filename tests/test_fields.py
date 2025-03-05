@@ -185,12 +185,13 @@ class TestField(unittest.TestCase):
             asm_pad_factor=0,
         )
 
-        with self.assertRaises(ValueError):  # Should fail: propagation outside bounds
+        with self.assertRaises(ValueError):  # Should fail: propagation outside bounds since asm_pad_factor=0
             input_field.propagate(
                 (shape, shape),
                 propagation_distance,
                 spacing=input_field.spacing,
                 offset=(1e-8, 0),
+                propagation_method="ASM",
                 asm_pad_factor=0,
             )
 
