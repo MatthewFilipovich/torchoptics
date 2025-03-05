@@ -128,31 +128,31 @@ def is_asm(field: Field, propagation_plane: PlanarGeometry, propagation_method: 
     # Auto: Determine propagation method based on critical propagation distance
     critical_z = calculate_critical_propagation_distance(field, propagation_plane)
     z = (propagation_plane.z - field.z).abs()
-    return torch.all(critical_z < z)
+    return torch.all(z < critical_z)
 
 
 def calculate_critical_propagation_distance(field: Field, propagation_plane: PlanarGeometry) -> torch.Tensor:
     r"""
     Calculates the critical propagation distance for determining the propagation method.
 
-    The minimum distance is calculated using the criteria from D. Voelz's textbook "Computational Fourier
-    Optics: A MATLAB Tutorial" (2011):
+    The minimum distance is calculated using the criteria in Eq. A.17 from D. Voelz's textbook "Computational
+    Fourier Optics: A MATLAB Tutorial" (2011):
 
     .. math::
-        z_c = \frac{L \Delta}{\lambda},
+        z_c = \frac{2 |x_\mathrm{max}| \Delta}{\lambda},
 
     where:
 
     - :math:`z_c` is the critical propagation distance.
-    - :math:`L` is the maximum difference between grid bounds of the field and propagation planes.
+    - :math:`x_\mathrm{max}` is the maximum distance between grid points of the field and propagation planes.
     - :math:`\Delta` is the spacing of the field.
     - :math:`\lambda` is the wavelength of the field.
 
     The returned value is a tensor of shape (2,) containing the critical distances in both planar dimensions.
     """
     grid_bounds_abs = calculate_grid_bounds(field, propagation_plane).abs()
-    max_length = torch.stack([max(grid_bounds_abs[:2]), max(grid_bounds_abs[2:])])
-    return 2 * max_length * field.spacing / field.wavelength
+    max_distance = torch.stack([max(grid_bounds_abs[:2]), max(grid_bounds_abs[2:])])
+    return 2 * max_distance * field.spacing / field.wavelength
 
 
 def validate_propagation_method(value: str) -> None:
