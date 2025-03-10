@@ -9,6 +9,7 @@ import torch
 from ..functional import plane_sample
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar, Vector2
+from ..utils import copy
 from .angular_spectrum_method import asm_propagation
 from .direct_integration_method import calculate_grid_bounds, dim_propagation
 
@@ -68,7 +69,7 @@ def propagator(
 
     if not output_plane.is_same_geometry(field):  # Interpolate to output plane geometry
         transformed_data = plane_sample(field.data, field, output_plane, interpolation_mode)
-        field = field.copy(data=transformed_data, spacing=output_plane.spacing, offset=output_plane.offset)
+        field = copy(field, data=transformed_data, spacing=output_plane.spacing, offset=output_plane.offset)
 
     return field
 

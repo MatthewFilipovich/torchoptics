@@ -1,5 +1,6 @@
 """This module defines utility functions for TorchOptics."""
 
+import inspect
 from typing import Any
 
 import torch
@@ -77,3 +78,32 @@ def validate_tensor_dim(tensor: Tensor, name: str, dim: int) -> None:
         raise TypeError(f"Expected '{name}' to be a Tensor, but got {type(tensor).__name__}")
     if tensor.dim() != dim:
         raise ValueError(f"Expected '{name}' to be a {dim}D tensor, but got {tensor.dim()}D")
+
+
+def copy(obj, **kwargs):
+    """
+    Creates a copy of an object using its `__init__` parameters.
+
+    Args:
+        obj: The object to copy.
+        **kwargs: New properties to update.
+
+    Returns:
+        A copied object with updated properties.
+
+    Raises:
+        ValueError: If the object is missing required instance variables.
+    """
+    cls = type(obj)
+    init_params = [k for k in inspect.signature(cls.__init__).parameters if k != "self"]
+
+    missing_attrs = [k for k in init_params if not hasattr(obj, k)]
+    if missing_attrs:
+        raise ValueError(
+            f"Cannot copy instance of {cls.__name__} because the following required attributes are missing: "
+            f"{missing_attrs}"
+        )
+
+    new_attrs = {k: getattr(obj, k) for k in init_params}
+    new_attrs.update(kwargs)
+    return cls(**new_attrs)
