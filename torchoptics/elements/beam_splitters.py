@@ -7,6 +7,7 @@ from torch import Tensor
 
 from ..fields import Field, PolarizedField
 from ..type_defs import Scalar, Vector2
+from ..utils import copy
 from .elements import Element
 
 __all__ = ["BeamSplitter", "PolarizingBeamSplitter"]
@@ -96,7 +97,7 @@ class BeamSplitter(Element):
             output_data0 += other.data * self.transfer_matrix[0, 1]
             output_data1 += other.data * self.transfer_matrix[1, 1]
 
-        return field.copy(data=output_data0), field.copy(data=output_data1)
+        return copy(field, data=output_data0), copy(field, data=output_data1)
 
 
 class PolarizingBeamSplitter(Element):

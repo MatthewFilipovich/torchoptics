@@ -9,6 +9,7 @@ from torch import Tensor
 
 from ..functional import conv2d_fft, meshgrid2d
 from ..planar_geometry import PlanarGeometry
+from ..utils import copy
 
 if TYPE_CHECKING:
     from ..fields import Field
@@ -30,7 +31,7 @@ def dim_propagation(field: Field, propagation_plane: PlanarGeometry, propagation
     x, y = calculate_meshgrid(field, propagation_plane)
     impulse_response = calculate_impulse_response(field, propagation_plane, x, y, propagation_method)
     propagated_data = conv2d_fft(impulse_response, field.data)
-    return field.copy(data=propagated_data, z=propagation_plane.z, offset=propagation_plane.offset)
+    return copy(field, data=propagated_data, z=propagation_plane.z, offset=propagation_plane.offset)
 
 
 def calculate_meshgrid(field: Field, propagation_plane: PlanarGeometry) -> tuple[Tensor, Tensor]:

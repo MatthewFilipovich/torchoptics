@@ -12,6 +12,7 @@ from .functional import calculate_centroid, calculate_std, inner2d, outer2d
 from .planar_geometry import PlanarGeometry
 from .propagation import propagator
 from .type_defs import Scalar, Vector2
+from .utils import copy
 
 __all__ = ["Field", "PolarizedField", "CoherenceField"]
 
@@ -152,7 +153,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             Field: Modulated field.
         """
         modulated_data = self.data * modulation_profile
-        return self.copy(data=modulated_data)
+        return copy(self, data=modulated_data)
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         """
@@ -166,7 +167,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         """
         indices_unsqueezed = [..., *((None,) * self._data_min_dim)]
         normalized_data = self.data * (normalized_power / self.power()[indices_unsqueezed]).sqrt()
-        return self.copy(data=normalized_data)
+        return copy(self, data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
         """
@@ -214,26 +215,6 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         kwargs.update({"symbol": r"$\psi$"})
         return self._visualize(self.data, index, **kwargs)
 
-    def copy(self, **kwargs) -> Field:
-        """
-        Copies the field with updated properties.
-
-        Args:
-            **kwargs: New properties to update.
-
-        Returns:
-            Field: Copied field.
-        """
-        properties = {
-            "data": self.data,
-            "wavelength": self.wavelength,
-            "z": self.z,
-            "spacing": self.spacing,
-            "offset": self.offset,
-        }
-        properties.update(kwargs)
-        return self.__class__(**properties)  # type: ignore[arg-type]
-
     def _validate_data(self, tensor: Tensor) -> None:
         if not isinstance(tensor, Tensor):
             raise TypeError(f"Expected data to be a tensor, but got {type(tensor).__name__}.")
@@ -273,7 +254,7 @@ class PolarizedField(Field):  # pylint: disable=abstract-method
             Field: Modulated field.
         """
         modulated_data = (self.data.unsqueeze(-4) * polarized_modulation_profile).sum(-3)
-        return self.copy(data=modulated_data)  # type: ignore[return-value]
+        return copy(self, data=modulated_data)  # type: ignore[return-value]
 
     def polarized_split(self) -> tuple[PolarizedField, PolarizedField, PolarizedField]:
         """
@@ -282,7 +263,7 @@ class PolarizedField(Field):  # pylint: disable=abstract-method
         Returns:
             tuple[Field, Field, Field]: The split fields.
         """
-        fields = tuple(self.copy(data=torch.zeros_like(self.data)) for _ in range(3))
+        fields = tuple(copy(self, data=torch.zeros_like(self.data)) for _ in range(3))
         for i in range(3):
             fields[i].data.select(-3, i).copy_(self.data.select(-3, i))
         return fields  # type: ignore[return-value]
@@ -334,7 +315,7 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
 
         def prop(data: Tensor, output_plane_geometry: dict):
             return propagator(
-                self.copy(data=data),
+                copy(self, data=data),
                 **output_plane_geometry,
                 propagation_method=propagation_method,
                 asm_pad_factor=asm_pad_factor,
@@ -344,16 +325,16 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         # Define the geometry of the output plane for propagation.
         output_geometry = PlanarGeometry(shape, z, spacing, offset).geometry
         propagated_data = adjoint(prop(adjoint(prop(self.data, output_geometry)), output_geometry))
-        return self.copy(data=propagated_data, z=z, spacing=spacing, offset=offset)
+        return copy(self, data=propagated_data, z=z, spacing=spacing, offset=offset)
 
     def modulate(self, modulation_profile: Tensor) -> Field:
         modulated_data = self.data * outer2d(modulation_profile, modulation_profile)
-        return self.copy(data=modulated_data)
+        return copy(self, data=modulated_data)
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         indices_unsqueezed = [..., *((None,) * self._data_min_dim)]
         normalized_data = self.data * (normalized_power / self.power()[indices_unsqueezed])
-        return self.copy(data=normalized_data)
+        return copy(self, data=normalized_data)
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """

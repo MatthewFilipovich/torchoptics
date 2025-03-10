@@ -63,5 +63,41 @@ class TestInitializetensor(unittest.TestCase):
             initialize_tensor("invalid_non_negative", -1.0, is_non_negative=True)
 
 
+class TestCopyFunction(unittest.TestCase):
+    class SampleClass:
+        def __init__(self, a, b, c):
+            self.a = a
+            self.b = b
+            self._c = c
+
+        @property
+        def c(self):
+            return self._c
+
+    def test_copy_function_with_property(self):
+        obj = self.SampleClass(1, 2, 3)
+        copied_obj = copy(obj)
+        self.assertEqual(copied_obj.a, 1)
+        self.assertEqual(copied_obj.b, 2)
+        self.assertEqual(copied_obj.c, 3)
+
+    def test_copy_function_with_updates(self):
+        obj = self.SampleClass(1, 2, 3)
+        copied_obj = copy(obj, a=4, c=5)
+        self.assertEqual(copied_obj.a, 4)
+        self.assertEqual(copied_obj.b, 2)
+        self.assertEqual(copied_obj.c, 5)
+
+    class IncompleteClass:
+        def __init__(self, a, b):
+            self.a = a
+            self.b_ = b
+
+    def test_copy_function_missing_attributes(self):
+        obj = self.IncompleteClass(1, 2)
+        with self.assertRaises(ValueError):
+            copy(obj)
+
+
 if __name__ == "__main__":
     unittest.main()
