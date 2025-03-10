@@ -67,11 +67,9 @@ html_theme_options = {
             "icon": "fa-solid fa-box",
         },
     ],
-    "primary_sidebar_end": [],
     "secondary_sidebar_items": ["page-toc", "sg_download_links", "sg_launcher_links"],
 }
 
-html_sidebars = {"**": ["sidebar-nav-bs"]}
 html_static_path = ["_static"]
 
 
