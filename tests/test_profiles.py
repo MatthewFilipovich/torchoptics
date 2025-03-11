@@ -30,6 +30,7 @@ class TestLensProfile(unittest.TestCase):
         self.assertAlmostEqual(
             self.phase_profile[self.shape[0] // 2, self.shape[1] // 2].abs().item(), 1.0, places=5
         )
+        self.assertEqual(self.phase_profile.dtype, torch.cdouble)
 
     def test_circular_lens_mask(self):
         radial_dist = torch.sqrt(
@@ -40,6 +41,7 @@ class TestLensProfile(unittest.TestCase):
         mask = radial_dist > lens_diameter / 2
 
         self.assertTrue(torch.all(self.phase_profile[mask] == 0))
+        self.assertEqual(self.phase_profile.dtype, torch.cdouble)
 
 
 class TestHermiteGaussianProfile(unittest.TestCase):
@@ -72,6 +74,10 @@ class TestHermiteGaussianProfile(unittest.TestCase):
             for j in range(i + 1, len(self.profiles)):
                 inner_product = torch.sum(self.profiles[i].conj() * self.profiles[j]).abs().item()
                 self.assertAlmostEqual(inner_product, 0.0)
+
+    def test_dtype(self):
+        for profile in self.profiles:
+            self.assertEqual(profile.dtype, torch.cdouble)
 
     def test_normalization(self):
         for profile in self.profiles:
@@ -137,6 +143,10 @@ class TestLaguerreGaussianProfile(unittest.TestCase):
                 inner_product = torch.sum(self.profiles[i].conj() * self.profiles[j]).abs().item()
                 self.assertAlmostEqual(inner_product, 0.0)
 
+    def test_dtype(self):
+        for profile in self.profiles:
+            self.assertEqual(profile.dtype, torch.cdouble)
+
     def test_normalization(self):
         for profile in self.profiles:
             inner_product = torch.sum(profile.conj() * profile).abs().item()
@@ -189,6 +199,7 @@ class TestShapes(unittest.TestCase):
         )
         self.assertEqual(pattern.shape, self.shape)
         self.assertTrue(torch.all((pattern == 0) | (pattern == 1)))
+        self.assertEqual(pattern.dtype, torch.double)
 
     def test_circle(self):
         radius = 5.0
@@ -200,6 +211,7 @@ class TestShapes(unittest.TestCase):
         )
         self.assertEqual(profile.shape, self.shape)
         self.assertTrue(torch.all((profile == 0) | (profile == 1)))
+        self.assertEqual(profile.dtype, torch.double)
 
     def test_rectangle(self):
         side = (10, 20)
@@ -211,6 +223,7 @@ class TestShapes(unittest.TestCase):
         )
         self.assertEqual(profile.shape, self.shape)
         self.assertTrue(torch.all((profile == 0) | (profile == 1)))
+        self.assertEqual(profile.dtype, torch.double)
 
     def test_square(self):
         side = 10.0
@@ -222,6 +235,7 @@ class TestShapes(unittest.TestCase):
         )
         self.assertEqual(profile.shape, self.shape)
         self.assertTrue(torch.all((profile == 0) | (profile == 1)))
+        self.assertEqual(profile.dtype, torch.double)
 
     def test_triangle(self):
         base = 10.0
@@ -235,6 +249,7 @@ class TestShapes(unittest.TestCase):
         )
         self.assertEqual(profile.shape, self.shape)
         self.assertTrue(torch.all((profile == 0) | (profile == 1)))
+        self.assertEqual(profile.dtype, torch.double)
 
 
 class TestGratings(unittest.TestCase):
@@ -257,6 +272,7 @@ class TestGratings(unittest.TestCase):
         )
         self.assertEqual(profile.shape, self.shape)
         self.assertFalse(torch.is_complex(profile))
+        self.assertEqual(profile.dtype, torch.double)
 
     def test_sinusoidal_grating(self):
         period = 10.0
@@ -273,6 +289,7 @@ class TestGratings(unittest.TestCase):
         self.assertFalse(torch.is_complex(profile))
         self.assertTrue(torch.all(profile >= -height))
         self.assertTrue(torch.all(profile <= height))
+        self.assertEqual(profile.dtype, torch.double)
 
     def test_binary_grating(self):
         period = 10.0
@@ -286,6 +303,7 @@ class TestGratings(unittest.TestCase):
         self.assertEqual(profile.shape, self.shape)
         self.assertFalse(torch.is_complex(profile))
         self.assertTrue(torch.all((profile == 0) | (profile == 1)))
+        self.assertEqual(profile.dtype, torch.double)
 
 
 class TestSpecialProfiles(unittest.TestCase):
@@ -304,6 +322,7 @@ class TestSpecialProfiles(unittest.TestCase):
         )
         self.assertEqual(profile.shape, self.shape)
         self.assertTrue(torch.all(profile >= 0))
+        self.assertEqual(profile.dtype, torch.double)
 
     def test_sinc(self):
         scale = (10.0, 20.0)
@@ -315,6 +334,7 @@ class TestSpecialProfiles(unittest.TestCase):
         )
         self.assertEqual(profile.shape, self.shape)
         self.assertTrue(torch.all(profile >= 0))
+        self.assertEqual(profile.dtype, torch.double)
 
 
 class TestGaussianSchellModel(unittest.TestCase):
@@ -334,6 +354,7 @@ class TestGaussianSchellModel(unittest.TestCase):
         )
 
         self.assertEqual(coherence_data.shape, (10, 15, 10, 15))
+        self.assertEqual(coherence_data.dtype, torch.double)
 
     def test_identical_with_gaussian(self):
         coherence_data = gaussian_schell_model(
@@ -357,6 +378,8 @@ class TestGaussianSchellModel(unittest.TestCase):
                 field.propagate_to_z(0.2).intensity(), coherence_field.propagate_to_z(0.2).intensity()
             )
         )
+        self.assertEqual(coherence_data.dtype, torch.double)
+        self.assertEqual(gaussian_data.dtype, torch.cdouble)
 
     def test_incoherent(self):
         incoherent_data = gaussian_schell_model(
@@ -392,6 +415,9 @@ class TestBesselProfile(unittest.TestCase):
     def test_bessel_values(self):
         self.assertTrue(torch.all(self.profile.abs() <= 1))
 
+    def test_bessel_dtype(self):
+        self.assertEqual(self.profile.dtype, torch.double)
+
 
 class TestZernikeProfile(unittest.TestCase):
     def setUp(self):
@@ -415,6 +441,7 @@ class TestZernikeProfile(unittest.TestCase):
         self.assertFalse(torch.is_complex(profile))
         self.assertTrue(torch.all(profile >= -1))
         self.assertTrue(torch.all(profile <= 1))
+        self.assertEqual(profile.dtype, torch.double)
 
     def test_invalid_zernike_parameters(self):
         with self.assertRaises(ValueError):
