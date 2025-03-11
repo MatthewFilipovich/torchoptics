@@ -54,8 +54,11 @@ def binary_grating(
     """
 
     duty_cycle = initialize_tensor("duty_cycle", duty_cycle, is_scalar=True)
+    height = initialize_tensor("height", height, is_scalar=True)
+    theta = initialize_tensor("theta", theta, is_scalar=True)
+
     grating = blazed_grating(shape, period, spacing, offset, 1, theta)
-    return torch.where(grating < duty_cycle, 0, height)
+    return torch.where(grating < duty_cycle, 0.0, height)
 
 
 def blazed_grating(
@@ -99,7 +102,7 @@ def blazed_grating(
     x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
 
     grating = ((x * torch.cos(theta) + y * torch.sin(theta)) / period) % 1
-    grating = grating.where(grating < 1 - 1e-10, 0)  # Avoid numerical issues from modulus
+    grating = grating.where(grating < 1 - 1e-10, 0.0)  # Avoid numerical issues from modulus
     return height * grating
 
 

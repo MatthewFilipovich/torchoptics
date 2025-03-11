@@ -66,7 +66,7 @@ def circle(
     radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
     x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
-    return r <= radius
+    return (r <= radius).double()
 
 
 def rectangle(
@@ -87,7 +87,7 @@ def rectangle(
     """
     side = initialize_tensor("side", side, is_vector2=True, is_positive=True)
     x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
-    return (x.abs() <= side[0] / 2) & (y.abs() <= side[1] / 2)
+    return ((x.abs() <= side[0] / 2) & (y.abs() <= side[1] / 2)).double()
 
 
 def square(
@@ -141,11 +141,9 @@ def triangle(
     x_rot = x * torch.cos(theta) - y * torch.sin(theta)
     y_rot = x * torch.sin(theta) + y * torch.cos(theta)
 
-    triangle_profile = (
+    return (
         (y_rot >= -height / 2)
         & (y_rot <= height / 2)
         & (x_rot.abs() <= base / 2)
         & (y_rot <= height / 2 - (2 * height / base) * x_rot.abs())
-    )
-
-    return triangle_profile
+    ).double()
