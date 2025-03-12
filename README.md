@@ -17,12 +17,13 @@
 
 # Key Features
 
-- **Differentiable Wave Optics Simulations**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
-- **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
-- **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
-- **Wide Range of Optical Elements**: Features standard optical elements like lenses and modulators, providing a versatile toolkit for optical system design.
-- **Spatial Profiles**: Includes commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams for advanced optical applications.
-- **Polarized Light & Spatial Coherence**: Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
+- 🌊 **Differentiable Wave Optics Simulations**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
+- 🔥 **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
+- 🛠️ **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
+- 🔬 **Optical Elements**: Features standard optical elements like modulators, lenses, detectors, and polarizers. 
+
+- 🖼️ **Spatial Profiles**: Includes commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams for advanced optical applications.
+- 🔆 **Polarized Light & Spatial Coherence**: Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
 
 Our research paper, available on [arXiv](https://arxiv.org/abs/2411.18591), introduces the TorchOptics library and provides a comprehensive review of its features and applications.
 

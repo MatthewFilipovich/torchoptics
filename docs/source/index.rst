@@ -28,32 +28,32 @@ Key Features
 .. grid:: 1 2 2 3
    :gutter: 2
 
-   .. grid-item-card:: :fas:`chart-line` **Differentiable Wave Optics Simulations**
+   .. grid-item-card:: 🌊 **Differentiable Wave Optics Simulations**
       :class-card: sd-bg-light sd-border sd-shadow
 
       A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
 
-   .. grid-item-card:: :fas:`microchip` **Built on PyTorch**
+   .. grid-item-card:: 🔥 **Built on PyTorch**
       :class-card: sd-bg-light sd-border sd-shadow
 
       Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.  
 
-   .. grid-item-card:: :fas:`tools` **End-to-End Optimization**
+   .. grid-item-card:: 🛠️ **End-to-End Optimization**
       :class-card: sd-bg-light sd-border sd-shadow
 
       Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
 
-   .. grid-item-card:: :fas:`cubes` **Wide Range of Optical Elements**
+   .. grid-item-card:: 🔬 **Optical Elements**
       :class-card: sd-bg-light sd-border sd-shadow
 
-      Features standard optical elements like lenses and modulators, providing a versatile toolkit for optical system design.
+      Features standard optical elements like modulators, lenses, detectors, and polarizers. 
 
-   .. grid-item-card:: :fas:`vector-square` **Spatial Profiles**
+   .. grid-item-card:: 🖼️ **Spatial Profiles**
       :class-card: sd-bg-light sd-border sd-shadow
 
       Includes commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams for advanced optical applications.
 
-   .. grid-item-card:: :fas:`sliders-h` **Polarized Light & Spatial Coherence**
+   .. grid-item-card:: 🔆 **Polarized Light & Spatial Coherence**
       :class-card: sd-bg-light sd-border sd-shadow
 
       Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
