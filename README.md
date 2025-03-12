@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/torchoptics_logo.png" width="700px">
 </p>
 
-> TorchOptics is an open-source Python library for differentiable Fourier optics simulations with PyTorch.
+> TorchOptics is an open-source Python library for differentiable wave optics simulations with PyTorch.
 
 <div align="center">
 
@@ -17,12 +17,12 @@
 
 # Key Features
 
-- **Differentiable Fourier Optics Simulations**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
+- **Differentiable Wave Optics Simulations**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
 - **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
 - **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
-- **Wide Range of Optical Elements and Spatial Profiles**: Includes standard elements like lenses and modulators, along with commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams.
-- **Polarized Light Simulation**: Simulates polarized light interactions using matrix Fourier optics with Jones calculus.
-- **Spatial Coherence Support**: Models optical fields with arbitrary spatial coherence through the mutual coherence function.
+- **Wide Range of Optical Elements**: Features standard optical elements like lenses and modulators, providing a versatile toolkit for optical system design.
+- **Spatial Profiles**: Includes commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams for advanced optical applications.
+- **Polarized Light & Spatial Coherence**: Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
 
 Our research paper, available on [arXiv](https://arxiv.org/abs/2411.18591), introduces the TorchOptics library and provides a comprehensive review of its features and applications.
 
@@ -38,7 +38,7 @@ TorchOptics and its dependencies can be installed using [pip](https://pypi.org/p
 pip install torchoptics
 ```
 
-To install the library in development mode, first clone the GitHub repository and then use pip to install it in editable mode:
+For development mode, clone the GitHub repository and install it in editable mode:
 
 ```sh
 git clone https://github.com/MatthewFilipovich/torchoptics
@@ -49,8 +49,7 @@ pip install -e ./torchoptics
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MatthewFilipovich/torchoptics/blob/main/docs/source/tutorials/4f_system.ipynb)
 
-This example demonstrates simulating a 4f imaging system using TorchOptics.
-The field at each focal plane along the z-axis is computed and visualized:
+This example demonstrates how to simulate a 4f imaging system using TorchOptics. The field at each focal plane along the z-axis is computed and visualized:
 
 ```python
 import torch
@@ -70,7 +69,7 @@ num_tiles = 15  # Number of tiles in each dimension
 # Determine device
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Configure torchoptics default properties
+# Configure default properties
 torchoptics.set_default_spacing(spacing)
 torchoptics.set_default_wavelength(wavelength)
 
@@ -113,11 +112,11 @@ _For more examples and detailed usage, please refer to the [documentation](https
 
 We welcome all bug reports and suggestions for future features and enhancements, which can be filed as GitHub issues. To contribute a feature:
 
-1. Fork it (<https://github.com/MatthewFilipovich/torchoptics/fork>)
-2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Submit a Pull Request
+1. **Fork the repository**: Go to <https://github.com/MatthewFilipovich/torchoptics/fork>.
+2. **Create a feature branch**: Run `git checkout -b feature/fooBar`.
+3. **Commit your changes**: Execute `git commit -am 'Add some fooBar'`.
+4. **Push to the branch**: Use `git push origin feature/fooBar`.
+5. **Submit a Pull Request**: Open a Pull Request on GitHub.
 
 ## Citing TorchOptics
 
