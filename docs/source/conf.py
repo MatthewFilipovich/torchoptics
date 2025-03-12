@@ -40,8 +40,8 @@ intersphinx_mapping = {
 }
 
 sphinx_gallery_conf = {
-    "examples_dirs": "../../examples",
-    "gallery_dirs": "auto_examples",
+    "examples_dirs": ["../../examples", "user_guide"],
+    "gallery_dirs": ["auto_examples", "auto_user_guide"],
 }
 
 # -- Options for HTML output -------------------------------------------------
