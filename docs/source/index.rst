@@ -146,7 +146,7 @@ We welcome bug reports and suggestions for future features and enhancements. To 
 1. **Fork the repository**: Go to `https://github.com/MatthewFilipovich/torchoptics/fork <https://github.com/MatthewFilipovich/torchoptics/fork>`_
 2. **Create a feature branch**: ``git checkout -b feature/fooBar``
 3. **Commit your changes**: ``git commit -am 'Add some fooBar'``
-4. **Push to the branch**: ``git push origin feature/fooBar```
+4. **Push to the branch**: ``git push origin feature/fooBar``
 5. **Submit a Pull Request**: Open a Pull Request on GitHub
 
 Citing TorchOptics
