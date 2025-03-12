@@ -72,6 +72,7 @@ html_theme_options = {
 }
 
 html_static_path = ["_static"]
+html_sidebars = {"auto_user_guide/plot_quickstart": []}  # Disable sidebar for specific pages
 
 
 # -- Custom configuration ----------------------------------------------------

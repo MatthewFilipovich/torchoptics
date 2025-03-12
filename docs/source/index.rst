@@ -9,6 +9,7 @@
 .. toctree::
    :hidden:
 
+   auto_user_guide/plot_quickstart
    user_guide/index
    auto_examples/index
    reference/index

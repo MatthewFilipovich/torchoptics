@@ -1,14 +1,12 @@
 """
-Introduction to TorchOptics
-============================
+Quickstart
+===========
 
 This tutorial demonstrates the basic functionalities of the TorchOptics library,
 including setting up simulations, propagating optical fields, and using lenses.
 """
 
 # %%
-import torch
-
 import torchoptics
 from torchoptics import Field, System
 from torchoptics.elements import Lens
