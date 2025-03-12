@@ -9,7 +9,7 @@
 .. toctree::
    :hidden:
 
-   getting_started/index
+   user_guide/index
    auto_examples/index
    Reference <reference/index>
    background/index
