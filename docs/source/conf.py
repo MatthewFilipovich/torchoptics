@@ -42,6 +42,7 @@ intersphinx_mapping = {
 sphinx_gallery_conf = {
     "examples_dirs": ["../../examples", "user_guide"],
     "gallery_dirs": ["auto_examples", "auto_user_guide"],
+    "reference_url": {"torchoptics": None},
 }
 
 # -- Options for HTML output -------------------------------------------------
