@@ -119,7 +119,8 @@ def is_asm(field: Field, propagation_plane: PlanarGeometry, propagation_method: 
     Returns `False` if :attr:`field.propagation_method` is `"DIM"` or `"DIM_FRESNEL"`.
 
     If :attr:`field.propagation_method` is `"auto"`, the propagation method is determined based on the
-    condition set in :func:`calculate_critical_propagation_distance`.
+    condition set in :func:`calculate_critical_propagation_distance`. Returns `True` if at least one of the
+    two planar dimensions meets the condition; otherwise, returns False.
     """
     if propagation_method.upper() in ("DIM", "DIM_FRESNEL"):
         return False
@@ -129,7 +130,7 @@ def is_asm(field: Field, propagation_plane: PlanarGeometry, propagation_method: 
     # Auto: Determine propagation method based on critical propagation distance
     critical_z = calculate_critical_propagation_distance(field, propagation_plane)
     z = (propagation_plane.z - field.z).abs()
-    return torch.all(z < critical_z)
+    return torch.any(z < critical_z)
 
 
 def calculate_critical_propagation_distance(field: Field, propagation_plane: PlanarGeometry) -> torch.Tensor:
