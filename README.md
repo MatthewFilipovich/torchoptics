@@ -20,7 +20,7 @@
 - 🌊 **Differentiable Wave Optics Simulations**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
 - 🔥 **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
 - 🛠️ **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
-- 🔬 **Optical Elements**: Features standard optical elements like modulators, lenses, detectors, and polarizers. 
+- 🔬 **Optical Elements**: Features standard optical elements like modulators, lenses, detectors, and polarizers.
 
 - 🖼️ **Spatial Profiles**: Includes commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams for advanced optical applications.
 - 🔆 **Polarized Light & Spatial Coherence**: Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
@@ -113,11 +113,11 @@ _For more examples and detailed usage, please refer to the [documentation](https
 
 We welcome all bug reports and suggestions for future features and enhancements, which can be filed as GitHub issues. To contribute a feature:
 
-1. **Fork the repository**: Go to <https://github.com/MatthewFilipovich/torchoptics/fork>.
-2. **Create a feature branch**: Run `git checkout -b feature/fooBar`.
-3. **Commit your changes**: Execute `git commit -am 'Add some fooBar'`.
-4. **Push to the branch**: Use `git push origin feature/fooBar`.
-5. **Submit a Pull Request**: Open a Pull Request on GitHub.
+1. **Fork the repository**: Go to <https://github.com/MatthewFilipovich/torchoptics/fork>
+2. **Create a feature branch**: `git checkout -b feature/fooBar`
+3. **Commit your changes**: `git commit -am 'Add some fooBar'`
+4. **Push to the branch**: `git push origin feature/fooBar`
+5. **Submit a Pull Request**: Open a Pull Request on GitHub
 
 ## Citing TorchOptics
 

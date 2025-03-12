@@ -46,7 +46,7 @@ Key Features
    .. grid-item-card:: 🔬 **Optical Elements**
       :class-card: sd-bg-light sd-border sd-shadow
 
-      Features standard optical elements like modulators, lenses, detectors, and polarizers. 
+      Features standard optical elements like modulators, lenses, detectors, and polarizers.
 
    .. grid-item-card:: 🖼️ **Spatial Profiles**
       :class-card: sd-bg-light sd-border sd-shadow
@@ -143,11 +143,11 @@ Contributing
 
 We welcome bug reports and suggestions for future features and enhancements. To contribute a feature, please follow these steps:
 
-1. **Fork the repository**: Go to `https://github.com/MatthewFilipovich/torchoptics/fork <https://github.com/MatthewFilipovich/torchoptics/fork>`_.
-2. **Create a feature branch**: Run `git checkout -b feature/fooBar`.
-3. **Commit your changes**: Execute `git commit -am 'Add some fooBar'`.
-4. **Push to the branch**: Use `git push origin feature/fooBar`.
-5. **Submit a Pull Request**: Open a Pull Request on GitHub.
+1. **Fork the repository**: Go to `https://github.com/MatthewFilipovich/torchoptics/fork <https://github.com/MatthewFilipovich/torchoptics/fork>`_
+2. **Create a feature branch**: ``git checkout -b feature/fooBar``
+3. **Commit your changes**: ``git commit -am 'Add some fooBar'``
+4. **Push to the branch**: ``git push origin feature/fooBar```
+5. **Submit a Pull Request**: Open a Pull Request on GitHub
 
 Citing TorchOptics
 -------------------
