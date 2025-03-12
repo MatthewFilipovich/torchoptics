@@ -40,8 +40,8 @@ intersphinx_mapping = {
 }
 
 sphinx_gallery_conf = {
-    "examples_dirs": ["../../examples", "user_guide"],
-    "gallery_dirs": ["auto_examples", "auto_user_guide"],
+    "examples_dirs": ["examples", "quickstart", "user_guide"],
+    "gallery_dirs": ["auto_examples", "auto_quickstart", "auto_user_guide"],
     "reference_url": {"torchoptics": None},
 }
 
@@ -72,7 +72,7 @@ html_theme_options = {
 }
 
 html_static_path = ["_static"]
-html_sidebars = {"auto_user_guide/plot_quickstart": []}  # Disable sidebar for specific pages
+html_sidebars = {"auto_quickstart/plot_quickstart": []}  # Disable sidebar for specific pages
 
 
 # -- Custom configuration ----------------------------------------------------
