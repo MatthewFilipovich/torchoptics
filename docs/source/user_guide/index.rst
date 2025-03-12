@@ -2,10 +2,10 @@ User Guide
 ===========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents
    
-   introduction
-   fields
+   ../auto_user_guide/plot_introduction
    elements
+   fields
    systems

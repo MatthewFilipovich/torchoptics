@@ -183,5 +183,5 @@ venv*/
 data/
 
 # sphinx-gallery
-auto_examples/
+auto_*/
 sg_execution_times.rst
