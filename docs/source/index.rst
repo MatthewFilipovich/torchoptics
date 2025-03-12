@@ -17,9 +17,10 @@
 TorchOptics Documentation
 ==========================
 
+TorchOptics is an open-source Python library for differentiable wave optics simulations with PyTorch.
+
 .. note::
     **Documentation is currently being developed.** For detailed information about the library, please refer to the `arXiv paper <https://arxiv.org/abs/2411.18591>`_.
-
 
 Key Features
 ------------
@@ -27,37 +28,35 @@ Key Features
 .. grid:: 1 2 2 3
    :gutter: 2
 
-   .. grid-item-card:: :fas:`wave-square` **Differentiable Fourier Optics Simulations**
+   .. grid-item-card:: :fas:`chart-line` **Differentiable Wave Optics Simulations**
       :class-card: sd-bg-light sd-border sd-shadow
 
       A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
 
-   .. grid-item-card:: :fab:`pytorch` **Built on PyTorch**
+   .. grid-item-card:: :fas:`microchip` **Built on PyTorch**
       :class-card: sd-bg-light sd-border sd-shadow
 
-      Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
+      Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.  
 
-   .. grid-item-card:: :fas:`cogs` **End-to-End Optimization**
+   .. grid-item-card:: :fas:`tools` **End-to-End Optimization**
       :class-card: sd-bg-light sd-border sd-shadow
 
       Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
 
-   .. grid-item-card:: :fas:`project-diagram` **Wide Range of Optical Elements and Spatial Profiles**
+   .. grid-item-card:: :fas:`cubes` **Wide Range of Optical Elements**
       :class-card: sd-bg-light sd-border sd-shadow
 
-      Includes standard elements like lenses and modulators, along with commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams.
+      Features standard optical elements like lenses and modulators, providing a versatile toolkit for optical system design.
 
-   .. grid-item-card:: :fas:`lightbulb` **Polarized Light Simulation**
+   .. grid-item-card:: :fas:`vector-square` **Spatial Profiles**
       :class-card: sd-bg-light sd-border sd-shadow
 
-      Simulates polarized light interactions using matrix Fourier optics with Jones calculus.
+      Includes commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams for advanced optical applications.
 
-   .. grid-item-card:: :fas:`eye` **Spatial Coherence Support**
+   .. grid-item-card:: :fas:`sliders-h` **Polarized Light & Spatial Coherence**
       :class-card: sd-bg-light sd-border sd-shadow
 
-      Models optical fields with arbitrary spatial coherence through the mutual coherence function.
-
-Our research paper, available on `arXiv <https://arxiv.org/abs/2411.18591>`_, introduces the TorchOptics library and provides a comprehensive review of its features and applications.
+      Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
 
 Installation
 ------------
@@ -68,7 +67,7 @@ TorchOptics and its dependencies can be installed using `pip <https://pypi.org/p
 
     pip install torchoptics
 
-To install the library in development mode, first clone the GitHub repository and then use pip to install it in editable mode:
+For development mode, clone the GitHub repository and install it in editable mode:
 
 .. code-block:: bash
 
@@ -82,7 +81,7 @@ Usage
    :target: https://colab.research.google.com/github/MatthewFilipovich/torchoptics/blob/main/docs/source/tutorials/4f_system.ipynb
    :alt: Open in Colab
 
-This example demonstrates simulating a 4f imaging system using TorchOptics. The field at each focal plane along the z-axis is computed and visualized:
+This example demonstrates how to simulate a 4f imaging system using TorchOptics. The field at each focal plane along the z-axis is computed and visualized:
 
 .. code-block:: python
 
@@ -103,7 +102,7 @@ This example demonstrates simulating a 4f imaging system using TorchOptics. The 
     # Determine device
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    # Configure torchoptics default properties
+    # Configure default properties
     torchoptics.set_default_spacing(spacing)
     torchoptics.set_default_wavelength(wavelength)
 
@@ -142,13 +141,13 @@ This example demonstrates simulating a 4f imaging system using TorchOptics. The 
 Contributing
 --------------
 
-We welcome all bug reports and suggestions for future features and enhancements, which can be filed as GitHub issues. To contribute a feature:
+We welcome bug reports and suggestions for future features and enhancements. To contribute a feature, please follow these steps:
 
-1. Fork it at `https://github.com/MatthewFilipovich/torchoptics/fork <https://github.com/MatthewFilipovich/torchoptics/fork>`_.
-2. Create your feature branch (:code:`git checkout -b feature/fooBar`).
-3. Commit your changes (:code:`git commit -am 'Add some fooBar'`).
-4. Push to the branch (:code:`git push origin feature/fooBar`).
-5. Submit a Pull Request.
+1. **Fork the repository**: Go to `https://github.com/MatthewFilipovich/torchoptics/fork <https://github.com/MatthewFilipovich/torchoptics/fork>`_.
+2. **Create a feature branch**: Run `git checkout -b feature/fooBar`.
+3. **Commit your changes**: Execute `git commit -am 'Add some fooBar'`.
+4. **Push to the branch**: Use `git push origin feature/fooBar`.
+5. **Submit a Pull Request**: Open a Pull Request on GitHub.
 
 Citing TorchOptics
 -------------------
