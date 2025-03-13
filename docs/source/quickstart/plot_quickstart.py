@@ -1,28 +1,30 @@
 """
 Quickstart
-===========
+==========
 
-This tutorial demonstrates the basic functionalities of the TorchOptics library,
-including setting up simulations, propagating optical fields, and using lenses.
+In this quickstart tutorial, you'll learn the basics of working with the :mod:`torchoptics` library.
+We'll define optical fields, simulate their propagation through free space, and explore how lenses affect these fields.
 """
 
 # %%
-import torchoptics
-from torchoptics import Field, System
-from torchoptics.elements import Lens
-from torchoptics.profiles import triangle
+import torchoptics  # Core TorchOptics functionalities
+from torchoptics import Field, System  # Fundamental classes for optical fields and optical systems
+from torchoptics.elements import Lens  # Optical element: lens
+from torchoptics.profiles import triangle  # Profile-generating function for triangle shapes
 
 # %%
-# Setting Up TorchOptics
-# ----------------------
+# Setting Up Your Simulation
+# --------------------------
 #
-# Before defining optical fields, we must specify default grid spacing and wavelength.
-# These values affect all subsequent operations and should be chosen based on the
-# physical scale of your simulation.
+# Start by specifying some global settings. These will define the scale and resolution for your optical simulations.
+# We use :func:`torchoptics.set_default_spacing` and :func:`torchoptics.set_default_wavelength` to set these parameters.
 
-torchoptics.set_default_spacing(10e-6)
-torchoptics.set_default_wavelength(700e-9)
+torchoptics.set_default_spacing(10e-6)  # Spatial grid spacing (m)
+torchoptics.set_default_wavelength(700e-9)  # Default wavelength of the field (m)
 
+# %%
+# Let's create an optical field shaped like a triangle. We'll use the built-in profile function
+# :func:`~torchoptics.profiles.triangle` to easily generate this shape.
 shape = 500
 base_length = 2e-3  # Base length of the triangle profile (m)
 triangle_height = 1e-3  # Height of the triangle profile (m)
@@ -33,67 +35,70 @@ field = Field(triangle_profile)
 field.visualize(title="Initial Triangle Field")
 
 # %%
-# Free-Space Propagation
-# ----------------------
+# Propagating Through Free Space
+# ------------------------------
 #
-# Light propagates freely in space according to the Huygens-Fresnel principle.
-# Here, we compute the field at a distance of 0.1 meters from its initial position.
+# Next, we'll simulate how the optical field changes as it travels through free space.
+# The method :meth:`~torchoptics.Field.propagate_to_z` handles this propagation based on physical principles.
 
 propagated_field = field.propagate_to_z(0.1)
 propagated_field.visualize(title="Propagated Field at z=0.1 m")
 
 # %%
-# Introducing a Lens
-# ------------------
+# Adding a Lens to the Simulation
+# -------------------------------
 #
-# A lens focuses or diverges light according to its focal length. Using the thin-lens equation:
+# Now, let's see how adding a lens affects the field. A lens can focus or diverge light, and its behavior is described by the thin-lens equation:
 #
 # .. math::
 #
-#    \frac{1}{f} = \frac{1}{z} + \frac{1}{z'}
+#    \frac{1}{f} = \frac{1}{d_o} + \frac{1}{d_i}
 #
-# where :math:`f` is the focal length, :math:`z` is the distance from the object to the lens,
-# and :math:`z'` is the image distance.
+# Here, :math:`f` is the lens's focal length, :math:`d_o` is the distance from the object plane (which we've set at z=0),
+# and :math:`d_i` is the distance from the lens to the resulting image plane.
 
-focal_length = 0.2  # Focal length of the lens (m)
-lens_z = 0.4  # Position of the lens along the z-axis (m)
-image_z = 0.8  # Position of the image plane (m)
+focal_length = 0.2  # Lens focal length (m)
+d_o = 0.4  # Object-to-lens distance (m)
+d_i = 0.4  # Lens-to-image distance (m)
+
+lens_z = d_o  # Absolute lens position along the z-axis (m)
+image_z = lens_z + d_i  # Absolute image-plane position along the z-axis (m)
 
 # %%
-# Field Before Lens
-# -----------------
+# Checking the Field Before the Lens
+# ----------------------------------
 #
-# Propagate the field to the lens position to observe its state just before encountering the lens.
+# Before applying the lens, let's propagate the field to the lens position and see its distribution at that point.
 
 field_before_lens = field.propagate_to_z(lens_z)
 field_before_lens.visualize(title="Field Before Lens")
 
 # %%
-# Field After Lens
-# ----------------
+# Observing the Field After the Lens
+# ----------------------------------
 #
-# Apply the lens transformation to see how the field is modified immediately after passing through the lens.
+# Next, apply the lens transformation. This step lets us observe how the lens immediately reshapes the optical field.
 
 lens = Lens(shape, focal_length, lens_z)
 field_after_lens = lens(field_before_lens)
 field_after_lens.visualize(title="Field After Lens")
 
 # %%
-# Field at Image Plane
-# --------------------
+# Examining the Field at the Image Plane
+# --------------------------------------
 #
-# Finally, propagate the field from the lens to the image plane to observe the resulting field distribution.
+# Finally, we'll propagate the field from the lens position to the image plane. This step shows how well the lens focuses the field.
 
 field_image_plane = field_after_lens.propagate_to_z(image_z)
 field_image_plane.visualize(title="Field at Image Plane")
 
 # %%
-# Using the System Class
-# ----------------------
+# Simplifying with the System Class
+# ---------------------------------
 #
-# The `System` class allows us to build a sequence of optical elements and measure the field
-# at different points without manually computing each step. This simplifies complex simulations.
+# TorchOptics provides the convenient :class:`~torchoptics.System` class, making it easy to chain multiple optical elements together.
+# Let's quickly redo the previous steps using this simplified approach.
 
 system = System(lens)
 field_image_plane = system.measure_at_z(field, z=image_z)
-field_image_plane.visualize(title="Image Plane via System Class")
+field_image_plane.visualize(title="Image Plane Using System Class")
