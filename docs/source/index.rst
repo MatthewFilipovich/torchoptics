@@ -19,9 +19,6 @@ TorchOptics Documentation
 
 TorchOptics is an open-source Python library for differentiable wave optics simulations with PyTorch.
 
-.. note::
-    **Documentation is currently being developed.** For detailed information about the library, please refer to the `arXiv paper <https://arxiv.org/abs/2411.18591>`_.
-
 Key Features
 ------------
 
