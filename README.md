@@ -21,8 +21,7 @@
 - 🔥 **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
 - 🛠️ **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
 - 🔬 **Optical Elements**: Features standard optical elements like modulators, lenses, detectors, and polarizers.
-
-- 🖼️ **Spatial Profiles**: Includes commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams for advanced optical applications.
+- 🖼️ **Spatial Profiles**: Provides a wide range of spatial profiles, including Hermite-Gaussian and Laguerre-Gaussian beams.
 - 🔆 **Polarized Light & Spatial Coherence**: Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
 
 Our research paper, available on [arXiv](https://arxiv.org/abs/2411.18591), introduces the TorchOptics library and provides a comprehensive review of its features and applications.
@@ -111,7 +110,10 @@ _For more examples and detailed usage, please refer to the [documentation](https
 
 ## Contributing
 
-We welcome all bug reports and suggestions for future features and enhancements, which can be filed as GitHub issues. To contribute a feature:
+We welcome **bug reports, questions, and feature suggestions** to improve TorchOptics.
+
+- **Found a bug or have a question?** Please [open an issue on GitHub](https://github.com/MatthewFilipovich/torchoptics/issues).
+- **Want to contribute a new feature?** Follow these steps:
 
 1. **Fork the repository**: Go to <https://github.com/MatthewFilipovich/torchoptics/fork>
 2. **Create a feature branch**: `git checkout -b feature/fooBar`
@@ -121,7 +123,7 @@ We welcome all bug reports and suggestions for future features and enhancements,
 
 ## Citing TorchOptics
 
-If you are using TorchOptics for research purposes, we kindly request that you cite the following paper:
+If you use TorchOptics in your research, please cite our paper:
 
 > M.J. Filipovich and A.I. Lvovsky, _TorchOptics: An open-source Python library for differentiable Fourier optics simulations_, arXiv preprint [arXiv:2411.18591](https://arxiv.org/abs/2411.18591) (2024).
 
