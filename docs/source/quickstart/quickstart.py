@@ -2,61 +2,94 @@
 Quickstart
 ==========
 
-In this quickstart tutorial, you'll learn the basics of working with the TorchOptics library.
-We'll define optical fields, simulate their propagation through free space, and explore how lenses affect these fields.
+Welcome to the TorchOptics quickstart! This guide walks you through the fundamental concepts of optical
+simulations, including:
+
+- Creating an optical field
+- Propagating it through free space
+- Simulating an imaging system with a single lens
+
+Before starting, make sure TorchOptics is installed (:ref:`installation`).
 """
 
 # %%
-import torchoptics  # Core TorchOptics functionalities
-from torchoptics import Field, System  # Fundamental classes for optical fields and optical systems
-from torchoptics.elements import Lens  # Optical element: lens
-from torchoptics.profiles import triangle  # Profile-generating function for triangle shapes
+# Import Modules
+# ---------------
+#
+# We first import the necessary TorchOptics components:
+
+import torchoptics
+from torchoptics import Field, System
+from torchoptics.elements import Lens
+from torchoptics.profiles import triangle
 
 # %%
-# Setting Up Your Simulation
-# --------------------------
+# Set Defaults
+# -------------
 #
-# Start by specifying some global settings. These will define the scale and resolution for your optical simulations.
-# We use :func:`torchoptics.set_default_spacing` and :func:`torchoptics.set_default_wavelength` to set these parameters.
+# We specify the simulation default parameters, which include:
+#
+# - ``spacing``: Specifies the physical distance between adjacent points in the xy-plane of the simulation
+#   grid. This controls the spatial resolution of optical fields and elements, affecting
+#   numerical accuracy and computational cost.
+#
+# - ``wavelength``: Defines the wavelength of the monochromatic light used in the simulation.
 
 torchoptics.set_default_spacing(10e-6)  # Spatial grid spacing (m)
 torchoptics.set_default_wavelength(700e-9)  # Default wavelength of the field (m)
 
 # %%
-# Let's create an optical field shaped like a triangle. We'll use the built-in profile function
-# :func:`~torchoptics.profiles.triangle` to easily generate this shape.
-shape = 500
-base_length = 2e-3  # Base length of the triangle profile (m)
-triangle_height = 1e-3  # Height of the triangle profile (m)
+# Initialize Optical Field
+# ------------------------
+#
+# Monochromatic optical fields are represented in TorchOptics using the :class:`~torchoptics.Field` class,
+# which encapsulates the complex-valued wavefronts sampled along the xy-plane.
+#
+# Let's create an optical field with a triangular amplitude profile.
 
-triangle_profile = triangle(shape, base_length, triangle_height)
+shape = 500  # Define the shape of the field along the x and y axes (number of points)
+base = 2e-3  # Base length of the triangle profile (m)
+height = 1e-3  # Height of the triangle profile (m)
+
+# Generate a triangle-shaped optical profile as a 2D PyTorch tensor.
+triangle_profile = triangle(shape, base, height)
+
+# Create the optical field using the triangle profile.
 field = Field(triangle_profile)
 
+# Visualize the field and print its properties.
 field.visualize(title="Initial Triangle Field")
-print(field)  # Display the field's properties
+print(field)
 
 # %%
-# Propagating Through Free Space
-# ------------------------------
+# Free-Space Propagation
+# ----------------------
 #
-# Next, we'll simulate how the optical field changes as it travels through free space.
-# The method :meth:`~torchoptics.Field.propagate_to_z` handles this propagation based on physical principles.
+# Next, we'll simulate the propagation of the optical field in free space. This is performed using the
+# :meth:`~torchoptics.Field.propagate_to_z` method, which returns the field at aspecified distance along the
+# z-axis.
 
 propagated_field = field.propagate_to_z(0.1)
 propagated_field.visualize(title="Propagated Field at z=0.1 m")
 
 # %%
-# Adding a Lens to the Simulation
-# -------------------------------
+# Define Lens Parameters
+# ----------------------
 #
-# Now, let's see how adding a lens affects the field. A lens can focus or diverge light, and its behavior is described by the thin-lens equation:
+# A thin lens introduces a quadratic phase factor, effectively modifying the curvature of the optical field.
+# Its focusing behavior is described by the lensmaker’s formula (also called the thin-lens equation):
 #
 # .. math::
 #
-#    \frac{1}{f} = \frac{1}{d_o} + \frac{1}{d_i}
+#     \frac{1}{f} = \frac{1}{z_o} + \frac{1}{z_i}
 #
-# Here, :math:`f` is the lens's focal length, :math:`d_o` is the distance from the object plane (which we've set at z=0),
-# and :math:`d_i` is the distance from the lens to the resulting image plane.
+# where:
+#
+# - :math:`f` is the focal length of the lens.
+# - :math:`z_o` is the distance from the lens to the object plane (input field).
+# - :math:`z_i` is the distance from the lens to the image plane, at which the field is ideally refocused.
+#
+# In this example, we place the lens and define object/image planes based on these distances.
 
 focal_length = 0.2  # Lens focal length (m)
 d_o = 0.4  # Object-to-lens distance (m)
@@ -69,31 +102,33 @@ print(f"Lens Position: {lens_z} m")
 print(f"Image Plane Position: {image_z} m")
 
 # %%
-# Checking the Field Before the Lens
-# ----------------------------------
+# Initialize Lens
+# ---------------
+
+lens = Lens(shape, focal_length, lens_z)
+print(lens)  # Display the lens properties
+
+
+# %%
+# Field Before the Lens
+# ---------------------
 #
-# Before applying the lens, let's propagate the field to the lens position and see its distribution at that point.
+# Before applying the lens, let's propagate the field to the lens position and visualize its distribution.
 
 field_before_lens = field.propagate_to_z(lens_z)
 field_before_lens.visualize(title="Field Before Lens")
 
 # %%
-# Observing the Field After the Lens
-# ----------------------------------
+# Field After the Lens
+# ---------------------
 #
 # Next, apply the lens transformation. This step lets us observe how the lens immediately reshapes the optical field.
-
-lens = Lens(shape, focal_length, lens_z)
-print(lens)  # Display the lens properties
-
-# %%
-# Apply the lens to the field at the lens position
 field_after_lens = lens(field_before_lens)
 field_after_lens.visualize(title="Field After Lens")
 
 # %%
-# Examining the Field at the Image Plane
-# --------------------------------------
+# Field at the Image Plane
+# ------------------------
 #
 # Finally, we'll propagate the field from the lens position to the image plane. This step shows how well the lens focuses the field.
 
@@ -101,16 +136,17 @@ field_image_plane = field_after_lens.propagate_to_z(image_z)
 field_image_plane.visualize(title="Field at Image Plane")
 
 # %%
-# Simplifying with the System Class
-# ---------------------------------
+# System Class
+# -------------
 #
-# TorchOptics provides the convenient :class:`~torchoptics.System` class, making it easy to chain multiple optical elements together.
-# Let's quickly redo the previous steps using this simplified approach.
+# Instead of manually applying each optical element, the :class:`~torchoptics.System` class lets you define
+# a full optical setup in a structured way. This simplifies complex simulations and makes it easy to add or remove elements.
 
 system = System(lens)
 print(system)  # Display the system's properties
 
 # %%
-# Propagating the Field through the System
+# Measure at Image Plane
+# -----------------------
 field_image_plane = system.measure_at_z(field, z=image_z)
 field_image_plane.visualize(title="Image Plane Using System Class")

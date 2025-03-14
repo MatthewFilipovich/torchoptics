@@ -55,6 +55,8 @@ Key Features
 
       Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
 
+.. _installation:
+
 Installation
 ------------
 
