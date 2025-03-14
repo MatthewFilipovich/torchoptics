@@ -33,6 +33,7 @@ triangle_profile = triangle(shape, base_length, triangle_height)
 field = Field(triangle_profile)
 
 field.visualize(title="Initial Triangle Field")
+print(field)  # Display the field's properties
 
 # %%
 # Propagating Through Free Space
@@ -64,6 +65,9 @@ d_i = 0.4  # Lens-to-image distance (m)
 lens_z = d_o  # Absolute lens position along the z-axis (m)
 image_z = lens_z + d_i  # Absolute image-plane position along the z-axis (m)
 
+print(f"Lens Position: {lens_z} m")
+print(f"Image Plane Position: {image_z} m")
+
 # %%
 # Checking the Field Before the Lens
 # ----------------------------------
@@ -80,6 +84,10 @@ field_before_lens.visualize(title="Field Before Lens")
 # Next, apply the lens transformation. This step lets us observe how the lens immediately reshapes the optical field.
 
 lens = Lens(shape, focal_length, lens_z)
+print(lens)  # Display the lens properties
+
+# %%
+# Apply the lens to the field at the lens position
 field_after_lens = lens(field_before_lens)
 field_after_lens.visualize(title="Field After Lens")
 
@@ -100,5 +108,9 @@ field_image_plane.visualize(title="Field at Image Plane")
 # Let's quickly redo the previous steps using this simplified approach.
 
 system = System(lens)
+print(system)  # Display the system's properties
+
+# %%
+# Propagating the Field through the System
 field_image_plane = system.measure_at_z(field, z=image_z)
 field_image_plane.visualize(title="Image Plane Using System Class")
