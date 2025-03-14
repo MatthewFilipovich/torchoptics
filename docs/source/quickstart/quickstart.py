@@ -2,7 +2,7 @@
 Quickstart
 ==========
 
-In this quickstart tutorial, you'll learn the basics of working with the :mod:`torchoptics` library.
+In this quickstart tutorial, you'll learn the basics of working with the TorchOptics library.
 We'll define optical fields, simulate their propagation through free space, and explore how lenses affect these fields.
 """
 

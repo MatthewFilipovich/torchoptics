@@ -6,6 +6,7 @@ This example demonstrates the use of a grating modulator to create a polychromat
 """
 
 # %%
+
 import torch
 import torchoptics
 import matplotlib.pyplot as plt
@@ -32,6 +33,7 @@ def plot_rgb_intensities(fields, title=None):
         raise ValueError("`fields` must be a list of 3 Fields.")
     rgb_intensities = [field.intensity() for field in fields]
     rgb_intensities = torch.stack(rgb_intensities, dim=-1).cpu().numpy()
+    plt.figure()
     plt.imshow(rgb_intensities)
     plt.axis("off")
     plt.title(title)
@@ -59,3 +61,5 @@ propagation_distances = torch.arange(0, 0.3, 0.05)
 for z in propagation_distances:
     propagated_fields = [system.measure_at_z(field, z) for field in fields]
     plot_rgb_intensities(propagated_fields, title=f"z = {z:.2f} m")
+    plt.show()
+    print(z)

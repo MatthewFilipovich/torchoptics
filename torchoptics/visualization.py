@@ -84,6 +84,9 @@ def visualize_tensor(
     if title:
         fig.suptitle(title, y=0.95)
 
+    fig.tight_layout()
+    fig.subplots_adjust(wspace=0.4)
+
     if show:
         plt.show()
 

@@ -6,6 +6,7 @@ This example demonstrates the effect of spatial coherence on the propagation of 
 """
 
 # %%
+
 import torch
 import torchoptics
 from torchoptics import CoherenceField
@@ -36,6 +37,4 @@ propagation_distances = [0, 0.01, 0.02]
 
 for z in propagation_distances:
     high_coherence_field.propagate_to_z(z).visualize(title=f"Field with high coherence at z = {z} m")
-
-for z in propagation_distances:
     low_coherence_field.propagate_to_z(z).visualize(title=f"Field with low coherence at z = {z} m")

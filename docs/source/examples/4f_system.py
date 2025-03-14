@@ -6,7 +6,12 @@ This example demonstrates the use of a 4f optical system to measure the intensit
 """
 
 # %%
+
+# sphinx_gallery_start_ignore
+# sphinx_gallery_multi_image = "single"
+# sphinx_gallery_end_ignore
 import torch
+
 import torchoptics
 from torchoptics import Field, System
 from torchoptics.elements import Lens
