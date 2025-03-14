@@ -9,7 +9,7 @@
 .. toctree::
    :hidden:
 
-   auto_quickstart/plot_quickstart
+   auto_quickstart/quickstart
    user_guide/index
    auto_examples/index
    reference/index
@@ -50,7 +50,7 @@ Key Features
 
       Provides a wide range of spatial profiles, including Hermite-Gaussian and Laguerre-Gaussian beams.
 
-   .. grid-item-card:: 🔆 **Polarized Light & Spatial Coherence**
+   .. grid-item-card:: 🔆 **Polarization & Spatial Coherence**
       :class-card: sd-bg-light sd-border sd-shadow
 
       Supports simulations of polarized light and optical fields with arbitrary spatial coherence.

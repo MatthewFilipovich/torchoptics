@@ -43,6 +43,7 @@ sphinx_gallery_conf = {
     "examples_dirs": ["examples", "quickstart", "user_guide"],
     "gallery_dirs": ["auto_examples", "auto_quickstart", "auto_user_guide"],
     "reference_url": {"torchoptics": None},
+    "filename_pattern": "^((?!sphinx_skip).)*$",  # Exclude files with 'sphinx_skip' in the name
 }
 
 # -- Options for HTML output -------------------------------------------------
@@ -54,6 +55,7 @@ html_title = "TorchOptics"
 
 html_favicon = "_static/favicon.png"
 html_logo = "_static/torchoptics_logo.png"
+html_js_files = ["custom-icon.js"]
 html_theme_options = {
     "icon_links": [
         {
@@ -65,14 +67,14 @@ html_theme_options = {
         {
             "name": "PyPI",
             "url": "https://pypi.org/project/torchoptics",
-            "icon": "fa-solid fa-box",
+            "icon": "fa-custom fa-pypi",
         },
     ],
     "secondary_sidebar_items": ["page-toc", "sg_download_links", "sg_launcher_links"],
 }
 
 html_static_path = ["_static"]
-html_sidebars = {"auto_quickstart/plot_quickstart": []}  # Disable sidebar for specific pages
+html_sidebars = {"auto_quickstart/quickstart": []}  # Disable sidebar for specific pages
 
 
 # -- Custom configuration ----------------------------------------------------
