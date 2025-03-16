@@ -55,7 +55,8 @@ def calculate_transfer_function(
     freq_x, freq_y = (fftshift(fftfreq_grad(n, d)) for n, d in zip(padded_input_shape, field.spacing))
     kx, ky = torch.meshgrid(freq_x * 2 * torch.pi, freq_y * 2 * torch.pi, indexing="ij")
     k = (2 * torch.pi) / field.wavelength
-    kz = torch.sqrt(k**2 - kx**2 - ky**2)
+    kz_squared = (k**2 - kx**2 - ky**2).to(torch.cdouble)  # Ensure kz_squared is complex for sqrt calculation
+    kz = torch.sqrt(kz_squared)  # kz is imaginary for evanescent waves where kz^2 < 0
     if torch.any(torch.isnan(kz)):
         raise ValueError("NaNs in kz")
     if propagation_method in {"ASM_FRESNEL", "AUTO_FRESNEL"}:
