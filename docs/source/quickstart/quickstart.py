@@ -28,7 +28,7 @@ from torchoptics.profiles import triangle
 # Define Simulation Defaults
 # --------------------------
 #
-# We set the default simulation parameters for the simulation:
+# We set the default parameters for the simulation:
 #
 # - ``spacing``: Physical separation between grid points for optical fields and elements, determining
 #   simulation resolution.
@@ -62,8 +62,8 @@ print(field)
 # Free-Space Propagation
 # ----------------------
 #
-# Next, we'll simulate the propagation of the optical field in free space to :math:`z=0.1` m and visualize the
-# diffracted field:
+# Next, we'll simulate the free-space propagation of the optical field to :math:`z=0.1` m using the
+# :meth:`~torchoptics.Field.propagate_to_z` method and visualize the resulting diffracted field:
 
 propagated_field = field.propagate_to_z(0.1)
 propagated_field.visualize(title="Propagated Field at z=0.1 m")
@@ -74,10 +74,10 @@ propagated_field.visualize(title="Propagated Field at z=0.1 m")
 #
 # We'll now focus the optical field using a lens to form an image. The lens is modeled as a thin lens
 # with a specified focal length :math:`f`, which relates the object distance :math:`d_o` and image distance
-# :math:`d_i` through the thin lens equation:
+# :math:`d_i` through the `thin lens equation <https://en.wikipedia.org/wiki/Thin_lens#Image_formation>`_:
 #
 # .. math::
-#     \frac{1}{f} = \frac{1}{d_o} + \frac{1}{d_i}
+#     \frac{1}{f} = \frac{1}{d_o} + \frac{1}{d_i}.
 #
 # We'll set the following parameters:
 
@@ -131,8 +131,12 @@ field_image_plane.visualize(title="Field at Image Plane")
 # System Class
 # -------------
 #
-# The :class:`~torchoptics.System` class simplifies optical simulations by automatically handling field
-# propagation and element interactions, removing the need for manual updates at each step:
+# The :class:`~torchoptics.System` class simplifies simulations by representing an optical system as an 
+# ordered sequence of :class:`~torchoptics.elements.Element` objects, similar to
+# :class:`torch.nn.Sequential` for neural networks. It can compute the evolution of an input field through the
+# system and return the field at any specified position.
+#
+# Let's create a system containg the single lens:
 
 system = System(lens)
 print(system)
@@ -141,6 +145,6 @@ print(system)
 # Measure at Image Plane
 # ^^^^^^^^^^^^^^^^^^^^^^
 #
-# We can measure the field at a specific z-plane using the :meth:`~torchoptics.System.measure_at_z` method:
+# We can measure the field at the image plane using the :meth:`~torchoptics.System.measure_at_z` method:
 field_image_plane = system.measure_at_z(field, z=image_z)
 field_image_plane.visualize(title="Field at Image Plane (System)")
