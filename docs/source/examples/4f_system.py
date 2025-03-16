@@ -2,7 +2,7 @@
 4f System
 ==========
 
-This example demonstrates the use of a 4f optical system to measure the intensity distribution of a field.
+Simulates 4f optical systems with two lenses using low-pass and high-pass filters.
 """
 
 # %%
@@ -59,8 +59,9 @@ measurements = [system.measure_at_z(input_field, z=i * focal_length) for i in ra
 for i, measurement in enumerate(measurements):
     measurement.visualize(title=f"z={i}f", vmax=1)
 
-# %% [markdown]
-# ## Low-pass filter
+# %%
+# Low-pass filter
+# ----------------
 
 # %%
 from torchoptics.elements import Modulator
@@ -88,9 +89,9 @@ measurements = [low_pass_system.measure_at_z(input_field, z=i * focal_length) fo
 for i, measurement in enumerate(measurements):
     measurement.visualize(title=f"z={i}f", vmax=1)
 
-# %% [markdown]
-# ## High-pass filter
-#
+# %%
+# High-pass filter
+# -----------------
 
 # %%
 high_pass_modulation_profile = low_pass_modulation_profile.logical_not()

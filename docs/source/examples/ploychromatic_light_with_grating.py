@@ -1,24 +1,24 @@
 """
-Polychromatic grating
-=====================
+Polychromatic Light with Grating
+====================================
 
-This example demonstrates the use of a grating modulator to create a polychromatic
+Simulates the propagation of red, green, and blue light through a blazed grating.
 """
 
 # %%
 
-import torch
-import torchoptics
 import matplotlib.pyplot as plt
+import torch
 
+import torchoptics
 from torchoptics import Field, System
 from torchoptics.elements import PolychromaticPhaseModulator
-from torchoptics.profiles import gaussian, blazed_grating
+from torchoptics.profiles import blazed_grating, gaussian
 
 # %%
 # Set simulation properties
 shape = 500
-waist_radius = 150e-6
+waist_radius = 300e-6
 wavelengths = [450e-9, 550e-9, 700e-9]  # Blue, green, red
 grating_period = 100e-6
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -34,7 +34,7 @@ def plot_rgb_intensities(fields, title=None):
     rgb_intensities = [field.intensity() for field in fields]
     rgb_intensities = torch.stack(rgb_intensities, dim=-1).cpu().numpy()
     plt.figure()
-    plt.imshow(rgb_intensities)
+    plt.imshow(rgb_intensities.clip(0, 1))
     plt.axis("off")
     plt.title(title)
     plt.show()
@@ -61,5 +61,3 @@ propagation_distances = torch.arange(0, 0.3, 0.05)
 for z in propagation_distances:
     propagated_fields = [system.measure_at_z(field, z) for field in fields]
     plot_rgb_intensities(propagated_fields, title=f"z = {z:.2f} m")
-    plt.show()
-    print(z)

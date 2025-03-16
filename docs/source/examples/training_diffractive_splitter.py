@@ -2,7 +2,7 @@
 Training Diffractive Splitter
 ==============================
 
-This example demonstrates how to train a diffractive optical system to create a desired output field.
+Trains a diffractive optical system to function as a diffractive splitter.
 """
 
 # %%
@@ -48,7 +48,7 @@ system = System(
 # %%
 optimizer = torch.optim.Adam(system.parameters(), lr=0.1)
 losses = []
-for iteration in range(20):
+for iteration in range(200):
     optimizer.zero_grad()
     output_field = system.measure_at_z(input_field, 0.6)
     loss = 1 - output_field.inner(target_field).abs().square()

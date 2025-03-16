@@ -37,6 +37,7 @@ autoapi_options = [
 intersphinx_mapping = {
     "torch": ("https://pytorch.org/docs/stable/", None),
     "python": ("https://docs.python.org/3", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
 }
 
 sphinx_gallery_conf = {
@@ -44,6 +45,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": ["auto_examples", "auto_quickstart", "auto_user_guide"],
     "reference_url": {"torchoptics": None},
     "filename_pattern": "^((?!sphinx_skip).)*$",  # Exclude files with 'sphinx_skip' in the name
+    "matplotlib_animations": (True, "jshtml"),
 }
 
 # -- Options for HTML output -------------------------------------------------

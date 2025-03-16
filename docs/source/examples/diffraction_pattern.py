@@ -2,10 +2,14 @@
 Diffraction pattern
 ===================
 
-This example shows how to compute the diffraction pattern of a set of circles.
+Computes the diffraction pattern from an array of circular apertures.
 """
 
 # %%
+
+# sphinx_gallery_start_ignore
+# sphinx_gallery_thumbnail_number = 2
+# sphinx_gallery_end_ignore
 import torch
 import torchoptics
 import matplotlib.pyplot as plt
