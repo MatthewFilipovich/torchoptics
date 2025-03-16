@@ -60,23 +60,26 @@ Key Features
 Installation
 ------------
 
-TorchOptics and its dependencies can be installed using `pip <https://pypi.org/project/torchoptics>`_:
+The latest stable release of TorchOptics is available on `PyPI <https://pypi.org/project/torchoptics>`_
+and can be installed with:
 
 .. code-block:: bash
 
     pip install torchoptics
 
-For development mode, clone the GitHub repository and install it in editable mode:
+To install the latest development version from `GitHub <https://github.com/MatthewFilipovich/torchoptics>`_ in 
+editable mode:
 
 .. code-block:: bash
 
     git clone https://github.com/MatthewFilipovich/torchoptics
-    pip install -e ./torchoptics
+    cd torchoptics
+    pip install -e .
 
 Contributing
 --------------
 
-We welcome **bug reports, questions, and feature suggestions** to improve TorchOptics.
+We welcome bug reports, questions, and feature suggestions to improve TorchOptics.
 
 - **Found a bug or have a question?** Please `open an issue on GitHub <https://github.com/MatthewFilipovich/torchoptics/issues>`_.
 - **Want to contribute a new feature?** Follow these steps:
