@@ -25,7 +25,7 @@ Key Features
 .. grid:: 1 2 2 3
    :gutter: 2
 
-   .. grid-item-card:: 🌊 **Differentiable Wave Optics Simulations**
+   .. grid-item-card:: 🌊 **Differentiable Wave Optics**
       :class-card: sd-bg-light sd-border sd-shadow
 
       A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
@@ -50,7 +50,7 @@ Key Features
 
       Provides a wide range of spatial profiles, including Hermite-Gaussian and Laguerre-Gaussian beams.
 
-   .. grid-item-card:: 🔆 **Polarization & Spatial Coherence**
+   .. grid-item-card:: 🔆 **Polarization & Coherence**
       :class-card: sd-bg-light sd-border sd-shadow
 
       Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
