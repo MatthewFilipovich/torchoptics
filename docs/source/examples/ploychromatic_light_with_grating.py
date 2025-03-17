@@ -16,46 +16,69 @@ from torchoptics.elements import PolychromaticPhaseModulator
 from torchoptics.profiles import blazed_grating, gaussian
 
 # %%
-# Set simulation properties
-shape = 500
-waist_radius = 300e-6
-wavelengths = [450e-9, 550e-9, 700e-9]  # Blue, green, red
-grating_period = 100e-6
+# Simulation Parameters
+# ---------------------
+# Define the grid size, wavelengths, grating properties, and propagation settings.
+
+shape = 500  # Grid size (number of points per dimension)
+waist_radius = 300e-6  # Waist radius of the Gaussian beam (m)
+wavelengths = [450e-9, 550e-9, 700e-9]  # Blue, green, red wavelengths (m)
+grating_period = 100e-6  # Period of the blazed grating (m)
+
+# Select computation device
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+# Configure torchoptics defaults
 torchoptics.set_default_spacing(10e-6)
 
-
 # %%
+# Function to Plot RGB Intensities
+# --------------------------------
+# This function overlays the intensity distributions of the three fields
+# as red, green, and blue channels.
+
 def plot_rgb_intensities(fields, title=None):
-    # Plot the RGB intensities of the fields, with each field represented by a different color channel.
+    """Plots the RGB intensities of three fields as an RGB image."""
     if not isinstance(fields, list) or len(fields) != 3:
-        raise ValueError("`fields` must be a list of 3 Fields.")
-    rgb_intensities = [field.intensity() for field in fields]
-    rgb_intensities = torch.stack(rgb_intensities, dim=-1).cpu().numpy()
+        raise ValueError("`fields` must be a list of 3 Fields (R, G, B).")
+    
+    rgb_intensities = torch.stack([field.intensity() for field in fields], dim=-1).cpu().numpy()
+    
     plt.figure()
     plt.imshow(rgb_intensities.clip(0, 1))
     plt.axis("off")
     plt.title(title)
     plt.show()
 
-
 # %%
-# Create three gaussian fields with different wavelengths (red, green, blue)
+# Generating Polychromatic Gaussian Fields
+# ----------------------------------------
+# We create three Gaussian fields, each with a different wavelength (R, G, B).
+
 gaussian_data = gaussian(shape, waist_radius).real
-gaussian_data /= gaussian_data.max()  # Normalize the field to have a maximum intensity of 1
+gaussian_data /= gaussian_data.max()  # Normalize to max intensity of 1
+
 fields = [Field(gaussian_data, wavelength).to(device) for wavelength in wavelengths]
 
-plot_rgb_intensities(fields)  # Plot the RGB intensities of the fields
+# Visualize the RGB intensity distribution of the input fields
+plot_rgb_intensities(fields, title="Input RGB Fields")
 
 # %%
-# Initialize a system with a blazed grating modulator
+# Blazed Grating Modulator
+# ------------------------
+# We apply a blazed grating phase modulation to the fields.
+
 phase = blazed_grating(shape, grating_period, height=wavelengths[0])
 system = System(PolychromaticPhaseModulator(phase)).to(device)
-system[0].visualize(wavelengths[0])
+
+# Visualize the phase modulation at one of the wavelengths
+system[0].visualize(wavelengths[0], title="Blazed Grating Phase Modulation")
 
 # %%
-# Propagate the fields through the system and plot the RGB intensities
+# Propagation Through the Grating System
+# --------------------------------------
+# We propagate the polychromatic fields through the system at different distances.
+
 propagation_distances = torch.arange(0, 0.3, 0.05)
 
 for z in propagation_distances:

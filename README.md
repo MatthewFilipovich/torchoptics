@@ -39,8 +39,7 @@ be installed with:
 pip install torchoptics
 ```
 
-To install the latest development version from [GitHub](https://github.com/MatthewFilipovich/torchoptics) in
-editable mode:
+The latest development version can be installed from [GitHub](https://github.com/MatthewFilipovich/torchoptics):
 
 ```sh
 git clone https://github.com/MatthewFilipovich/torchoptics

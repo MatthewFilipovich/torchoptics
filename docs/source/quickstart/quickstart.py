@@ -95,8 +95,8 @@ print(f"Image Plane Position: {image_z} m")
 # Initialize the Lens
 # ^^^^^^^^^^^^^^^^^^^
 #
-# We create a lens using the :class:`~torchoptics.elements.Lens` class, which modulates the field with a
-# quadratic phase factor and applies a circular aperture:
+# A lens can be simulated in TorchOptics using the :class:`~torchoptics.elements.Lens` class, which modulates 
+# the field with a quadratic phase factor and applies a circular aperture:
 
 lens = Lens(shape, focal_length, lens_z)
 lens.visualize(title="Lens Profile")
@@ -107,7 +107,7 @@ print(lens)
 # Field at Lens Plane
 # ^^^^^^^^^^^^^^^^^^^^
 #
-# Let's propagate the field to the lens :math:`z`-position:
+# Let's propagate the field to the :math:`z`-position of the lens:
 
 field_before_lens = field.propagate_to_z(lens_z)
 field_before_lens.visualize(title="Field Before Lens")
