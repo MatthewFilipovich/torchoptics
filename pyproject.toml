@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "torchoptics"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
   "torch",
   "matplotlib"
@@ -15,7 +15,7 @@ description = "Python library for differentiable Fourier optics simulations with
 readme = "README.md"
 license = {file = "LICENSE"}
 keywords = [
-  "Fourier optics",
+  "wave optics",
   "PyTorch",
   "machine learning",
   "physics",
@@ -24,7 +24,7 @@ keywords = [
   "diffraction",
   "holography",
   "computational optics",
-  "wave optics",
+  "Fourier optics",
   "optical neural networks",
   "inverse design",
   "differentiable optics"
