@@ -14,7 +14,7 @@ from torchoptics import CoherenceField
 from torchoptics.profiles import gaussian_schell_model as gsm
 
 # Set simulation properties
-shape = 40  # Grid size (number of points per dimension)
+shape = 30  # Grid size (number of points per dimension)
 spacing = 10e-6  # Grid spacing (m)
 wavelength = 700e-9  # Wavelength (m)
 waist_radius = 40e-6  # Waist radius of the Gaussian beam (m)

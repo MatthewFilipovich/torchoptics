@@ -23,7 +23,7 @@ from torchoptics.profiles import gaussian
 # %%
 # Simulation Parameters
 # ---------------------
-# Define grid size, beam properties, and computational device.
+# Define the grid size and beam properties.
 
 shape = 250  # Grid size (number of points per dimension)
 waist_radius = 150e-6  # Waist radius of the Gaussian beam (m)
@@ -54,7 +54,7 @@ target_field.visualize(title="Target Field")
 # %%
 # Input Field: Single Gaussian Beam
 # ---------------------------------
-# The input field is a single Gaussian beam at z = 0.
+# The input field is a single Gaussian beam at :math:`z=0` m.
 
 input_field = Field(gaussian(shape, waist_radius), z=0).to(device)
 input_field.visualize(title="Input Field")
