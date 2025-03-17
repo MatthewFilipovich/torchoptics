@@ -64,14 +64,13 @@ def calculate_impulse_response(
     r_squared = x**2 + y**2 + propagation_distance**2
     r = torch.sqrt(r_squared) if propagation_distance >= 0 else -torch.sqrt(r_squared)
     k = 2 * torch.pi / field.wavelength
+
     if propagation_method in {"DIM_FRESNEL", "AUTO_FRESNEL"}:
-        impulse_response = (
+        return (
             (torch.exp(1j * k * propagation_distance) / (1j * field.wavelength * propagation_distance))
             * torch.exp(1j * k / (2 * propagation_distance) * (x**2 + y**2))
             * field.cell_area()
         )
-    else:  # DIM using RS equation
-        impulse_response = (
-            1 / (2 * torch.pi) * (1 / r - 1j * k) * torch.exp(1j * k * r) * propagation_distance / r_squared
-        ) * field.cell_area()
-    return impulse_response
+    return (  # DIM using RS equation
+        1 / (2 * torch.pi) * (1 / r - 1j * k) * torch.exp(1j * k * r) * propagation_distance / r_squared
+    ) * field.cell_area()
