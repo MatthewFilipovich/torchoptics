@@ -56,7 +56,7 @@ html_static_path = ["_static"]
 html_title = "TorchOptics"
 
 html_favicon = "_static/favicon.png"
-html_logo = "_static/torchoptics_logo.png"
+html_logo = "_static/favicon.png"
 html_js_files = ["custom-icon.js"]
 html_theme_options = {
     "icon_links": [
@@ -73,6 +73,7 @@ html_theme_options = {
         },
     ],
     "secondary_sidebar_items": ["page-toc", "sg_download_links", "sg_launcher_links"],
+    "logo": {"text": "TorchOptics"},
 }
 
 html_static_path = ["_static"]
