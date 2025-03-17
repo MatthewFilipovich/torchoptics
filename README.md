@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/torchoptics_logo.png" width="700px">
 </p>
 
-> TorchOptics is an open-source Python library for differentiable Fourier optics simulations with PyTorch.
+> TorchOptics is an open-source Python library for differentiable wave optics simulations with PyTorch.
 
 <div align="center">
 
@@ -17,12 +17,12 @@
 
 # Key Features
 
-- **Differentiable Fourier Optics Simulations**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
-- **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
-- **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
-- **Wide Range of Optical Elements and Spatial Profiles**: Includes standard elements like lenses and modulators, along with commonly used spatial profiles such as Hermite-Gaussian and Laguerre-Gaussian beams.
-- **Polarized Light Simulation**: Simulates polarized light interactions using matrix Fourier optics with Jones calculus.
-- **Spatial Coherence Support**: Models optical fields with arbitrary spatial coherence through the mutual coherence function.
+- 🌊 **Differentiable Wave Optics**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
+- 🔥 **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
+- 🛠️ **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
+- 🔬 **Optical Elements**: Features standard optical elements like modulators, lenses, detectors, and polarizers.
+- 🖼️ **Spatial Profiles**: Provides a wide range of spatial profiles, including Hermite-Gaussian and Laguerre-Gaussian beams.
+- 🔆 **Polarization & Coherence**: Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
 
 Our research paper, available on [arXiv](https://arxiv.org/abs/2411.18591), introduces the TorchOptics library and provides a comprehensive review of its features and applications.
 
@@ -32,25 +32,26 @@ Access the latest documentation at [torchoptics.readthedocs.io](https://torchopt
 
 ## Installation
 
-TorchOptics and its dependencies can be installed using [pip](https://pypi.org/project/torchoptics/):
+The latest stable release of TorchOptics is available on [PyPI](https://pypi.org/project/torchoptics/) and can
+be installed with:
 
 ```sh
 pip install torchoptics
 ```
 
-To install the library in development mode, first clone the GitHub repository and then use pip to install it in editable mode:
+The latest development version can be installed from [GitHub](https://github.com/MatthewFilipovich/torchoptics):
 
 ```sh
 git clone https://github.com/MatthewFilipovich/torchoptics
-pip install -e ./torchoptics
+cd torchoptics
+pip install -e .
 ```
 
 ## Usage
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MatthewFilipovich/torchoptics/blob/main/docs/source/tutorials/4f_system.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MatthewFilipovich/torchoptics/blob/main/docs/_static/torchoptics_colab.ipynb)
 
-This example demonstrates simulating a 4f imaging system using TorchOptics.
-The field at each focal plane along the z-axis is computed and visualized:
+This example demonstrates how to simulate a 4f imaging system using TorchOptics. The field at each focal plane along the z-axis is computed and visualized:
 
 ```python
 import torch
@@ -70,7 +71,7 @@ num_tiles = 15  # Number of tiles in each dimension
 # Determine device
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Configure torchoptics default properties
+# Configure default properties
 torchoptics.set_default_spacing(spacing)
 torchoptics.set_default_wavelength(wavelength)
 
@@ -111,17 +112,20 @@ _For more examples and detailed usage, please refer to the [documentation](https
 
 ## Contributing
 
-We welcome all bug reports and suggestions for future features and enhancements, which can be filed as GitHub issues. To contribute a feature:
+We welcome bug reports, questions, and feature suggestions to improve TorchOptics.
 
-1. Fork it (<https://github.com/MatthewFilipovich/torchoptics/fork>)
-2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Submit a Pull Request
+- **Found a bug or have a question?** Please [open an issue on GitHub](https://github.com/MatthewFilipovich/torchoptics/issues).
+- **Want to contribute a new feature?** Follow these steps:
+
+1. **Fork the repository**: Go to <https://github.com/MatthewFilipovich/torchoptics/fork>
+2. **Create a feature branch**: `git checkout -b feature/fooBar`
+3. **Commit your changes**: `git commit -am 'Add some fooBar'`
+4. **Push to the branch**: `git push origin feature/fooBar`
+5. **Submit a Pull Request**: Open a Pull Request on GitHub
 
 ## Citing TorchOptics
 
-If you are using TorchOptics for research purposes, we kindly request that you cite the following paper:
+If you use TorchOptics in your research, please cite our paper:
 
 > M.J. Filipovich and A.I. Lvovsky, _TorchOptics: An open-source Python library for differentiable Fourier optics simulations_, arXiv preprint [arXiv:2411.18591](https://arxiv.org/abs/2411.18591) (2024).
 

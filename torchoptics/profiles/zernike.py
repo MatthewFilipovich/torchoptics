@@ -33,11 +33,11 @@ def zernike(
 
     where:
 
-        - :math:`n` is the radial order (non-negative integer),
-        - :math:`m` is the azimuthal index (integer satisfying :math:`|m| \leq n` and :math:`n - |m|` even),
-        - :math:`R_n^m(\rho)` is the radial polynomial,
-        - :math:`\rho` is the normalized radial coordinate, and
-        - :math:`\theta` is the angular coordinate.
+    - :math:`n` is the radial order (non-negative integer),
+    - :math:`m` is the azimuthal index (integer satisfying :math:`|m| \leq n` and :math:`n - |m|` even),
+    - :math:`R_n^m(\rho)` is the radial polynomial,
+    - :math:`\rho` is the normalized radial coordinate, and
+    - :math:`\theta` is the angular coordinate.
 
     The radial polynomial :math:`R_n^m(\rho)` is computed using:
 

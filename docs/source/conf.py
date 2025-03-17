@@ -6,8 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "torchoptics"
-copyright = "2024, Matthew Filipovich"
+project = "TorchOptics"
+copyright = "2024-2025, Matthew Filipovich"
 author = "Matthew Filipovich"
 
 # -- General configuration ---------------------------------------------------
@@ -19,9 +19,9 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx_copybutton",
-    "myst_nb",
+    "sphinx_gallery.gen_gallery",
+    "sphinx_design",
 ]
-nb_execution_mode = "off"
 
 autoapi_member_order = "alphabetical"
 autoapi_dirs = ["../../torchoptics"]
@@ -34,16 +34,49 @@ autoapi_options = [
     "show-module-summary",
     "imported-members",
 ]
-intersphinx_mapping = {"torch": ("https://pytorch.org/docs/stable/", None)}
+intersphinx_mapping = {
+    "torch": ("https://pytorch.org/docs/stable/", None),
+    "python": ("https://docs.python.org/3", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+}
+
+sphinx_gallery_conf = {
+    "examples_dirs": ["examples", "quickstart", "user_guide"],
+    "gallery_dirs": ["auto_examples", "auto_quickstart", "auto_user_guide"],
+    "reference_url": {"torchoptics": None},
+    "filename_pattern": "^((?!sphinx_skip).)*$",  # Exclude files with 'sphinx_skip' in the name
+    "matplotlib_animations": (True, "jshtml"),
+}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
+html_title = "TorchOptics"
 
 html_favicon = "_static/favicon.png"
+html_logo = "_static/torchoptics_logo.png"
+html_js_files = ["custom-icon.js"]
+html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/MatthewFilipovich/torchoptics",
+            "icon": "fa-brands fa-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/torchoptics",
+            "icon": "fa-custom fa-pypi",
+        },
+    ],
+    "secondary_sidebar_items": ["page-toc", "sg_download_links", "sg_launcher_links"],
+}
 
+html_static_path = ["_static"]
+html_sidebars = {"auto_quickstart/quickstart": []}  # Disable sidebar for specific pages
 
 
 # -- Custom configuration ----------------------------------------------------
@@ -54,5 +87,6 @@ def skip_modules(app, what, name, obj, skip, options):
     return skip
 
 
-def setup(sphinx):
-    sphinx.connect("autoapi-skip-member", skip_modules)
+def setup(app):
+    app.connect("autoapi-skip-member", skip_modules)
+    app.add_css_file("hide_links.css")  # Custom CSS to hide jupyter links

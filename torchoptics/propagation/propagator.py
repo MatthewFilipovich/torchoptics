@@ -120,7 +120,7 @@ def is_asm(field: Field, propagation_plane: PlanarGeometry, propagation_method: 
 
     If :attr:`field.propagation_method` is `"auto"`, the propagation method is determined based on the
     condition set in :func:`calculate_critical_propagation_distance`. Returns `True` if at least one of the
-    two planar dimensions meets the condition; otherwise, returns False.
+    two planar dimensions meets the condition; otherwise, returns `False`.
     """
     if propagation_method.upper() in ("DIM", "DIM_FRESNEL"):
         return False
