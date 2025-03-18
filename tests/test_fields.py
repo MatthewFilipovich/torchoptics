@@ -195,6 +195,31 @@ class TestField(unittest.TestCase):
                 asm_pad_factor=0,
             )
 
+    def test_asm_propagation_zero_pad(self):
+        """
+        Tests that when asm_pad_factor is set to 0, the power remains unchanged after propagation.
+        """
+        shapes = [(100, 100), (1, 100), (100, 1), (1, 1)]
+        spacings = [1e-6, 500e-9]  # Different spatial resolutions
+        wavelength = 700e-9
+        propagation_distance = 1
+
+        for shape in shapes:
+            for spacing in spacings:
+                with self.subTest(shape=shape, spacing=spacing):
+                    field = Field(
+                        torch.ones(shape, dtype=torch.cdouble), spacing=spacing, wavelength=wavelength
+                    )
+                    field_prop = field.propagate_to_z(
+                        propagation_distance, propagation_method="asm", asm_pad_factor=0
+                    )
+
+                    # Assert power remains unchanged after propagation
+                    self.assertAlmostEqual(
+                        field.power().item(),
+                        field_prop.power().item(),
+                    )
+
     def test_asm_pad_factor(self):
         field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
         with self.assertRaises(ValueError):

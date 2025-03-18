@@ -57,8 +57,8 @@ class TestFFTFreqGrad(unittest.TestCase):
 
     def test_fftfreq_grad_values(self):
         """Test that fftfreq_grad matches torch.fft.fftfreq for various inputs."""
-        for n in [8, 16, 32]:  # Different sizes
-            for d_value in [1.0, 0.1]:  # Different spacings
+        for n in [0, 1, 2, 3, 8, 16, 31, 32]:  # Different sizes
+            for d_value in [1e-9, 1e-3, 1e-1, 1e1, 1e7]:  # Different spacings
                 with self.subTest(n=n, d=d_value):
                     d = torch.tensor(d_value)
                     expected = torch.fft.fftfreq(n, d=d_value)
