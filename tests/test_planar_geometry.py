@@ -25,10 +25,23 @@ class TestPlanarGeometry(unittest.TestCase):
             offset=self.offset,
         )
 
-        self.assertEqual(plane.shape, torch.Size(self.shape))
+        self.assertEqual(plane.shape, self.shape)
         self.assertTrue(torch.equal(plane.z, torch.tensor(self.z, dtype=torch.double)))
         self.assertTrue(torch.equal(plane.spacing, torch.tensor(self.spacing, dtype=torch.double)))
         self.assertTrue(torch.equal(plane.offset, torch.tensor(self.offset, dtype=torch.double)))
+
+    def test_shape(self):
+        plane = PlanarGeometry(
+            shape=self.shape,
+            z=self.z,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+
+        self.assertIsInstance(plane.shape, tuple)
+        self.assertEqual(len(plane.shape), 2)
+        self.assertTrue(all(isinstance(s, int) for s in plane.shape))
+        print(plane.shape)
 
     def test_default_initialization(self):
         torchoptics.set_default_spacing((0.1, 0.1))
@@ -39,7 +52,7 @@ class TestPlanarGeometry(unittest.TestCase):
         plane = PlanarGeometry(shape=self.shape, z=self.z, spacing=self.spacing, offset=self.offset)
 
         expected_geometry = {
-            "shape": torch.Size(self.shape),
+            "shape": self.shape,
             "z": torch.tensor(self.z, dtype=torch.double),
             "spacing": torch.tensor(self.spacing, dtype=torch.double),
             "offset": torch.tensor(self.offset, dtype=torch.double),
@@ -82,8 +95,8 @@ class TestPlanarGeometry(unittest.TestCase):
         plane = PlanarGeometry(shape=self.shape, z=self.z, spacing=self.spacing, offset=self.offset)
 
         x, y = plane.meshgrid()
-        self.assertEqual(x.shape, torch.Size(self.shape))
-        self.assertEqual(y.shape, torch.Size(self.shape))
+        self.assertEqual(x.shape, self.shape)
+        self.assertEqual(y.shape, self.shape)
 
     def test_is_same_geometry(self):
         pg1 = PlanarGeometry((10, 10), 5.0, (1.0, 1.0), (0.0, 0.0))

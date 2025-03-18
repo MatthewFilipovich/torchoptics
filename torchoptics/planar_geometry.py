@@ -45,7 +45,7 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
     ) -> None:
         super().__init__()
         self._shape = tuple(
-            initialize_tensor("shape", shape, is_vector2=True, is_integer=True, is_positive=True)
+            initialize_tensor("shape", shape, is_vector2=True, is_integer=True, is_positive=True).tolist()
         )
         self.register_optics_property("z", z, is_scalar=True)
         self.register_optics_property(
