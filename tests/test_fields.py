@@ -397,3 +397,23 @@ class TestSpatialCoherence(unittest.TestCase):
     def test_visualization(self):
         fig = self.spatial_coherence.visualize(return_fig=True, show=False)
         self.assertIsInstance(fig, plt.Figure)
+
+    def test_raise_error(self):
+        self.shape = (20, 21)
+        self.wavelength = 795e-9
+        self.z = 0
+        self.spacing = 9.2e-6
+        self.offset = (-102e-6, 83e-6)
+        self.input_field = torch.rand(self.shape, dtype=torch.double) * torch.exp(
+            2j * torch.pi * torch.rand(self.shape, dtype=torch.double)
+        )
+        self.input_spatial_coherence = outer2d(self.input_field, self.input_field)
+
+        # Make the input_spatial_coherence non-Hermitian
+        self.input_spatial_coherence[0, 3] = self.input_spatial_coherence[3, 0] + 2
+
+        self.spatial_coherence = CoherenceField(
+            self.input_spatial_coherence, self.wavelength, self.z, self.spacing, self.offset
+        )
+        with self.assertRaises(ValueError):
+            self.spatial_coherence.intensity()
