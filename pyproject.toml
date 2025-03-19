@@ -54,6 +54,9 @@ Homepage = "https://github.com/MatthewFilipovich/torchoptics"
 Documentation = "https://torchoptics.readthedocs.io/"
 Tracker = "https://github.com/MatthewFilipovich/torchoptics/issues"
 
+[tool.setuptools.package-data]
+"torchoptics" = ["py.typed"]
+
 [tool.black]
 line-length = 110
 
