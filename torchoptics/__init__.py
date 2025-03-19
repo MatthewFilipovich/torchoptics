@@ -1,4 +1,4 @@
-"""This is the top-level module for the torchoptics package."""
+"""TorchOptics is an open-source Python library for differentiable wave optics simulations with PyTorch."""
 
 import torchoptics.elements
 import torchoptics.functional
