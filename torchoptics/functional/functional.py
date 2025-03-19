@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Sequence, Union
 
 import torch
 from torch import Tensor
-from torch.fft import fft2, ifft2
+from torch.fft import fft2, fftfreq, ifft2
 from torch.nn.functional import grid_sample
 
 if TYPE_CHECKING:
@@ -84,9 +84,7 @@ def fftfreq_grad(n: int, d: Tensor) -> Tensor:
     Returns:
         torch.Tensor: The sample frequencies.
     """
-    val = torch.arange(0, n, device=d.device, dtype=d.dtype)
-    k = torch.where(val < (n // 2), val, val - n)
-    return k * (1.0 / (n * d))
+    return fftfreq(n, d=1.0, dtype=d.dtype, device=d.device) / d  # pylint: disable=not-callable
 
 
 def inner2d(vec1: Tensor, vec2: Tensor) -> Tensor:
