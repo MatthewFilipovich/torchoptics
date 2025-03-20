@@ -5,7 +5,7 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..fields import Field, PolarizedField
+from ..fields import Field
 from ..type_defs import Scalar, Vector2
 from ..utils import copy
 from .elements import Element
@@ -107,17 +107,15 @@ class PolarizingBeamSplitter(Element):
     The polarizing beam splitter splits the input field into two orthogonal polarizations.
     """
 
-    def forward(self, field: PolarizedField) -> tuple[PolarizedField, PolarizedField]:
+    def forward(self, field: Field) -> tuple[Field, Field]:
         """
         Applies the beam splitter to the input field.
 
         Args:
-            field (PolarizedField): The field to split.
+            field (Field): The field to split.
 
         Returns:
-            tuple[PolarizedField, PolarizedField]: The split fields.
+            tuple[Field, Field]: The split fields.
         """
         self.validate_field(field)
-        if not torch.all(field.data.select(-3, 2) == 0):
-            raise ValueError("Polarized field cannot have z polarization.")
         return field.polarized_split()[:2]

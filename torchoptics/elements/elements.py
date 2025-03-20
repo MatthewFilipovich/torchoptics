@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 from torch import Tensor
 
-from ..fields import Field, PolarizedField
+from ..fields import Field
 from ..planar_geometry import PlanarGeometry
 from ..type_defs import Scalar
 
@@ -140,15 +140,15 @@ class PolarizedModulationElement(Element):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    def forward(self, field: PolarizedField) -> PolarizedField:
+    def forward(self, field: Field) -> Field:
         """
         Modulates the polarized field.
 
         Args:
-            field (PolarizedField): The field to modulate.
+            field (Field): The field to modulate.
 
         Returns:
-            PolarizedField: The modulated polarized field."""
+            Field: The modulated polarized field."""
         self.validate_field(field)
         return field.polarized_modulate(self.polarized_modulation_profile())
 

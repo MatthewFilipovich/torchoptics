@@ -1,4 +1,4 @@
-"""This module defines the Field, PolarizedField, and CoherenceField classes."""
+"""This module defines the Field and CoherenceField classes."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from .propagation import propagator
 from .type_defs import Scalar, Vector2
 from .utils import copy
 
-__all__ = ["Field", "PolarizedField", "CoherenceField"]
+__all__ = ["Field", "CoherenceField"]
 
 
 class Field(PlanarGeometry):  # pylint: disable=abstract-method
@@ -32,6 +32,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
     """
 
     _data_min_dim = 2
+    _polarization_dim = -3
     data: Tensor
     wavelength: Tensor
 
@@ -155,6 +156,37 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         modulated_data = self.data * modulation_profile
         return copy(self, data=modulated_data)
 
+    def polarized_modulate(self, polarized_modulation_profile: Tensor) -> Field:
+        """
+        Modulates the field by a polarized modulation profile.
+
+        Args:
+            polarized_modulation_profile (Tensor): The polarized modulation profile.
+
+        Returns:
+            Field: Modulated field.
+        """
+        self._validate_polarization_dim()
+        modulated_data = (self.data.unsqueeze(self._polarization_dim - 1) * polarized_modulation_profile).sum(
+            self._polarization_dim
+        )
+        return copy(self, data=modulated_data)  # type: ignore[return-value]
+
+    def polarized_split(self) -> tuple[Field, Field, Field]:
+        """
+        Splits the field into three polarized fields.
+
+        Returns:
+            tuple[Field, Field, Field]: The split fields.
+        """
+        self._validate_polarization_dim()
+        fields = tuple(copy(self, data=torch.zeros_like(self.data)) for _ in range(3))
+        for i in range(3):
+            fields[i].data.select(self._polarization_dim, i).copy_(
+                self.data.select(self._polarization_dim, i)
+            )
+        return fields  # type: ignore[return-value]
+
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         """
         Normalizes the field to a specified power.
@@ -165,7 +197,9 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         Returns:
             Field: Normalized field.
         """
-        normalized_data = self.data * (normalized_power / self.power()[..., None, None]).sqrt()
+        ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None]), 0)
+        normalized_data = self.data * ratio.sqrt()
+
         return copy(self, data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
@@ -222,57 +256,13 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
                 f"Expected data to have at least {self._data_min_dim} dimensions, but got {tensor.dim()}."
             )
 
-
-class PolarizedField(Field):  # pylint: disable=abstract-method
-    """
-    Polarized optical field.
-
-    Args:
-        data (Tensor): The complex-valued polarized field data.
-        wavelength (Scalar, optional): The wavelength of the field. Default: if `None`, uses a global default
-            (see :meth:`torchoptics.set_default_wavelength()`).
-        z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
-            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
-    """
-
-    _data_min_dim = 3
-
-    def intensity(self) -> Tensor:
-        return super().intensity().sum(dim=-3)  # Sum over the polarization dimension.
-
-    def polarized_modulate(self, polarized_modulation_profile: Tensor) -> PolarizedField:
-        """
-        Modulates the field by a polarized modulation profile.
-
-        Args:
-            polarized_modulation_profile (Tensor): The polarized modulation profile.
-
-        Returns:
-            Field: Modulated field.
-        """
-        modulated_data = (self.data.unsqueeze(-4) * polarized_modulation_profile).sum(-3)
-        return copy(self, data=modulated_data)  # type: ignore[return-value]
-
-    def polarized_split(self) -> tuple[PolarizedField, PolarizedField, PolarizedField]:
-        """
-        Splits the field into three polarized fields.
-
-        Returns:
-            tuple[Field, Field, Field]: The split fields.
-        """
-        fields = tuple(copy(self, data=torch.zeros_like(self.data)) for _ in range(3))
-        for i in range(3):
-            fields[i].data.select(-3, i).copy_(self.data.select(-3, i))
-        return fields  # type: ignore[return-value]
-
-    def _validate_data(self, tensor: Tensor) -> None:
-        super()._validate_data(tensor)
-        if tensor.shape[-3] != 3:
+    def _validate_polarization_dim(self) -> None:
+        if self.data.ndim < abs(self._polarization_dim):
+            raise ValueError("Data tensor has no polarization dimension.")
+        if self.data.shape[self._polarization_dim] != 3:
             raise ValueError(
-                f"Expected data to have a size of 3 in the polarization dimension (-3), "
-                f"but got {tensor.shape[-3]}."
+                f"Expected data to have 3 polarization components, but got "
+                f"{self.data.shape[self._polarization_dim]}"
             )
 
 
@@ -291,6 +281,7 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
     """
 
     _data_min_dim = 4
+    _polarization_dim = -5
 
     propagate = get_coherence_evolution(Field.propagate)
     modulate = get_coherence_evolution(Field.modulate)
@@ -309,7 +300,8 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         return intensity.real
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
-        normalized_data = self.data * (normalized_power / self.power()[[..., None, None, None, None]])
+        ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None, None, None]), 0)
+        normalized_data = self.data * ratio
         return copy(self, data=normalized_data)
 
     def visualize(self, *index: int, **kwargs) -> Any:

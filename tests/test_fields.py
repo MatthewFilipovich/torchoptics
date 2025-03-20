@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from scipy.special import fresnel
 
-from torchoptics import CoherenceField, Field, PlanarGeometry, PolarizedField
+from torchoptics import CoherenceField, Field, PlanarGeometry
 from torchoptics.elements import Modulator
 from torchoptics.functional import outer2d
 from torchoptics.propagation import VALID_PROPAGATION_METHODS
@@ -345,7 +345,7 @@ class TestPolarizedField(unittest.TestCase):
         spacing = 1.0
         offset = None
         wavelength = 0.3
-        pg = PolarizedField(data, wavelength, z, spacing, offset)
+        pg = Field(data, wavelength, z, spacing, offset)
 
         self.assertTrue(torch.equal(pg.data, torch.ones(3, *shape, dtype=torch.cdouble)))
         self.assertTrue(torch.equal(pg.z, torch.tensor(5.0, dtype=torch.double)))
@@ -353,18 +353,22 @@ class TestPolarizedField(unittest.TestCase):
         self.assertTrue(torch.equal(pg.offset, torch.tensor([0.0, 0.0], dtype=torch.double)))
         self.assertTrue(torch.equal(pg.wavelength, torch.tensor(0.3, dtype=torch.double)))
 
-        with self.assertRaises(ValueError):
-            PolarizedField(torch.ones(2, 10, 10), spacing=1, wavelength=1)
-
     def test_normalization(self):
-        field = PolarizedField(torch.rand(3, 10, 10), spacing=10e-6, wavelength=800e-9)
+        field = Field(torch.rand(3, 10, 10), spacing=10e-6, wavelength=800e-9)
         normalized_field = field.normalize(2)
         self.assertTrue(torch.allclose(normalized_field.power(), torch.tensor(2, dtype=torch.double)))
 
     def test_modulate(self):
-        field = PolarizedField(torch.ones(3, 10, 10), spacing=1, wavelength=1)
+        field = Field(torch.ones(3, 10, 10), spacing=1, wavelength=1)
         modulated_field = field.modulate(10 * torch.ones(10, 10))
         self.assertTrue(torch.allclose(modulated_field.data, 10 * torch.ones(3, 10, 10, dtype=torch.cdouble)))
+
+    def test_polarized_split(self):
+        field = Field(torch.ones(3, 10, 10), spacing=1, wavelength=1)
+        split_fields = field.polarized_split()
+        self.assertEqual(len(split_fields), 3)
+        for i, split_field in enumerate(split_fields):
+            self.assertTrue(torch.allclose(split_field.data[i], torch.ones(10, 10, dtype=torch.cdouble)))
 
 
 class TestSpatialCoherence(unittest.TestCase):
