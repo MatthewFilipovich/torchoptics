@@ -409,6 +409,7 @@ class TestSpatialCoherence(unittest.TestCase):
             prop_shape, prop_z, prop_spacing, prop_offset
         )
         self.assertTrue(torch.allclose(prop_field.intensity(), prop_spatial_coherence.intensity()))
+        self.assertTrue(prop_field.is_same_geometry(prop_spatial_coherence))
 
     def test_normalization_coherent(self):
         normalized_power = 2.53

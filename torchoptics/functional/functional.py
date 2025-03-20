@@ -9,6 +9,8 @@ from torch import Tensor
 from torch.fft import fft2, fftfreq, ifft2
 from torch.nn.functional import grid_sample
 
+from ..utils import copy
+
 if TYPE_CHECKING:
     from ..planar_geometry import PlanarGeometry
 
@@ -17,6 +19,7 @@ __all__ = [
     "calculate_std",
     "conv2d_fft",
     "fftfreq_grad",
+    "get_coherence_evolution",
     "inner2d",
     "linspace_grad",
     "meshgrid2d",
@@ -85,6 +88,40 @@ def fftfreq_grad(n: int, d: Tensor) -> Tensor:
         torch.Tensor: The sample frequencies.
     """
     return fftfreq(n, d=1.0, dtype=d.dtype, device=d.device) / d  # pylint: disable=not-callable
+
+
+def get_coherence_evolution(evolution_func):
+    r"""
+    Decorator that constructs the evolution function for a coherence field given an evolution operator
+    :math:`U`.
+
+    The input function applies the evolution :math:`U` to a :class:`~torchoptics.fields.Field` instance:
+
+    .. math::
+        \psi \to U \psi
+
+    while the returned function extends this transformation to a :class:`~torchoptics.fields.CoherenceField`
+    instance:
+
+    .. math::
+        \Gamma \to U \Gamma U^\dagger
+
+    which can be expressed equivalently as:
+
+    .. math::
+        \Gamma \to \left( U (U \Gamma)^\dagger \right)^\dagger.
+    """
+
+    def _adjoint(data):
+        """Computes the adjoint by conjugate-transposing across specific dimensions."""
+        return data.conj().transpose(-1, -3).transpose(-2, -4)
+
+    def wrapper(field, *args, **kwargs):
+        evolved = evolution_func(field, *args, **kwargs)
+        evolved_conj = evolution_func(copy(field, data=_adjoint(evolved.data)), *args, **kwargs)
+        return copy(evolved_conj, data=_adjoint(evolved_conj.data))
+
+    return wrapper
 
 
 def inner2d(vec1: Tensor, vec2: Tensor) -> Tensor:

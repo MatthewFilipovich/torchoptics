@@ -8,7 +8,7 @@ import torch
 from torch import Tensor
 
 from .config import wavelength_or_default
-from .functional import calculate_centroid, calculate_std, inner2d, outer2d
+from .functional import calculate_centroid, calculate_std, get_coherence_evolution, inner2d, outer2d
 from .planar_geometry import PlanarGeometry
 from .propagation import propagator
 from .type_defs import Scalar, Vector2
@@ -165,8 +165,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         Returns:
             Field: Normalized field.
         """
-        indices_unsqueezed = [..., *((None,) * self._data_min_dim)]
-        normalized_data = self.data * (normalized_power / self.power()[indices_unsqueezed]).sqrt()
+        normalized_data = self.data * (normalized_power / self.power()[..., None, None]).sqrt()
         return copy(self, data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
@@ -293,6 +292,9 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
 
     _data_min_dim = 4
 
+    propagate = get_coherence_evolution(Field.propagate)
+    modulate = get_coherence_evolution(Field.modulate)
+
     def intensity(self) -> Tensor:
         data_flattened = self.data.flatten(-4, -3).flatten(-2, -1)
         intensity = torch.diagonal(data_flattened, dim1=-2, dim2=-1).unflatten(-1, self.shape)
@@ -306,40 +308,8 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
 
         return intensity.real
 
-    def propagate(
-        self,
-        shape: Vector2,
-        z: Scalar,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
-        propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
-        interpolation_mode: str = "nearest",
-    ) -> Field:
-        def adjoint(data: Tensor):
-            return data.conj().transpose(-1, -3).transpose(-2, -4)
-
-        def prop(data: Tensor, output_plane_geometry: dict):
-            return propagator(
-                copy(self, data=data),
-                **output_plane_geometry,
-                propagation_method=propagation_method,
-                asm_pad_factor=asm_pad_factor,
-                interpolation_mode=interpolation_mode,
-            ).data
-
-        # Define the geometry of the output plane for propagation.
-        output_geometry = PlanarGeometry(shape, z, spacing, offset).geometry
-        propagated_data = adjoint(prop(adjoint(prop(self.data, output_geometry)), output_geometry))
-        return copy(self, data=propagated_data, z=z, spacing=spacing, offset=offset)
-
-    def modulate(self, modulation_profile: Tensor) -> Field:
-        modulated_data = self.data * outer2d(modulation_profile, modulation_profile)
-        return copy(self, data=modulated_data)
-
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
-        indices_unsqueezed = [..., *((None,) * self._data_min_dim)]
-        normalized_data = self.data * (normalized_power / self.power()[indices_unsqueezed])
+        normalized_data = self.data * (normalized_power / self.power()[[..., None, None, None, None]])
         return copy(self, data=normalized_data)
 
     def visualize(self, *index: int, **kwargs) -> Any:
