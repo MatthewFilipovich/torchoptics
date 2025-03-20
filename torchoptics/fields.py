@@ -19,7 +19,7 @@ __all__ = ["Field", "CoherenceField"]
 
 class Field(PlanarGeometry):  # pylint: disable=abstract-method
     """
-    Scalar optical field.
+    Optical field class.
 
     Args:
         data (Tensor): The complex-valued field data.
@@ -170,7 +170,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         modulated_data = (self.data.unsqueeze(self._polarization_dim - 1) * polarized_modulation_profile).sum(
             self._polarization_dim
         )
-        return copy(self, data=modulated_data)  # type: ignore[return-value]
+        return copy(self, data=modulated_data)
 
     def polarized_split(self) -> tuple[Field, Field, Field]:
         """
@@ -185,7 +185,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             fields[i].data.select(self._polarization_dim, i).copy_(
                 self.data.select(self._polarization_dim, i)
             )
-        return fields  # type: ignore[return-value]
+        return fields
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         """
@@ -268,7 +268,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
 
 class CoherenceField(Field):  # pylint: disable=abstract-method
     """
-    Scalar optical spatial coherence.
+    Spatial Coherence Field class.
 
     Args:
         data (Tensor): The complex-valued spatial coherence data.
