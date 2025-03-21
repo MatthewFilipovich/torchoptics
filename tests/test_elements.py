@@ -70,7 +70,7 @@ class TestPolarizingBeamSplitters(unittest.TestCase):
         self.assertTrue(torch.allclose(bs_field1.data[:, 1], field.data[:, 1]))
 
         # Test with z-polarized field
-        field = Field(torch.ones(4, 3, shape, shape), wavelength=700e-9, spacing=1e-5)
+        field = Field(torch.ones(1, 2, shape, shape), wavelength=700e-9, spacing=1e-5)
         with self.assertRaises(ValueError):
             bs.forward(field)
 
