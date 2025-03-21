@@ -388,6 +388,25 @@ class TestSpatialCoherence(unittest.TestCase):
             self.input_spatial_coherence, self.wavelength, self.z, self.spacing, self.offset
         )
 
+    def test_incorrect_shape(self):
+        with self.assertRaises(ValueError):
+            SpatialCoherence(
+                torch.ones(2, 3),
+                wavelength=self.wavelength,
+                z=self.z,
+                spacing=self.spacing,
+                offset=self.offset,
+            )
+
+        with self.assertRaises(ValueError):
+            SpatialCoherence(
+                torch.ones(2, 3, 2, 5),  # Incorrect shape
+                wavelength=self.wavelength,
+                z=self.z,
+                spacing=self.spacing,
+                offset=self.offset,
+            ).intensity()
+
     def test_intensity_equal_field_coherent(self):
         self.assertTrue(torch.allclose(self.field.intensity(), self.spatial_coherence.intensity()))
 

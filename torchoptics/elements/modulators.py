@@ -7,7 +7,7 @@ from torch import Tensor
 
 from ..config import wavelength_or_default
 from ..type_defs import Scalar, Vector2
-from ..utils import validate_tensor_dim
+from ..utils import validate_tensor_ndim
 from .elements import ModulationElement, PolychromaticModulationElement
 
 __all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator", "PolychromaticPhaseModulator"]
@@ -36,7 +36,7 @@ class Modulator(ModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        validate_tensor_dim(modulation, "modulation", 2)
+        validate_tensor_ndim(modulation, "modulation", 2)
         super().__init__(modulation.shape, z, spacing, offset)
         self.register_optics_property("modulation", modulation, is_complex=True)
 
@@ -67,7 +67,7 @@ class PhaseModulator(ModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        validate_tensor_dim(phase, "phase", 2)
+        validate_tensor_ndim(phase, "phase", 2)
         super().__init__(phase.shape, z, spacing, offset)
         self.register_optics_property("phase", phase)
 
@@ -98,7 +98,7 @@ class AmplitudeModulator(ModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        validate_tensor_dim(amplitude, "amplitude", 2)
+        validate_tensor_ndim(amplitude, "amplitude", 2)
         super().__init__(amplitude.shape, z, spacing, offset)
         self.register_optics_property("amplitude", amplitude)
 
@@ -139,7 +139,7 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        validate_tensor_dim(optical_path_length, "optical_path_length", 2)
+        validate_tensor_ndim(optical_path_length, "optical_path_length", 2)
         super().__init__(optical_path_length.shape, z, spacing, offset)
         self.register_optics_property("optical_path_length", optical_path_length)
 

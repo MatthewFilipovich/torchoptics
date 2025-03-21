@@ -7,7 +7,7 @@ from torch.nn.functional import linear
 
 from ..fields import Field
 from ..type_defs import Scalar, Vector2
-from ..utils import validate_tensor_dim
+from ..utils import validate_tensor_ndim
 from .elements import Element
 
 __all__ = ["Detector", "LinearDetector"]
@@ -90,7 +90,7 @@ class LinearDetector(Element):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        validate_tensor_dim(weight, "weight", 3)
+        validate_tensor_ndim(weight, "weight", 3)
         super().__init__(weight.shape[1:], z, spacing, offset)
         self.register_optics_property("weight", weight)
 
