@@ -86,7 +86,7 @@ d_o = 0.4  # Object-to-lens distance (40 cm)
 d_i = 0.4  # Lens-to-image distance (40 cm)
 
 lens_z = d_o  # Position of the lens along the z-axis
-image_z = lens_z + d_i  # Position of the image plane along the z-axis
+image_z = d_o + d_i  # Position of the image plane along the z-axis
 
 print(f"Lens Position: {lens_z} m")
 print(f"Image Plane Position: {image_z} m")
