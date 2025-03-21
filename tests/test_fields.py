@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from scipy.special import fresnel
 
-from torchoptics import CoherenceField, Field, PlanarGeometry
+from torchoptics import Field, PlanarGeometry, SpatialCoherence
 from torchoptics.elements import Modulator
 from torchoptics.functional import outer2d
 from torchoptics.propagation import VALID_PROPAGATION_METHODS
@@ -384,7 +384,7 @@ class TestSpatialCoherence(unittest.TestCase):
         )
         self.input_spatial_coherence = outer2d(self.input_field, self.input_field)
         self.field = Field(self.input_field, self.wavelength, self.z, self.spacing, self.offset)
-        self.spatial_coherence = CoherenceField(
+        self.spatial_coherence = SpatialCoherence(
             self.input_spatial_coherence, self.wavelength, self.z, self.spacing, self.offset
         )
 
@@ -442,7 +442,7 @@ class TestSpatialCoherence(unittest.TestCase):
         # Make the input_spatial_coherence non-Hermitian
         self.input_spatial_coherence[0, 3] = self.input_spatial_coherence[3, 0] + 2
 
-        self.spatial_coherence = CoherenceField(
+        self.spatial_coherence = SpatialCoherence(
             self.input_spatial_coherence, self.wavelength, self.z, self.spacing, self.offset
         )
         with self.assertRaises(ValueError):

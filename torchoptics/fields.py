@@ -1,4 +1,4 @@
-"""This module defines the Field and CoherenceField classes."""
+"""This module defines the Field and SpatialCoherence classes."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from .propagation import propagator
 from .type_defs import Scalar, Vector2
 from .utils import copy
 
-__all__ = ["Field", "CoherenceField"]
+__all__ = ["Field", "SpatialCoherence"]
 
 
 class Field(PlanarGeometry):  # pylint: disable=abstract-method
@@ -266,9 +266,9 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             )
 
 
-class CoherenceField(Field):  # pylint: disable=abstract-method
+class SpatialCoherence(Field):  # pylint: disable=abstract-method
     """
-    Spatial Coherence Field class.
+    Spatial Coherence class.
 
     Args:
         data (Tensor): The complex-valued spatial coherence data.
@@ -305,12 +305,12 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         return copy(self, data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
-        """CoherenceField does not support the inner product."""
-        raise TypeError("inner() is not applicable for CoherenceField.")
+        """SpatialCoherence does not support the inner product."""
+        raise TypeError("inner() is not applicable for SpatialCoherence.")
 
     def outer(self, other: Field) -> Tensor:
-        """CoherenceField does not support the outer product."""
-        raise TypeError("outer() is not applicable for CoherenceField.")
+        """SpatialCoherence does not support the outer product."""
+        raise TypeError("outer() is not applicable for SpatialCoherence.")
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """

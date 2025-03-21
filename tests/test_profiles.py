@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from torchoptics import CoherenceField, Field
+from torchoptics import Field, SpatialCoherence
 from torchoptics.profiles import *
 
 
@@ -370,12 +370,12 @@ class TestGaussianSchellModel(unittest.TestCase):
             spacing=self.spacing,
         )
         field = Field(gaussian_data, spacing=self.spacing, wavelength=self.wavelength)
-        coherence_field = CoherenceField(coherence_data, spacing=self.spacing, wavelength=self.wavelength)
+        spatial_coherence = SpatialCoherence(coherence_data, spacing=self.spacing, wavelength=self.wavelength)
 
-        self.assertTrue(torch.allclose(field.intensity(), coherence_field.intensity()))
+        self.assertTrue(torch.allclose(field.intensity(), spatial_coherence.intensity()))
         self.assertTrue(
             torch.allclose(
-                field.propagate_to_z(0.2).intensity(), coherence_field.propagate_to_z(0.2).intensity()
+                field.propagate_to_z(0.2).intensity(), spatial_coherence.propagate_to_z(0.2).intensity()
             )
         )
         self.assertEqual(coherence_data.dtype, torch.double)

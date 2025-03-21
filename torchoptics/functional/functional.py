@@ -92,7 +92,7 @@ def fftfreq_grad(n: int, d: Tensor) -> Tensor:
 
 def get_coherence_evolution(evolution_func):
     r"""
-    Decorator that constructs the evolution function for a coherence field given an evolution operator
+    Decorator that constructs the evolution function for spatial coherence given an evolution operator
     :math:`U`.
 
     The input function applies the evolution :math:`U` to a :class:`~torchoptics.fields.Field` instance:
@@ -100,7 +100,7 @@ def get_coherence_evolution(evolution_func):
     .. math::
         \psi \to U \psi
 
-    while the returned function extends this transformation to a :class:`~torchoptics.fields.CoherenceField`
+    while the returned function extends this transformation to a :class:`~torchoptics.fields.SpatialCoherence`
     instance:
 
     .. math::
