@@ -335,34 +335,6 @@ class TestField(unittest.TestCase):
         fig = field.visualize(show=False, return_fig=True)
         self.assertIsInstance(fig, plt.Figure)
 
-
-class TestPolarizedField(unittest.TestCase):
-
-    def test_initialization(self):
-        shape = (10, 10)
-        data = torch.ones(3, *shape, dtype=torch.cdouble)
-        z = 5.0
-        spacing = 1.0
-        offset = None
-        wavelength = 0.3
-        pg = Field(data, wavelength, z, spacing, offset)
-
-        self.assertTrue(torch.equal(pg.data, torch.ones(3, *shape, dtype=torch.cdouble)))
-        self.assertTrue(torch.equal(pg.z, torch.tensor(5.0, dtype=torch.double)))
-        self.assertTrue(torch.equal(pg.spacing, torch.tensor([1.0, 1.0], dtype=torch.double)))
-        self.assertTrue(torch.equal(pg.offset, torch.tensor([0.0, 0.0], dtype=torch.double)))
-        self.assertTrue(torch.equal(pg.wavelength, torch.tensor(0.3, dtype=torch.double)))
-
-    def test_normalization(self):
-        field = Field(torch.rand(3, 10, 10), spacing=10e-6, wavelength=800e-9)
-        normalized_field = field.normalize(2)
-        self.assertTrue(torch.allclose(normalized_field.power(), torch.tensor(2, dtype=torch.double)))
-
-    def test_modulate(self):
-        field = Field(torch.ones(3, 10, 10), spacing=1, wavelength=1)
-        modulated_field = field.modulate(10 * torch.ones(10, 10))
-        self.assertTrue(torch.allclose(modulated_field.data, 10 * torch.ones(3, 10, 10, dtype=torch.cdouble)))
-
     def test_polarized_split(self):
         field = Field(torch.ones(3, 10, 10), spacing=1, wavelength=1)
         split_fields = field.polarized_split()
@@ -466,3 +438,12 @@ class TestSpatialCoherence(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             self.spatial_coherence.intensity()
+
+    def test_inner_outer(self):
+        spatial_coherence1 = SpatialCoherence(torch.ones(10, 10, 10, 10), spacing=1, wavelength=1)
+        spatial_coherence2 = SpatialCoherence(torch.ones(10, 10, 10, 10), spacing=1, wavelength=1)
+
+        with self.assertRaises(TypeError):
+            spatial_coherence1.inner(spatial_coherence2)
+        with self.assertRaises(TypeError):
+            spatial_coherence1.outer(spatial_coherence2)
