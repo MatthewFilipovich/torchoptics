@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from scipy.special import fresnel
 
-from torchoptics import Field, PlanarGeometry, SpatialCoherence
+from torchoptics import Field, PlanarGrid, SpatialCoherence
 from torchoptics.elements import Modulator
 from torchoptics.functional import outer2d
 from torchoptics.propagation import VALID_PROPAGATION_METHODS
@@ -56,8 +56,8 @@ class TestField(unittest.TestCase):
         offset = (1.63, -0.64)
         wavelength = 1.0
 
-        planar_geometry = PlanarGeometry(shape, z, spacing, offset)
-        x, y = planar_geometry.meshgrid()
+        planar_grid = PlanarGrid(shape, z, spacing, offset)
+        x, y = planar_grid.meshgrid()
 
         sigma_x, sigma_y = 2.6, 1.75
         mu_x, mu_y = -2.34, 3.23
@@ -294,13 +294,13 @@ class TestField(unittest.TestCase):
     def test_propagate_methods(self):
         field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
         field_propagate_to_z = field.propagate_to_z(1)
-        field_propagate_to_plane = field.propagate_to_plane(PlanarGeometry(10, 1, 1))
+        field_propagate_to_plane = field.propagate_to_plane(PlanarGrid(10, 1, 1))
         field_propagate = field.propagate(10, 1, 1)
         self.assertTrue(torch.allclose(field_propagate_to_z.data, field_propagate.data))
         self.assertTrue(torch.allclose(field_propagate_to_plane.data, field_propagate.data))
 
         with self.assertRaises(TypeError):
-            field.propagate_to_plane("Not a PlanarGeometry object")
+            field.propagate_to_plane("Not a PlanarGrid object")
 
     def test_modulate(self):
         field = Field(torch.ones(10, 10), spacing=1, wavelength=1)

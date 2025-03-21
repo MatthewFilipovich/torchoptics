@@ -6,7 +6,7 @@ import torch
 from torch import Tensor
 from torch.special import bessel_j1  # Bessel function of the first kind
 
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
@@ -41,7 +41,7 @@ def airy(
         Tensor: The generated Airy profile.
     """
     scale = initialize_tensor("scale", scale, is_scalar=True, is_positive=True)
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
     scaled_r = r / scale
     airy_pattern = (2 * bessel_j1(scaled_r) / (scaled_r)) ** 2  # pylint: disable=not-callable
@@ -77,6 +77,6 @@ def sinc(
         Tensor: The generated sinc profile.
     """
     scale = initialize_tensor("scale", scale, is_vector2=True, is_positive=True)
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
     sinc_pattern = torch.sinc(x / scale[0]) * torch.sinc(y / scale[1]) / (scale[0] * scale[1]) ** 0.5
     return sinc_pattern

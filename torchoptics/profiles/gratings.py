@@ -4,7 +4,7 @@ from typing import Optional
 
 import torch
 
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
@@ -99,7 +99,7 @@ def blazed_grating(
     period = initialize_tensor("period", period, is_scalar=True)
     height = initialize_tensor("height", height, is_scalar=True)
     theta = initialize_tensor("theta", theta, is_scalar=True)
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
 
     grating = ((x * torch.cos(theta) + y * torch.sin(theta)) / period) % 1
     grating = grating.where(grating < 1 - 1e-10, 0.0)  # Avoid numerical issues from modulus
@@ -145,7 +145,7 @@ def sinusoidal_grating(
     period = initialize_tensor("period", period, is_scalar=True)
     height = initialize_tensor("height", height, is_scalar=True)
     theta = initialize_tensor("theta", theta, is_scalar=True)
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
 
     grating = 0.5 + 0.5 * torch.cos(2 * torch.pi * (x * torch.cos(theta) + y * torch.sin(theta)) / period)
     return height * grating

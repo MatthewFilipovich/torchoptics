@@ -6,7 +6,7 @@ import torch
 from torch import Tensor
 
 from ..config import wavelength_or_default
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
@@ -53,7 +53,7 @@ def bessel(
     k = 2 * torch.pi / wavelength
     k_r = k * torch.sin(cone_angle)
 
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
 
     # Calculate the zeroth-order Bessel beam

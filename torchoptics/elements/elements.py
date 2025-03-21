@@ -6,13 +6,13 @@ from typing import Any, Optional
 from torch import Tensor
 
 from ..fields import Field
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar
 
 __all__ = ["Element", "ModulationElement", "PolarizedModulationElement"]
 
 
-class Element(PlanarGeometry):  # pylint: disable=abstract-method
+class Element(PlanarGrid):  # pylint: disable=abstract-method
     """
     Base class for optical elements.
 

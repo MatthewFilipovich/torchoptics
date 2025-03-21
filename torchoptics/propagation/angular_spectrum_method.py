@@ -10,7 +10,7 @@ from torch.fft import fft2, fftshift, ifft2, ifftshift
 from torch.nn.functional import pad
 
 from ..functional import fftfreq_grad
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..type_defs import Vector2
 from ..utils import copy, initialize_tensor
 
@@ -21,14 +21,14 @@ __all__ = ["asm_propagation"]
 
 
 def asm_propagation(
-    field: Field, propagation_plane: PlanarGeometry, propagation_method: str, asm_pad_factor: Vector2
+    field: Field, propagation_plane: PlanarGrid, propagation_method: str, asm_pad_factor: Vector2
 ) -> Field:
     """
     Propagates the field to a plane using the angular spectrum method (ASM).
 
     Args:
         field (Field): Input field.
-        propagation_plane (PlanarGeometry): Plane to which the field is propagated.
+        propagation_plane (PlanarGrid): Plane to which the field is propagated.
 
     Returns:
         Field: Output field after propagation.
@@ -76,7 +76,7 @@ def apply_transfer_function(transfer_function: Tensor, field: Field, asm_pad_fac
     return data
 
 
-def validate_bounds(propagated_field: Field, target_plane: PlanarGeometry, asm_pad_factor: Vector2) -> None:
+def validate_bounds(propagated_field: Field, target_plane: PlanarGrid, asm_pad_factor: Vector2) -> None:
     """Validate that the propagated field bounds contain the target plane bounds."""
     target_plane_bounds = target_plane.bounds(use_grid_points=True)
     propagated_field_bounds = propagated_field.bounds(use_grid_points=True)

@@ -9,7 +9,7 @@ from torch import Tensor
 
 from .config import wavelength_or_default
 from .functional import calculate_centroid, calculate_std, get_coherence_evolution, inner2d, outer2d
-from .planar_geometry import PlanarGeometry
+from .planar_grid import PlanarGrid
 from .propagation import propagator
 from .type_defs import Scalar, Vector2
 from .utils import copy, validate_tensor_min_ndim
@@ -17,7 +17,7 @@ from .utils import copy, validate_tensor_min_ndim
 __all__ = ["Field", "SpatialCoherence"]
 
 
-class Field(PlanarGeometry):  # pylint: disable=abstract-method
+class Field(PlanarGrid):  # pylint: disable=abstract-method
     """
     Optical field class.
 
@@ -120,12 +120,12 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
 
         return self.propagate(self.shape, z, self.spacing, self.offset, **prop_kwargs)
 
-    def propagate_to_plane(self, plane: PlanarGeometry, **prop_kwargs) -> Field:
+    def propagate_to_plane(self, plane: PlanarGrid, **prop_kwargs) -> Field:
         """
-        Propagates the field through free-space to a plane defined by a :class:`PlanarGeometry` object.
+        Propagates the field through free-space to a plane defined by a :class:`PlanarGrid` object.
 
         Args:
-            plane (PlanarGeometry): Plane geometry.
+            plane (PlanarGrid): Plane grid.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
             asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
                 Default: `2`.
@@ -136,8 +136,8 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
             Field: Output field after propagating to the plane.
         """
 
-        if not isinstance(plane, PlanarGeometry):
-            raise TypeError(f"Expected plane to be a PlanarGeometry, but got {type(plane).__name__}.")
+        if not isinstance(plane, PlanarGrid):
+            raise TypeError(f"Expected plane to be a PlanarGrid, but got {type(plane).__name__}.")
         return self.propagate(plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
 
     def modulate(self, modulation_profile: Tensor) -> Field:

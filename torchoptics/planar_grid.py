@@ -1,4 +1,4 @@
-"""This module defines the PlanarGeometry class."""
+"""This module defines the PlanarGrid class."""
 
 from __future__ import annotations
 
@@ -14,15 +14,15 @@ from .type_defs import Scalar, Vector2
 from .utils import initialize_tensor
 from .visualization import visualize_tensor
 
-__all__ = ["PlanarGeometry"]
+__all__ = ["PlanarGrid"]
 
 
-class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
+class PlanarGrid(OpticsModule):  # pylint: disable=abstract-method
     """
-    Base class for TorchOptics classes with 2D planar geometries.
+    Base class for TorchOptics classes with 2D planar grid geometries.
 
     This class defines objects with planar geometries perpendicular to the z-axis. It includes methods
-    for calculating various properties of the planar geometry.
+    for calculating various properties of the planar grid.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -112,12 +112,12 @@ class PlanarGeometry(OpticsModule):  # pylint: disable=abstract-method
         """Returns a 2D meshgrid of the grid points along the plane."""
         return meshgrid2d(self.bounds(use_grid_points=True), self.shape)
 
-    def is_same_geometry(self, other: PlanarGeometry) -> bool:
+    def is_same_geometry(self, other: PlanarGrid) -> bool:
         """
-        Checks if the geometry is the same as another :class:`PlanarGeometry` instance.
+        Checks if the geometry is the same as another :class:`PlanarGrid` instance.
 
         Args:
-            other (PlanarGeometry): Another instance of PlanarGeometry to compare with.
+            other (PlanarGrid): Another instance of PlanarGrid to compare with.
         """
         return (
             self.shape == other.shape
