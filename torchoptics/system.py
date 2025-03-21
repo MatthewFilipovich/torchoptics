@@ -6,7 +6,7 @@ from torch.nn import Module, ModuleList
 
 from .elements import Element, IdentityElement
 from .fields import Field
-from .planar_geometry import PlanarGeometry
+from .planar_grid import PlanarGrid
 from .type_defs import Scalar, Vector2
 
 __all__ = ["System"]
@@ -133,13 +133,13 @@ class System(Module):
         """
         return self.measure(field, field.shape, z, field.spacing, field.offset, **prop_kwargs)
 
-    def measure_at_plane(self, field: Field, plane: PlanarGeometry, **prop_kwargs) -> Field:
+    def measure_at_plane(self, field: Field, plane: PlanarGrid, **prop_kwargs) -> Field:
         """
-        Propagates the field through the system to a plane defined by a :class:`PlanarGeometry` object.
+        Propagates the field through the system to a plane defined by a :class:`PlanarGrid` object.
 
         Args:
             field (Field): Input field.
-            plane (PlanarGeometry): Plane geometry.
+            plane (PlanarGrid): Plane grid.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
             asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
                 Default: `2`.

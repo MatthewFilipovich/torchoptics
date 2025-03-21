@@ -5,7 +5,7 @@ from typing import Optional
 import torch
 
 from ..config import wavelength_or_default
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 
 __all__ = ["lens"]
@@ -44,13 +44,13 @@ def lens(
     """
     wavelength = wavelength_or_default(wavelength)
 
-    planar_geometry = PlanarGeometry(shape, spacing=spacing, offset=offset)
-    x, y = planar_geometry.meshgrid()
+    planar_grid = PlanarGrid(shape, spacing=spacing, offset=offset)
+    x, y = planar_grid.meshgrid()
     radial_dist = torch.sqrt(x**2 + y**2)
     phase_profile = torch.exp(-1j * torch.pi / (wavelength * focal_length) * radial_dist**2)
 
     if is_circular_lens:
-        lens_diameter = min(planar_geometry.length(use_grid_points=True))
+        lens_diameter = min(planar_grid.length(use_grid_points=True))
         mask = radial_dist > lens_diameter / 2
         phase_profile[mask] = 0
     return phase_profile

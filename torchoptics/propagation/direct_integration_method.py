@@ -8,7 +8,7 @@ import torch
 from torch import Tensor
 
 from ..functional import conv2d_fft, meshgrid2d
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..utils import copy
 
 if TYPE_CHECKING:
@@ -17,13 +17,13 @@ if TYPE_CHECKING:
 __all__ = ["dim_propagation"]
 
 
-def dim_propagation(field: Field, propagation_plane: PlanarGeometry, propagation_method: str) -> Field:
+def dim_propagation(field: Field, propagation_plane: PlanarGrid, propagation_method: str) -> Field:
     """
     Propagates the field to a plane using the direct integration method (DIM).
 
     Args:
         field (Field): Input field.
-        propagation_plane (PlanarGeometry): Plane to which the field is propagated.
+        propagation_plane (PlanarGrid): Plane to which the field is propagated.
 
     Returns:
         Field: Output field after propagation.
@@ -34,14 +34,14 @@ def dim_propagation(field: Field, propagation_plane: PlanarGeometry, propagation
     return copy(field, data=propagated_data, z=propagation_plane.z, offset=propagation_plane.offset)
 
 
-def calculate_meshgrid(field: Field, propagation_plane: PlanarGeometry) -> tuple[Tensor, Tensor]:
+def calculate_meshgrid(field: Field, propagation_plane: PlanarGrid) -> tuple[Tensor, Tensor]:
     """Calculate the meshgrid for the impulse response calculation."""
     grid_bounds = calculate_grid_bounds(field, propagation_plane)
     grid_shape = [field.shape[i] + propagation_plane.shape[i] - 1 for i in range(2)]
     return meshgrid2d(grid_bounds, grid_shape)
 
 
-def calculate_grid_bounds(field: Field, propagation_plane: PlanarGeometry) -> Tensor:
+def calculate_grid_bounds(field: Field, propagation_plane: PlanarGrid) -> Tensor:
     """Calculate the grid bounds for the impulse response calculation."""
     field_bounds = field.bounds(use_grid_points=True)
     propagation_plane_bounds = propagation_plane.bounds(use_grid_points=True)
@@ -57,7 +57,7 @@ def calculate_grid_bounds(field: Field, propagation_plane: PlanarGeometry) -> Te
 
 
 def calculate_impulse_response(
-    field: Field, propagation_plane: PlanarGeometry, x: Tensor, y: Tensor, propagation_method: str
+    field: Field, propagation_plane: PlanarGrid, x: Tensor, y: Tensor, propagation_method: str
 ) -> Tensor:
     """Calculate the impulse response for DIM propagation."""
     propagation_distance = propagation_plane.z - field.z

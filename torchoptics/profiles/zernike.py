@@ -6,7 +6,7 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 
@@ -67,7 +67,7 @@ def zernike(
     if (n - m.abs()) % 2 != 0:
         raise ValueError("The difference n - |m| must be even for a valid Zernike polynomial.")
 
-    x, y = PlanarGeometry(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
 
     rho = torch.sqrt(x**2 + y**2) / radius
     theta = torch.atan2(y, x)

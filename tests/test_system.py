@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from torchoptics import Field, PlanarGeometry, System
+from torchoptics import Field, PlanarGrid, System
 from torchoptics.elements import Detector, IdentityElement, Modulator
 
 
@@ -86,9 +86,9 @@ class TestSystem(unittest.TestCase):
         with self.assertRaises(ValueError):
             system2(self.input_field)  # Empty system should raise an error
 
-        system3 = System(PlanarGeometry(self.shape, z=0, spacing=self.spacing))
+        system3 = System(PlanarGrid(self.shape, z=0, spacing=self.spacing))
         with self.assertRaises(TypeError):
-            system3(self.input_field)  # PlanarGeometry should not be used as an element
+            system3(self.input_field)  # PlanarGrid should not be used as an element
 
     def test_dunder_methods(self):
         modulator1 = Modulator(
@@ -107,9 +107,7 @@ class TestSystem(unittest.TestCase):
     def test_measure_at_plane(self):
         system = System()
         offset = (13e-4, -5e-4)
-        plane = PlanarGeometry(
-            self.shape, z=2 * self.propagation_distance, spacing=self.spacing, offset=offset
-        )
+        plane = PlanarGrid(self.shape, z=2 * self.propagation_distance, spacing=self.spacing, offset=offset)
         measure_plane = system.measure_at_plane(self.input_field, plane)
         measure = system.measure(self.input_field, **plane.geometry)
         self.assertTrue(torch.allclose(measure_plane.data, measure.data))

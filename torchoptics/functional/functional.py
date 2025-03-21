@@ -12,7 +12,7 @@ from torch.nn.functional import grid_sample
 from ..utils import copy
 
 if TYPE_CHECKING:
-    from ..planar_geometry import PlanarGeometry
+    from ..planar_grid import PlanarGrid
 
 __all__ = [
     "calculate_centroid",
@@ -190,8 +190,8 @@ def outer2d(vec1: Tensor, vec2: Tensor) -> Tensor:
 
 def plane_sample(
     data: Tensor,
-    data_plane: PlanarGeometry,
-    interpolated_plane: PlanarGeometry,
+    data_plane: PlanarGrid,
+    interpolated_plane: PlanarGrid,
     interpolation_mode: str,
 ) -> Tensor:
     """
@@ -199,8 +199,8 @@ def plane_sample(
 
     Args:
         data (torch.Tensor): The input data to interpolate.
-        data_plane (PlanarGeometry): The plane containing the input data.
-        interpolated_plane (PlanarGeometry): The plane to interpolate the data to.
+        data_plane (PlanarGrid): The plane containing the input data.
+        interpolated_plane (PlanarGrid): The plane to interpolate the data to.
         interpolation_mode (str, optional): The interpolation mode.
 
     Returns:

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Optional
 import torch
 
 from ..functional import plane_sample
-from ..planar_geometry import PlanarGeometry
+from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import copy
 from .angular_spectrum_method import asm_propagation
@@ -58,7 +58,7 @@ def propagator(
     validate_propagation_method(propagation_method)
     validate_interpolation_mode(interpolation_mode)
 
-    output_plane = PlanarGeometry(shape, z, spacing, offset).to(field.data.device)
+    output_plane = PlanarGrid(shape, z, spacing, offset).to(field.data.device)
 
     if output_plane.z != field.z:  # Propagate to output plane z
         propagation_plane = get_propagation_plane(field, output_plane)
@@ -74,7 +74,7 @@ def propagator(
     return field
 
 
-def get_propagation_plane(field: Field, output_plane: PlanarGeometry) -> PlanarGeometry:
+def get_propagation_plane(field: Field, output_plane: PlanarGrid) -> PlanarGrid:
     r"""
     Creates a propagation plane that is equal to or slightly larger than the specified output plane.
 
@@ -108,10 +108,10 @@ def get_propagation_plane(field: Field, output_plane: PlanarGeometry) -> PlanarG
     spacing_ratio = output_plane.spacing / field.spacing
     output_plane_shape = torch.tensor(output_plane.shape, device=spacing_ratio.device)
     propagation_shape = torch.ceil((output_plane_shape - 1) * spacing_ratio).int() + 1
-    return PlanarGeometry(propagation_shape, output_plane.z, field.spacing, output_plane.offset)
+    return PlanarGrid(propagation_shape, output_plane.z, field.spacing, output_plane.offset)
 
 
-def is_asm(field: Field, propagation_plane: PlanarGeometry, propagation_method: str):
+def is_asm(field: Field, propagation_plane: PlanarGrid, propagation_method: str):
     """Returns whether propagation using ASM should be used.
 
     Returns `True` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_FRESNEL"`.
@@ -133,7 +133,7 @@ def is_asm(field: Field, propagation_plane: PlanarGeometry, propagation_method: 
     return torch.any(z < critical_z)
 
 
-def calculate_critical_propagation_distance(field: Field, propagation_plane: PlanarGeometry) -> torch.Tensor:
+def calculate_critical_propagation_distance(field: Field, propagation_plane: PlanarGrid) -> torch.Tensor:
     r"""
     Calculates the critical propagation distance for determining the propagation method.
 
