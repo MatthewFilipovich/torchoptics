@@ -1,4 +1,4 @@
-"""This module defines the Field, PolarizedField, and CoherenceField classes."""
+"""This module defines the Field and SpatialCoherence classes."""
 
 from __future__ import annotations
 
@@ -8,18 +8,18 @@ import torch
 from torch import Tensor
 
 from .config import wavelength_or_default
-from .functional import calculate_centroid, calculate_std, inner2d, outer2d
+from .functional import calculate_centroid, calculate_std, get_coherence_evolution, inner2d, outer2d
 from .planar_geometry import PlanarGeometry
 from .propagation import propagator
 from .type_defs import Scalar, Vector2
-from .utils import copy
+from .utils import copy, validate_tensor_min_ndim
 
-__all__ = ["Field", "PolarizedField", "CoherenceField"]
+__all__ = ["Field", "SpatialCoherence"]
 
 
 class Field(PlanarGeometry):  # pylint: disable=abstract-method
     """
-    Scalar optical field.
+    Optical field class.
 
     Args:
         data (Tensor): The complex-valued field data.
@@ -31,7 +31,8 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    _data_min_dim = 2
+    DATA_MIN_NDIM = 2
+    POLARIZATION_DIM = -3
     data: Tensor
     wavelength: Tensor
 
@@ -44,7 +45,7 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         offset: Optional[Vector2] = None,
     ) -> None:
 
-        self._validate_data(data)
+        validate_tensor_min_ndim(data, "data", self.DATA_MIN_NDIM)
         super().__init__(data.shape[-2:], z, spacing, offset)
         self.register_optics_property("data", data, is_complex=True)
         self.register_optics_property(
@@ -81,7 +82,6 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         Propagates the field through free-space to a plane defined by the input parameters.
 
         Args:
-            field (Field): Input field.
             shape (Vector2): Number of grid points along the planar dimensions.
             z (Scalar): Position along the z-axis.
             spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default:
@@ -107,7 +107,6 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         The plane has the same ``shape``, ``spacing``, and ``offset`` as the input field.
 
         Args:
-            field (Field): Input field.
             z (Scalar): Position along the z-axis.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
             asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
@@ -126,7 +125,6 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         Propagates the field through free-space to a plane defined by a :class:`PlanarGeometry` object.
 
         Args:
-            field (Field): Input field.
             plane (PlanarGeometry): Plane geometry.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
             asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
@@ -155,6 +153,35 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         modulated_data = self.data * modulation_profile
         return copy(self, data=modulated_data)
 
+    def polarized_modulate(self, polarized_modulation_profile: Tensor) -> Field:
+        """
+        Modulates the field by a polarized modulation profile.
+
+        Args:
+            polarized_modulation_profile (Tensor): The polarized modulation profile.
+
+        Returns:
+            Field: Modulated field.
+        """
+        self._validate_polarization_dim()
+        modulated_data = (self.data.unsqueeze(self.POLARIZATION_DIM - 1) * polarized_modulation_profile).sum(
+            self.POLARIZATION_DIM
+        )
+        return copy(self, data=modulated_data)
+
+    def polarized_split(self) -> tuple[Field, Field, Field]:
+        """
+        Splits the field into three polarized fields.
+
+        Returns:
+            tuple[Field, Field, Field]: The split fields.
+        """
+        self._validate_polarization_dim()
+        fields = tuple(copy(self, data=torch.zeros_like(self.data)) for _ in range(3))
+        for i in range(3):
+            fields[i].data.select(self.POLARIZATION_DIM, i).copy_(self.data.select(self.POLARIZATION_DIM, i))
+        return fields
+
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         """
         Normalizes the field to a specified power.
@@ -165,8 +192,9 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         Returns:
             Field: Normalized field.
         """
-        indices_unsqueezed = [..., *((None,) * self._data_min_dim)]
-        normalized_data = self.data * (normalized_power / self.power()[indices_unsqueezed]).sqrt()
+        ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None]), 0)
+        normalized_data = self.data * ratio.sqrt()
+
         return copy(self, data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
@@ -215,71 +243,17 @@ class Field(PlanarGeometry):  # pylint: disable=abstract-method
         kwargs.update({"symbol": r"$\psi$"})
         return self._visualize(self.data, index, **kwargs)
 
-    def _validate_data(self, tensor: Tensor) -> None:
-        if not isinstance(tensor, Tensor):
-            raise TypeError(f"Expected data to be a tensor, but got {type(tensor).__name__}.")
-        if tensor.dim() < self._data_min_dim:
+    def _validate_polarization_dim(self) -> None:
+        if self.data.ndim < abs(self.POLARIZATION_DIM) or self.data.shape[self.POLARIZATION_DIM] != 3:
             raise ValueError(
-                f"Expected data to have at least {self._data_min_dim} dimensions, but got {tensor.dim()}."
+                f"Expected data tensor to have polarization dimension of size 3 at "
+                f"dim={self.POLARIZATION_DIM}, but data has shape {self.data.shape}."
             )
 
 
-class PolarizedField(Field):  # pylint: disable=abstract-method
+class SpatialCoherence(Field):  # pylint: disable=abstract-method
     """
-    Polarized optical field.
-
-    Args:
-        data (Tensor): The complex-valued polarized field data.
-        wavelength (Scalar, optional): The wavelength of the field. Default: if `None`, uses a global default
-            (see :meth:`torchoptics.set_default_wavelength()`).
-        z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
-            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
-    """
-
-    _data_min_dim = 3
-
-    def intensity(self) -> Tensor:
-        return super().intensity().sum(dim=-3)  # Sum over the polarization dimension.
-
-    def polarized_modulate(self, polarized_modulation_profile: Tensor) -> PolarizedField:
-        """
-        Modulates the field by a polarized modulation profile.
-
-        Args:
-            polarized_modulation_profile (Tensor): The polarized modulation profile.
-
-        Returns:
-            Field: Modulated field.
-        """
-        modulated_data = (self.data.unsqueeze(-4) * polarized_modulation_profile).sum(-3)
-        return copy(self, data=modulated_data)  # type: ignore[return-value]
-
-    def polarized_split(self) -> tuple[PolarizedField, PolarizedField, PolarizedField]:
-        """
-        Splits the field into three polarized fields.
-
-        Returns:
-            tuple[Field, Field, Field]: The split fields.
-        """
-        fields = tuple(copy(self, data=torch.zeros_like(self.data)) for _ in range(3))
-        for i in range(3):
-            fields[i].data.select(-3, i).copy_(self.data.select(-3, i))
-        return fields  # type: ignore[return-value]
-
-    def _validate_data(self, tensor: Tensor) -> None:
-        super()._validate_data(tensor)
-        if tensor.shape[-3] != 3:
-            raise ValueError(
-                f"Expected data to have a size of 3 in the polarization dimension (-3), "
-                f"but got {tensor.shape[-3]}."
-            )
-
-
-class CoherenceField(Field):  # pylint: disable=abstract-method
-    """
-    Scalar optical spatial coherence.
+    Spatial Coherence class.
 
     Args:
         data (Tensor): The complex-valued spatial coherence data.
@@ -291,9 +265,16 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    _data_min_dim = 4
+    DATA_MIN_NDIM = 4
+    POLARIZATION_DIM = -5
+    propagate = get_coherence_evolution(Field.propagate)
+    modulate = get_coherence_evolution(Field.modulate)
 
     def intensity(self) -> Tensor:
+        if self.data.shape[-1] != self.data.shape[-3] or self.data.shape[-2] != self.data.shape[-4]:
+            shape_str = ", ".join(str(dim) for dim in self.data.shape)
+            raise ValueError(f"Expected data tensor to have shape (..., H, W, H, W), but got ({shape_str}).")
+
         data_flattened = self.data.flatten(-4, -3).flatten(-2, -1)
         intensity = torch.diagonal(data_flattened, dim1=-2, dim2=-1).unflatten(-1, self.shape)
         if not torch.allclose(intensity.imag, torch.zeros_like(intensity.imag), atol=1e-7):
@@ -306,41 +287,18 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
 
         return intensity.real
 
-    def propagate(
-        self,
-        shape: Vector2,
-        z: Scalar,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
-        propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
-        interpolation_mode: str = "nearest",
-    ) -> Field:
-        def adjoint(data: Tensor):
-            return data.conj().transpose(-1, -3).transpose(-2, -4)
-
-        def prop(data: Tensor, output_plane_geometry: dict):
-            return propagator(
-                copy(self, data=data),
-                **output_plane_geometry,
-                propagation_method=propagation_method,
-                asm_pad_factor=asm_pad_factor,
-                interpolation_mode=interpolation_mode,
-            ).data
-
-        # Define the geometry of the output plane for propagation.
-        output_geometry = PlanarGeometry(shape, z, spacing, offset).geometry
-        propagated_data = adjoint(prop(adjoint(prop(self.data, output_geometry)), output_geometry))
-        return copy(self, data=propagated_data, z=z, spacing=spacing, offset=offset)
-
-    def modulate(self, modulation_profile: Tensor) -> Field:
-        modulated_data = self.data * outer2d(modulation_profile, modulation_profile)
-        return copy(self, data=modulated_data)
-
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
-        indices_unsqueezed = [..., *((None,) * self._data_min_dim)]
-        normalized_data = self.data * (normalized_power / self.power()[indices_unsqueezed])
+        ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None, None, None]), 0)
+        normalized_data = self.data * ratio
         return copy(self, data=normalized_data)
+
+    def inner(self, other: Field) -> Tensor:
+        """SpatialCoherence does not support the inner product."""
+        raise TypeError("inner() is not applicable for SpatialCoherence.")
+
+    def outer(self, other: Field) -> Tensor:
+        """SpatialCoherence does not support the outer product."""
+        raise TypeError("outer() is not applicable for SpatialCoherence.")
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import torch
 
 import torchoptics
-from torchoptics import Field, PolarizedField
+from torchoptics import Field
 from torchoptics.elements import *
 from torchoptics.profiles import hermite_gaussian
 
@@ -33,20 +33,18 @@ class TestBeamSplitters(unittest.TestCase):
         self.assertTrue(torch.allclose(bs_field0.intensity(), 2 * field.intensity()))
         self.assertTrue(torch.allclose(bs_field1.intensity(), 0 * field.intensity()))
 
-        polarized_field = torchoptics.PolarizedField(
-            torch.ones(4, 3, shape, shape), wavelength=700e-9, spacing=1e-5
-        )
+        polarized_field = torchoptics.Field(torch.ones(4, 3, shape, shape), wavelength=700e-9, spacing=1e-5)
 
         # Send a single polarized field through the beam splitter
         bs_polarized_field0, bs_polarized_field1 = bs.forward(polarized_field)
-        self.assertIsInstance(bs_polarized_field0, torchoptics.PolarizedField)
-        self.assertIsInstance(bs_polarized_field1, torchoptics.PolarizedField)
+        self.assertIsInstance(bs_polarized_field0, torchoptics.Field)
+        self.assertIsInstance(bs_polarized_field1, torchoptics.Field)
         self.assertTrue(torch.allclose(bs_polarized_field0.intensity(), 0.5 * polarized_field.intensity()))
         self.assertTrue(torch.allclose(bs_polarized_field1.intensity(), 0.5 * polarized_field.intensity()))
         # Send two polarized fields through the beam splitter
         bs_polarized_field0, bs_polarized_field1 = bs.forward(polarized_field, polarized_field)
-        self.assertIsInstance(bs_polarized_field0, torchoptics.PolarizedField)
-        self.assertIsInstance(bs_polarized_field1, torchoptics.PolarizedField)
+        self.assertIsInstance(bs_polarized_field0, torchoptics.Field)
+        self.assertIsInstance(bs_polarized_field1, torchoptics.Field)
         self.assertTrue(torch.allclose(bs_polarized_field0.intensity(), 2 * polarized_field.intensity()))
         self.assertTrue(torch.allclose(bs_polarized_field1.intensity(), 0 * polarized_field.intensity()))
 
@@ -56,7 +54,7 @@ class TestPolarizingBeamSplitters(unittest.TestCase):
         """Test the PolarizingBeamSplitter class."""
         shape = 32
         z = 0
-        field = PolarizedField(torch.ones(4, 3, shape, shape), wavelength=700e-9, spacing=1e-5)
+        field = Field(torch.ones(4, 3, shape, shape), wavelength=700e-9, spacing=1e-5)
         field.data[:, 2] = 0  # z polarization
         # Create a 50:50 polarized beam splitter
         bs = PolarizingBeamSplitter(shape, z, spacing=1e-5)
@@ -64,47 +62,23 @@ class TestPolarizingBeamSplitters(unittest.TestCase):
 
         # Send a single polarized field through the beam splitter
         bs_field0, bs_field1 = bs.forward(field)
-        self.assertIsInstance(bs_field0, torchoptics.PolarizedField)
-        self.assertIsInstance(bs_field1, torchoptics.PolarizedField)
+        self.assertIsInstance(bs_field0, torchoptics.Field)
+        self.assertIsInstance(bs_field1, torchoptics.Field)
         self.assertTrue(torch.allclose(bs_field0.data[:, 0], field.data[:, 0]))
         self.assertTrue(torch.allclose(bs_field0.data[:, 1], 0 * field.data[:, 0]))
         self.assertTrue(torch.allclose(bs_field1.data[:, 0], 0 * field.data[:, 0]))
         self.assertTrue(torch.allclose(bs_field1.data[:, 1], field.data[:, 1]))
 
         # Test with z-polarized field
-        field = PolarizedField(torch.ones(4, 3, shape, shape), wavelength=700e-9, spacing=1e-5)
+        field = Field(torch.ones(1, 2, shape, shape), wavelength=700e-9, spacing=1e-5)
         with self.assertRaises(ValueError):
             bs.forward(field)
 
 
 class TestDetectors(unittest.TestCase):
-    def test_hermite_gaussian_orthogonality(self):
-        """
-        Test that the FieldDetector correctly identifies orthogonality of Hermite-Gaussian modes.
-        For two different Hermite-Gaussian modes, the inner product should be 0.
-        For the same mode, the inner product should be 1.
-        """
-        shape = (100, 100)  # Grid dimensions
-        spacing = (0.1, 0.1)  # Grid spacing
-        radius = 1.0  # Radius of the aperture
 
-        # Assuming you have a function to generate Hermite-Gaussian modes
-        hg_00 = hermite_gaussian(shape, 0, 0, radius, spacing=spacing)
-        hg_10 = hermite_gaussian(shape, 1, 0, radius, spacing=spacing)
-        hg_01 = hermite_gaussian(shape, 0, 1, radius, spacing=spacing)
-        hg_modes = torch.stack([hg_00, hg_10, hg_01])
-
-        # Create FieldDetector with field_1 as the weight
-        field_01 = Field(hg_01, wavelength=1, spacing=spacing)
-        detector = FieldDetector(weight=hg_modes, spacing=spacing)
-
-        output = detector(field_01)
-        self.assertIsInstance(output, torch.Tensor)
-        # The inner product of the same mode should be 1 and different modes should be 0
-        self.assertTrue(torch.allclose(output, torch.tensor((0.0, 0.0, 1.0), dtype=torch.double)))
-
-    def test_intensity_detector(self):
-        """Test the IntensityDetector class."""
+    def test_linear_detector(self):
+        """Test the LinearDetector class."""
         shape = (100, 100)
         spacing = 1
         field = Field(torch.ones(*shape), wavelength=700e-9, spacing=spacing)
@@ -112,7 +86,7 @@ class TestDetectors(unittest.TestCase):
         weight[0, :50, :60] = 1
         weight[1, :40, :30] = 1
 
-        detector = IntensityDetector(weight, spacing=spacing)
+        detector = LinearDetector(weight, spacing=spacing)
         output = detector(field)
         self.assertIsInstance(output, torch.Tensor)
         self.assertTrue(output.shape == (2,))
@@ -121,9 +95,9 @@ class TestDetectors(unittest.TestCase):
         self.assertIsInstance(fig, plt.Figure)
 
         with self.assertRaises(TypeError):
-            IntensityDetector("not a tensor", spacing=spacing)
+            LinearDetector("not a tensor", spacing=spacing)
         with self.assertRaises(ValueError):
-            IntensityDetector(torch.rand(1, 2, 3, 4), spacing=spacing)
+            LinearDetector(torch.rand(1, 2, 3, 4), spacing=spacing)
 
 
 class TestModulatorClasses(unittest.TestCase):
@@ -209,14 +183,12 @@ class TestPolarizedModulatorClasses(unittest.TestCase):
         self.phase_profile = torch.rand((3, 3, 10, 12))
         self.amplitude_profile = torch.rand((3, 3, 10, 12))
         self.z = 1.5
-        self.polarized_field = PolarizedField(
-            torch.ones(4, 3, 10, 12), wavelength=700e-9, z=self.z, spacing=1
-        )
+        self.polarized_field = Field(torch.ones(4, 3, 10, 12), wavelength=700e-9, z=self.z, spacing=1)
         torchoptics.set_default_spacing(1)
 
     def test_polarized_modulator_initialization(self):
         modulator = PolarizedModulator(self.polarized_modulation_profile, self.z)
-        self.assertIsInstance(modulator(self.polarized_field), PolarizedField)
+        self.assertIsInstance(modulator(self.polarized_field), Field)
         self.assertTrue(
             torch.equal(modulator.polarized_modulation_profile(), self.polarized_modulation_profile)
         )
@@ -225,13 +197,13 @@ class TestPolarizedModulatorClasses(unittest.TestCase):
         phase_modulator = PolarizedPhaseModulator(self.phase_profile, self.z)
         expected_profile = torch.exp(1j * self.phase_profile).to(dtype=torch.cdouble)
         self.assertTrue(torch.allclose(phase_modulator.polarized_modulation_profile(), expected_profile))
-        self.assertIsInstance(phase_modulator(self.polarized_field), PolarizedField)
+        self.assertIsInstance(phase_modulator(self.polarized_field), Field)
 
     def test_polarized_amplitude_modulator_initialization_and_profile(self):
         amplitude_modulator = PolarizedAmplitudeModulator(self.amplitude_profile, self.z)
         expected_profile = self.amplitude_profile.cdouble()
         self.assertTrue(torch.allclose(amplitude_modulator.polarized_modulation_profile(), expected_profile))
-        self.assertIsInstance(amplitude_modulator(self.polarized_field), PolarizedField)
+        self.assertIsInstance(amplitude_modulator(self.polarized_field), Field)
 
     def test_phase_modulation_profile_consistency(self):
         phase_modulator = PolarizedPhaseModulator(self.phase_profile, self.z)
@@ -293,9 +265,9 @@ class TestPolarizers(unittest.TestCase):
             .expand(2, 2, *shape)
         )
         self.assertTrue(torch.allclose(polarized_modulation_profile[:2, :2], expected_matrix))
-        field = PolarizedField(torch.ones(4, 3, *shape), wavelength=700e-9, spacing=spacing)
+        field = Field(torch.ones(4, 3, *shape), wavelength=700e-9, spacing=spacing)
         output_field = polarizer(field)
-        self.assertIsInstance(output_field, torchoptics.PolarizedField)
+        self.assertIsInstance(output_field, torchoptics.Field)
 
     def test_left_circular_polarizer(self):
         """Test the LeftCircularPolarizer class."""
@@ -311,9 +283,9 @@ class TestPolarizers(unittest.TestCase):
             .expand(2, 2, *shape)
         )
         self.assertTrue(torch.allclose(polarization_modulation_profile[:2, :2], expected_matrix))
-        field = PolarizedField(torch.ones(4, 3, *shape), wavelength=700e-9, spacing=spacing)
+        field = Field(torch.ones(4, 3, *shape), wavelength=700e-9, spacing=spacing)
         output_field = polarizer(field)
-        self.assertIsInstance(output_field, torchoptics.PolarizedField)
+        self.assertIsInstance(output_field, torchoptics.Field)
 
     def test_right_circular_polarizer(self):
         """Test the RightCircularPolarizer class."""
@@ -321,9 +293,9 @@ class TestPolarizers(unittest.TestCase):
         spacing = 1
         polarizer = RightCircularPolarizer(shape, spacing=spacing)
         self.assertEqual(polarizer.shape, shape)
-        field = PolarizedField(torch.ones(4, 3, *shape), wavelength=700e-9, spacing=spacing)
+        field = Field(torch.ones(4, 3, *shape), wavelength=700e-9, spacing=spacing)
         output_field = polarizer(field)
-        self.assertIsInstance(output_field, torchoptics.PolarizedField)
+        self.assertIsInstance(output_field, torchoptics.Field)
 
 
 class TestLens(unittest.TestCase):
@@ -354,9 +326,9 @@ class TestWaveplates(unittest.TestCase):
         theta = torch.tensor(torch.pi / 4)
         spacing = 1
         waveplate = Waveplate(shape, phi, theta, spacing=spacing)
-        field = PolarizedField(torch.ones(4, 3, *shape), wavelength=700e-9, spacing=spacing)
+        field = Field(torch.ones(4, 3, *shape), wavelength=700e-9, spacing=spacing)
         output_field = waveplate(field)
-        self.assertIsInstance(output_field, torchoptics.PolarizedField)
+        self.assertIsInstance(output_field, torchoptics.Field)
 
     def test_waveplate_modulation_profile(self):
         """Test the polarized matrix of the Waveplate with theta and phi set to 0."""

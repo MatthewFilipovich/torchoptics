@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from scipy.special import fresnel
 
-from torchoptics import CoherenceField, Field, PlanarGeometry, PolarizedField
+from torchoptics import Field, PlanarGeometry, SpatialCoherence
 from torchoptics.elements import Modulator
 from torchoptics.functional import outer2d
 from torchoptics.propagation import VALID_PROPAGATION_METHODS
@@ -335,36 +335,12 @@ class TestField(unittest.TestCase):
         fig = field.visualize(show=False, return_fig=True)
         self.assertIsInstance(fig, plt.Figure)
 
-
-class TestPolarizedField(unittest.TestCase):
-
-    def test_initialization(self):
-        shape = (10, 10)
-        data = torch.ones(3, *shape, dtype=torch.cdouble)
-        z = 5.0
-        spacing = 1.0
-        offset = None
-        wavelength = 0.3
-        pg = PolarizedField(data, wavelength, z, spacing, offset)
-
-        self.assertTrue(torch.equal(pg.data, torch.ones(3, *shape, dtype=torch.cdouble)))
-        self.assertTrue(torch.equal(pg.z, torch.tensor(5.0, dtype=torch.double)))
-        self.assertTrue(torch.equal(pg.spacing, torch.tensor([1.0, 1.0], dtype=torch.double)))
-        self.assertTrue(torch.equal(pg.offset, torch.tensor([0.0, 0.0], dtype=torch.double)))
-        self.assertTrue(torch.equal(pg.wavelength, torch.tensor(0.3, dtype=torch.double)))
-
-        with self.assertRaises(ValueError):
-            PolarizedField(torch.ones(2, 10, 10), spacing=1, wavelength=1)
-
-    def test_normalization(self):
-        field = PolarizedField(torch.rand(3, 10, 10), spacing=10e-6, wavelength=800e-9)
-        normalized_field = field.normalize(2)
-        self.assertTrue(torch.allclose(normalized_field.power(), torch.tensor(2, dtype=torch.double)))
-
-    def test_modulate(self):
-        field = PolarizedField(torch.ones(3, 10, 10), spacing=1, wavelength=1)
-        modulated_field = field.modulate(10 * torch.ones(10, 10))
-        self.assertTrue(torch.allclose(modulated_field.data, 10 * torch.ones(3, 10, 10, dtype=torch.cdouble)))
+    def test_polarized_split(self):
+        field = Field(torch.ones(3, 10, 10), spacing=1, wavelength=1)
+        split_fields = field.polarized_split()
+        self.assertEqual(len(split_fields), 3)
+        for i, split_field in enumerate(split_fields):
+            self.assertTrue(torch.allclose(split_field.data[i], torch.ones(10, 10, dtype=torch.cdouble)))
 
 
 class TestSpatialCoherence(unittest.TestCase):
@@ -380,9 +356,28 @@ class TestSpatialCoherence(unittest.TestCase):
         )
         self.input_spatial_coherence = outer2d(self.input_field, self.input_field)
         self.field = Field(self.input_field, self.wavelength, self.z, self.spacing, self.offset)
-        self.spatial_coherence = CoherenceField(
+        self.spatial_coherence = SpatialCoherence(
             self.input_spatial_coherence, self.wavelength, self.z, self.spacing, self.offset
         )
+
+    def test_incorrect_shape(self):
+        with self.assertRaises(ValueError):
+            SpatialCoherence(
+                torch.ones(2, 3),
+                wavelength=self.wavelength,
+                z=self.z,
+                spacing=self.spacing,
+                offset=self.offset,
+            )
+
+        with self.assertRaises(ValueError):
+            SpatialCoherence(
+                torch.ones(2, 3, 2, 5),  # Incorrect shape
+                wavelength=self.wavelength,
+                z=self.z,
+                spacing=self.spacing,
+                offset=self.offset,
+            ).intensity()
 
     def test_intensity_equal_field_coherent(self):
         self.assertTrue(torch.allclose(self.field.intensity(), self.spatial_coherence.intensity()))
@@ -409,6 +404,7 @@ class TestSpatialCoherence(unittest.TestCase):
             prop_shape, prop_z, prop_spacing, prop_offset
         )
         self.assertTrue(torch.allclose(prop_field.intensity(), prop_spatial_coherence.intensity()))
+        self.assertTrue(prop_field.is_same_geometry(prop_spatial_coherence))
 
     def test_normalization_coherent(self):
         normalized_power = 2.53
@@ -437,8 +433,17 @@ class TestSpatialCoherence(unittest.TestCase):
         # Make the input_spatial_coherence non-Hermitian
         self.input_spatial_coherence[0, 3] = self.input_spatial_coherence[3, 0] + 2
 
-        self.spatial_coherence = CoherenceField(
+        self.spatial_coherence = SpatialCoherence(
             self.input_spatial_coherence, self.wavelength, self.z, self.spacing, self.offset
         )
         with self.assertRaises(ValueError):
             self.spatial_coherence.intensity()
+
+    def test_inner_outer(self):
+        spatial_coherence1 = SpatialCoherence(torch.ones(10, 10, 10, 10), spacing=1, wavelength=1)
+        spatial_coherence2 = SpatialCoherence(torch.ones(10, 10, 10, 10), spacing=1, wavelength=1)
+
+        with self.assertRaises(TypeError):
+            spatial_coherence1.inner(spatial_coherence2)
+        with self.assertRaises(TypeError):
+            spatial_coherence1.outer(spatial_coherence2)

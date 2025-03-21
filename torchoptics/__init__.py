@@ -1,4 +1,4 @@
-"""TorchOptics is an open-source Python library for differentiable wave optics simulations with PyTorch."""
+"""TorchOptics: Differentiable wave optics simulations with PyTorch."""
 
 import torchoptics.elements
 import torchoptics.functional
@@ -9,7 +9,7 @@ from torchoptics.config import (
     set_default_spacing,
     set_default_wavelength,
 )
-from torchoptics.fields import CoherenceField, Field, PolarizedField
+from torchoptics.fields import Field, SpatialCoherence
 from torchoptics.optics_module import OpticsModule
 from torchoptics.planar_geometry import PlanarGeometry
 from torchoptics.system import System

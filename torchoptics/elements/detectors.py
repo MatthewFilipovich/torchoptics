@@ -7,10 +7,10 @@ from torch.nn.functional import linear
 
 from ..fields import Field
 from ..type_defs import Scalar, Vector2
-from ..utils import validate_tensor_dim
+from ..utils import validate_tensor_ndim
 from .elements import Element
 
-__all__ = ["Detector", "IntensityDetector", "FieldDetector"]
+__all__ = ["Detector", "LinearDetector"]
 
 
 class Detector(Element):
@@ -49,11 +49,14 @@ class Detector(Element):
         return field.intensity() * self.cell_area()
 
 
-class IntensityDetector(Element):
+class LinearDetector(Element):
     r"""
-    Intensity detector element.
+    Linear detector element, conceptually similar to :class:`torch.nn.Linear`.
 
-    Computes the total weighted power measured by the detector using the following equation:
+    Applies a spatially varying weight to the field intensity and integrates over the plane,
+    producing a weighted sum for each output channel.
+
+    The total weighted power measured by the detector is computed as:
 
     .. math::
         P_c = \sum_{i, j} w_{c, i, j} \cdot I_{i, j} \cdot \Delta A_{\text{cell}}
@@ -78,7 +81,6 @@ class IntensityDetector(Element):
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
-    _weight_is_complex = False
     weight: Tensor
 
     def __init__(
@@ -88,9 +90,9 @@ class IntensityDetector(Element):
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-        validate_tensor_dim(weight, "weight", 3)
+        validate_tensor_ndim(weight, "weight", 3)
         super().__init__(weight.shape[1:], z, spacing, offset)
-        self.register_optics_property("weight", weight, is_complex=self._weight_is_complex)
+        self.register_optics_property("weight", weight)
 
     def forward(self, field: Field) -> Tensor:
         """
@@ -117,52 +119,3 @@ class IntensityDetector(Element):
         """
         kwargs.update({"symbol": r"$\mathcal{W}_{" + str(index[-1]) + r"}$"})
         return self._visualize(self.weight, index, **kwargs)
-
-
-class FieldDetector(IntensityDetector):
-    r"""
-    Field detector element.
-
-    Computes the total weighted power from field data using the inner product of the field with a weight
-    tensor, based on the following equation:
-
-    .. math::
-        P_c = \left| \sum_{i, j} w_{c, i, j} \cdot \psi_{i, j} \cdot \Delta A_{\text{cell}} \right|^2
-
-    where:
-        - :math:`P_c` is the total weighted power measured by the detector for channel :math:`c`,
-        - :math:`w_{c, i, j}` is the weight matrix for channel :math:`c`,
-        - :math:`\psi_{i, j}` is the field at position :math:`(i, j)`, and
-        - :math:`\Delta A_{\text{cell}}` is the area of a single grid cell.
-
-    .. note::
-        This equation in its integral form is expressed as:
-
-        .. math::
-            P_c = \left| \int \int w_c(x, y) \cdot \psi(x, y) \, dx \, dy \right|^2
-
-    Args:
-        weight (Tensor): Weight matrix of shape (C, H, W).
-        z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
-            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
-
-    """
-
-    _weight_is_complex = True
-
-    def forward(self, field: Field) -> Tensor:
-        """
-        Calculates the weighted power from the field using the inner product with the weight matrix.
-
-        Args:
-            field (Field): The input field.
-
-        Returns:
-            Tensor: The weighted power after applying the inner product and calculating the magnitude squared.
-        """
-        self.validate_field(field)
-        data_flat, weight_flat = field.data.flatten(-2), self.weight.flatten(-2)
-        inner_prod = linear(data_flat, weight_flat) * self.cell_area()  # pylint: disable=not-callable
-        return inner_prod.abs().square()

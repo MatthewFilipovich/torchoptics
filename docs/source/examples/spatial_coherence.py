@@ -10,7 +10,7 @@ Simulates Gaussian beams with low and high spatial coherence.
 import torch
 
 import torchoptics
-from torchoptics import CoherenceField
+from torchoptics import SpatialCoherence
 from torchoptics.profiles import gaussian_schell_model as gsm
 
 # Set simulation properties
@@ -30,9 +30,9 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 torchoptics.set_default_spacing(spacing)
 torchoptics.set_default_wavelength(wavelength)
 
-# Initialize coherence fields
-low_coherence_field = CoherenceField(gsm(shape, waist_radius, low_coherence_width)).to(device)
-high_coherence_field = CoherenceField(gsm(shape, waist_radius, high_coherence_width)).to(device)
+# Initialize spatial coherence fields
+low_spatial_coherence = SpatialCoherence(gsm(shape, waist_radius, low_coherence_width)).to(device)
+high_spatial_coherence = SpatialCoherence(gsm(shape, waist_radius, high_coherence_width)).to(device)
 
 # %%
 # Propagation of Low and High Coherence Fields
@@ -44,5 +44,5 @@ high_coherence_field = CoherenceField(gsm(shape, waist_radius, high_coherence_wi
 propagation_distances = [0, 0.01, 0.02]
 
 for z in propagation_distances:
-    low_coherence_field.propagate_to_z(z).visualize(title=f"Low Coherence Field at z = {z} m", vmin=0)
-    high_coherence_field.propagate_to_z(z).visualize(title=f"High Coherence Field at z = {z} m", vmin=0)
+    low_spatial_coherence.propagate_to_z(z).visualize(title=f"Low Coherence Field at z = {z} m", vmin=0)
+    high_spatial_coherence.propagate_to_z(z).visualize(title=f"High Coherence Field at z = {z} m", vmin=0)

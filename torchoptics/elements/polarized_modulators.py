@@ -6,7 +6,7 @@ import torch
 from torch import Tensor
 
 from ..type_defs import Scalar, Vector2
-from ..utils import validate_tensor_dim
+from ..utils import validate_tensor_ndim
 from .elements import PolarizedModulationElement
 
 __all__ = ["PolarizedModulator", "PolarizedPhaseModulator", "PolarizedAmplitudeModulator"]
@@ -106,7 +106,7 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
 
 
 def _validate_tensor(tensor, name):
-    validate_tensor_dim(tensor, name, 4)
+    validate_tensor_ndim(tensor, name, 4)
     if tensor.shape[:2] != (3, 3):
         raise ValueError(
             f"Expected first two dimensions of {name} to have shape (3, 3), but got {tensor.shape[:2]}"

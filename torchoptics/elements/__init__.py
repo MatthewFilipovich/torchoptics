@@ -1,7 +1,7 @@
 """This module contains the classes for the optical elements."""
 
 from .beam_splitters import BeamSplitter, PolarizingBeamSplitter
-from .detectors import Detector, FieldDetector, IntensityDetector
+from .detectors import Detector, LinearDetector
 from .elements import Element, ModulationElement, PolarizedModulationElement, PolychromaticModulationElement
 from .identity_element import IdentityElement
 from .lens import Lens

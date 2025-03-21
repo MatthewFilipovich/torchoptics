@@ -64,9 +64,9 @@ def initialize_tensor(
     return tensor
 
 
-def validate_tensor_dim(tensor: Tensor, name: str, dim: int) -> None:
+def validate_tensor_ndim(tensor: Tensor, name: str, ndim: int) -> None:
     """
-    Validates that a PyTorch tensor has the expected shape.
+    Validates that a PyTorch tensor has the expected number of dimensions.
 
     Args:
         tensor (Tensor): The PyTorch tensor to validate.
@@ -76,8 +76,28 @@ def validate_tensor_dim(tensor: Tensor, name: str, dim: int) -> None:
     """
     if not isinstance(tensor, Tensor):
         raise TypeError(f"Expected '{name}' to be a Tensor, but got {type(tensor).__name__}")
-    if tensor.dim() != dim:
-        raise ValueError(f"Expected '{name}' to be a {dim}D tensor, but got {tensor.dim()}D")
+    if tensor.ndim != ndim:
+        raise ValueError(f"Expected '{name}' to be a {ndim}D tensor, but got {tensor.ndim}D")
+
+
+def validate_tensor_min_ndim(tensor: Tensor, name: str, min_ndim: int) -> None:
+    """
+    Validates that a PyTorch tensor has at least a minimum number of dimensions.
+
+    Args:
+        tensor (Tensor): The PyTorch tensor to validate.
+        name (str): The name of the tensor, used in error messages.
+        min_ndim (int): The minimum number of dimensions required.
+
+    Raises:
+        TypeError: If the input is not a Tensor.
+        ValueError: If the tensor does not meet the minimum dimension requirement.
+    """
+    if not isinstance(tensor, Tensor):
+        raise TypeError(f"Expected '{name}' to be a Tensor, but got {type(tensor).__name__}.")
+
+    if tensor.ndim < min_ndim:
+        raise ValueError(f"Expected '{name}' to have at least {min_ndim} dimensions, but got {tensor.ndim}.")
 
 
 def copy(obj, **kwargs):

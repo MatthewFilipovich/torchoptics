@@ -41,7 +41,7 @@ def visualize_tensor(
         return_fig (bool, optional): Whether to return the figure. Default: `False`.
     """
 
-    if tensor.dim() < 2 or not all(s == 1 for s in tensor.shape[:-2]):  # Check if squeezed tensor is 2D
+    if tensor.ndim < 2 or not all(s == 1 for s in tensor.shape[:-2]):  # Check if squeezed tensor is 2D
         raise ValueError(f"Expected tensor to be 2D, but got shape {tensor.shape}.")
     tensor = tensor.detach().cpu().view(tensor.shape[-2], tensor.shape[-1])
 
