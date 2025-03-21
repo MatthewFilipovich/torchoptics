@@ -76,33 +76,9 @@ class TestPolarizingBeamSplitters(unittest.TestCase):
 
 
 class TestDetectors(unittest.TestCase):
-    def test_hermite_gaussian_orthogonality(self):
-        """
-        Test that the FieldDetector correctly identifies orthogonality of Hermite-Gaussian modes.
-        For two different Hermite-Gaussian modes, the inner product should be 0.
-        For the same mode, the inner product should be 1.
-        """
-        shape = (100, 100)  # Grid dimensions
-        spacing = (0.1, 0.1)  # Grid spacing
-        radius = 1.0  # Radius of the aperture
 
-        # Assuming you have a function to generate Hermite-Gaussian modes
-        hg_00 = hermite_gaussian(shape, 0, 0, radius, spacing=spacing)
-        hg_10 = hermite_gaussian(shape, 1, 0, radius, spacing=spacing)
-        hg_01 = hermite_gaussian(shape, 0, 1, radius, spacing=spacing)
-        hg_modes = torch.stack([hg_00, hg_10, hg_01])
-
-        # Create FieldDetector with field_1 as the weight
-        field_01 = Field(hg_01, wavelength=1, spacing=spacing)
-        detector = FieldDetector(weight=hg_modes, spacing=spacing)
-
-        output = detector(field_01)
-        self.assertIsInstance(output, torch.Tensor)
-        # The inner product of the same mode should be 1 and different modes should be 0
-        self.assertTrue(torch.allclose(output, torch.tensor((0.0, 0.0, 1.0), dtype=torch.double)))
-
-    def test_intensity_detector(self):
-        """Test the IntensityDetector class."""
+    def test_linear_detector(self):
+        """Test the LinearDetector class."""
         shape = (100, 100)
         spacing = 1
         field = Field(torch.ones(*shape), wavelength=700e-9, spacing=spacing)
@@ -110,7 +86,7 @@ class TestDetectors(unittest.TestCase):
         weight[0, :50, :60] = 1
         weight[1, :40, :30] = 1
 
-        detector = IntensityDetector(weight, spacing=spacing)
+        detector = LinearDetector(weight, spacing=spacing)
         output = detector(field)
         self.assertIsInstance(output, torch.Tensor)
         self.assertTrue(output.shape == (2,))
@@ -119,9 +95,9 @@ class TestDetectors(unittest.TestCase):
         self.assertIsInstance(fig, plt.Figure)
 
         with self.assertRaises(TypeError):
-            IntensityDetector("not a tensor", spacing=spacing)
+            LinearDetector("not a tensor", spacing=spacing)
         with self.assertRaises(ValueError):
-            IntensityDetector(torch.rand(1, 2, 3, 4), spacing=spacing)
+            LinearDetector(torch.rand(1, 2, 3, 4), spacing=spacing)
 
 
 class TestModulatorClasses(unittest.TestCase):

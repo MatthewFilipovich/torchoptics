@@ -304,6 +304,14 @@ class CoherenceField(Field):  # pylint: disable=abstract-method
         normalized_data = self.data * ratio
         return copy(self, data=normalized_data)
 
+    def inner(self, other: Field) -> Tensor:
+        """CoherenceField does not support the inner product."""
+        raise TypeError("inner() is not applicable for CoherenceField.")
+
+    def outer(self, other: Field) -> Tensor:
+        """CoherenceField does not support the outer product."""
+        raise TypeError("outer() is not applicable for CoherenceField.")
+
     def visualize(self, *index: int, **kwargs) -> Any:
         """
         Visualizes the the time-averaged intensity (diagonal of the spatial coherence matrix).
