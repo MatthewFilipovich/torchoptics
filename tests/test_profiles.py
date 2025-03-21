@@ -336,6 +336,29 @@ class TestSpecialProfiles(unittest.TestCase):
         self.assertTrue(torch.all(profile >= 0))
         self.assertEqual(profile.dtype, torch.double)
 
+    def test_siemens_star(self):
+        num_spokes = 8
+        radius = 20.0
+        profile = special.siemens_star(
+            shape=self.shape,
+            num_spokes=num_spokes,
+            radius=radius,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        self.assertEqual(profile.shape, self.shape)
+        self.assertTrue(torch.all((profile == 0) | (profile == 1)))
+        self.assertEqual(profile.dtype, torch.double)
+
+        with self.assertRaises(ValueError):
+            special.siemens_star(
+                shape=self.shape,
+                num_spokes=num_spokes + 1,  # Invalid case with odd number of spokes
+                radius=radius,
+                spacing=self.spacing,
+                offset=self.offset,
+            )
+
 
 class TestGaussianSchellModel(unittest.TestCase):
     def setUp(self):

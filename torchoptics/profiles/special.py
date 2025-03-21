@@ -7,10 +7,10 @@ from torch import Tensor
 from torch.special import bessel_j1  # Bessel function of the first kind
 
 from ..planar_grid import PlanarGrid
-from ..type_defs import Scalar, Vector2
+from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["airy", "sinc"]
+__all__ = ["airy", "siemens_star", "sinc"]
 
 
 def airy(
@@ -47,6 +47,46 @@ def airy(
     airy_pattern = (2 * bessel_j1(scaled_r) / (scaled_r)) ** 2  # pylint: disable=not-callable
     airy_pattern[r == 0] = 1.0  # Handle the value at r = 0
     return airy_pattern
+
+
+def siemens_star(
+    shape: Vector2,
+    num_spokes: Int,
+    radius: Scalar,
+    spacing: Optional[Vector2] = None,
+    offset: Optional[Vector2] = None,
+) -> Tensor:
+    r"""
+    Generates a `Siemens star pattern <https://en.wikipedia.org/wiki/Siemens_star>`_.
+
+    A Siemens star is a radial resolution target with alternating spokes.
+    The number of spokes determines the angular frequency, and the pattern is confined to
+    a circular region defined by ``radius``.
+
+    Args:
+        shape (Vector2): Number of grid points along the planar dimensions.
+        num_spokes (int): Number of spokes (must be an even integer).
+        radius (Scalar): Radius of the circular Siemens star region.
+        spacing (Optional[Vector2]): Distance between grid points along planar dimensions.
+        offset (Optional[Vector2]): Center coordinates of the pattern. Default: `(0, 0)`.
+
+    Returns:
+        Tensor: The generated Siemens star pattern with values in [0, 1].
+    """
+    num_spokes = initialize_tensor("num_spokes", num_spokes, is_integer=True, is_positive=True)
+    radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
+    if (num_spokes % 2).item() != 0:
+        raise ValueError("num_spokes must be an even integer.")
+
+    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    r = torch.sqrt(x**2 + y**2)
+    theta = torch.atan2(y, x)
+
+    pattern = (torch.cos((num_spokes / 2) * theta) > 0).double()  # Binary angular pattern
+    pattern[r > radius] = 0.0  # Apply the circular mask (outside the radius is set to 0)
+    pattern[r == 0] = 1.0  # Set the center to 1.0
+
+    return pattern
 
 
 def sinc(

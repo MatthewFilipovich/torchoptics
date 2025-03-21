@@ -7,5 +7,5 @@ from .laguerre_gaussian import laguerre_gaussian
 from .lens import lens
 from .shapes import checkerboard, circle, rectangle, square, triangle
 from .spatial_coherence import gaussian_schell_model, schell_model
-from .special import airy, sinc
+from .special import airy, siemens_star, sinc
 from .zernike import zernike

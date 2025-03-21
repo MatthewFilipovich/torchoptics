@@ -20,6 +20,7 @@ def visualize_tensor(
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     symbol: Optional[str] = None,
+    interpolation: Optional[str] = None,
     show: bool = True,
     return_fig: bool = False,
 ) -> Optional[plt.Figure]:
@@ -37,6 +38,7 @@ def visualize_tensor(
         xlabel (str, optional): The label for the x-axis. Default: `None`.
         ylabel (str, optional): The label for the y-axis. Default: `None`.
         symbol (str, optional): Symbol used in ax title. Default: `None`.
+        interpolation (str, optional): The interpolation method to use. Default: `None`.
         show (bool, optional): Whether to display the plot. Default: `True`.
         return_fig (bool, optional): Whether to return the figure. Default: `False`.
     """
@@ -59,6 +61,7 @@ def visualize_tensor(
             ylabel,
             axes[0],
             rf"$|${symbol}$|^2$" if symbol is not None else None,
+            interpolation,
         )
 
         create_image_subplot(  # plot angle
@@ -71,6 +74,7 @@ def visualize_tensor(
             ylabel,
             axes[1],
             r"$\arg \{$" + symbol + r"$\}$" if symbol is not None else None,
+            interpolation,
             cbar_ticks=[-torch.pi, 0, torch.pi],
             cbar_ticklabels=[r"$-\pi$", r"$0$", r"$\pi$"],
         )
@@ -103,12 +107,14 @@ def create_image_subplot(  # pylint: disable=too-many-locals
     ylabel: Optional[str],
     ax: Any,
     ax_title: Optional[str],
+    interpolation: Optional[str] = None,
     cbar_ticks: Optional[Sequence[float]] = None,
     cbar_ticklabels: Optional[Sequence[str]] = None,
 ) -> None:
     """Creates a subplot for visualizing a real-valued tensor."""
+    # type: ignore[arg-type]
     extent_tuple = tuple(extent) if extent is not None else None
-    im = ax.imshow(tensor, extent=extent_tuple, vmin=vmin, vmax=vmax, cmap=cmap)  # type: ignore[arg-type]
+    im = ax.imshow(tensor, extent=extent_tuple, vmin=vmin, vmax=vmax, cmap=cmap, interpolation=interpolation)
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
     colorbar = plt.colorbar(im, cax=cax, orientation="vertical")
@@ -116,6 +122,6 @@ def create_image_subplot(  # pylint: disable=too-many-locals
         colorbar.set_ticks(cbar_ticks)
     if cbar_ticklabels is not None:
         colorbar.set_ticklabels(cbar_ticklabels)
-    ax.set_xlabel(xlabel)  # type: ignore[arg-type]
-    ax.set_ylabel(ylabel)  # type: ignore[arg-type]
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     ax.set_title(ax_title)
