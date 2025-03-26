@@ -11,7 +11,7 @@ from .config import spacing_or_default
 from .functional import meshgrid2d
 from .optics_module import OpticsModule
 from .type_defs import Scalar, Vector2
-from .utils import initialize_tensor
+from .utils import initialize_shape
 from .visualization import visualize_tensor
 
 __all__ = ["PlanarGrid"]
@@ -44,9 +44,7 @@ class PlanarGrid(OpticsModule):  # pylint: disable=abstract-method
         offset: Optional[Vector2] = None,
     ) -> None:
         super().__init__()
-        self._shape = tuple(
-            initialize_tensor("shape", shape, is_vector2=True, is_integer=True, is_positive=True).tolist()
-        )
+        self._shape = initialize_shape(shape)
         self.register_optics_property("z", z, is_scalar=True)
         self.register_optics_property(
             "spacing", spacing_or_default(spacing), is_vector2=True, is_positive=True

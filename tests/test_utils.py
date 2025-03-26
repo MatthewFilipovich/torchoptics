@@ -99,5 +99,15 @@ class TestCopyFunction(unittest.TestCase):
             copy(obj)
 
 
+class TestInitializeShape(unittest.TestCase):
+    def test_initialize_shape_valid(self):
+        shape = initialize_shape([3, 4])
+        self.assertEqual(shape, (3, 4))
+
+    def test_initialize_shape_invalid_vector(self):
+        with self.assertRaises(ValueError):
+            initialize_shape([3, 4, 5])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,8 @@ from typing import Any
 import torch
 from torch import Tensor
 
+from .type_defs import Vector2
+
 
 def initialize_tensor(
     name: str,
@@ -62,6 +64,17 @@ def initialize_tensor(
         raise ValueError(f"Expected {name} to contain non-negative values, but found negative values.")
 
     return tensor
+
+
+def initialize_shape(shape: Vector2) -> tuple[int, int]:
+    """
+    Initializes a 2D shape tensor with validation checks.
+
+    Args:
+        shape (Vector2): The shape to initialize.
+    """
+    shape_tensor = initialize_tensor("shape", shape, is_vector2=True, is_integer=True, is_positive=True)
+    return (shape_tensor[0].item(), shape_tensor[1].item())  # type: ignore[return-value]
 
 
 def validate_tensor_ndim(tensor: Tensor, name: str, ndim: int) -> None:
