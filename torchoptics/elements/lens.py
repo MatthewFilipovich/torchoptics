@@ -4,7 +4,7 @@ from typing import Optional
 
 from torch import Tensor
 
-from ..profiles import lens
+from ..profiles import circle, quadratic_phase
 from ..type_defs import Scalar, Vector2
 from .elements import PolychromaticModulationElement
 
@@ -51,7 +51,12 @@ class Lens(PolychromaticModulationElement):
         self.is_circular_lens = is_circular_lens
 
     def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
-        return lens(self.shape, self.focal_length, wavelength, self.spacing, None, self.is_circular_lens)
+        profile = quadratic_phase(self.shape, self.focal_length, wavelength, self.spacing)
+        if self.is_circular_lens:
+            radius = self.length().min() / 2
+            aperture = circle(self.shape, radius, self.spacing)
+            profile *= aperture
+        return profile
 
     @property
     def is_circular_lens(self) -> bool:
