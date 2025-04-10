@@ -4,7 +4,7 @@ from typing import Optional
 
 from torch import Tensor
 
-from ..profiles import circle, quadratic_phase
+from ..profiles import lens
 from ..type_defs import Scalar, Vector2
 from .elements import PolychromaticModulationElement
 
@@ -44,30 +44,10 @@ class Lens(PolychromaticModulationElement):
         z: Scalar = 0,
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
-        is_circular_lens: bool = True,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("focal_length", focal_length, is_scalar=True)
-        self.is_circular_lens = is_circular_lens
 
     def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
-        profile = quadratic_phase(self.shape, self.focal_length, wavelength, self.spacing)
-        if self.is_circular_lens:
-            radius = self.length().min() / 2
-            aperture = circle(self.shape, radius, self.spacing)
-            profile *= aperture
-        return profile
-
-    @property
-    def is_circular_lens(self) -> bool:
-        """Returns whether the lens is circular."""
-        return self._is_circular_lens
-
-    @is_circular_lens.setter
-    def is_circular_lens(self, value: bool) -> None:
-        if not isinstance(value, bool):
-            raise TypeError(f"Expected is_circular_lens to be type bool, but got {type(value).__name__}.")
-        self._is_circular_lens = value
-
-    def extra_repr(self) -> str:
-        return super().extra_repr() + f", is_circular_lens={self.is_circular_lens}"
+        radius = self.length().min() / 2
+        return lens(self.shape, self.focal_length, radius, wavelength, self.spacing)

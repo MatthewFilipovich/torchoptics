@@ -7,13 +7,15 @@ import torch
 from ..config import wavelength_or_default
 from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
+from .shapes import circle
 
-__all__ = ["quadratic_phase"]
+__all__ = ["lens"]
 
 
-def quadratic_phase(
+def lens(
     shape: Vector2,
     focal_length: Scalar,
+    radius: Scalar,
     wavelength: Optional[Scalar] = None,
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
@@ -44,6 +46,9 @@ def quadratic_phase(
     planar_grid = PlanarGrid(shape, spacing=spacing, offset=offset)
     x, y = planar_grid.meshgrid()
     radial_square = x**2 + y**2
-    phase_profile = torch.exp(-1j * torch.pi / (wavelength * focal_length) * radial_square)
+
+    quadratic_phase = torch.exp(-1j * torch.pi / (wavelength * focal_length) * radial_square)
+    circle_profile = circle(shape, radius, spacing=spacing, offset=offset)
+    phase_profile = quadratic_phase * circle_profile
 
     return phase_profile
