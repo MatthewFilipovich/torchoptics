@@ -2,9 +2,10 @@
 
 from typing import Optional
 
+import torch
 from torch import Tensor
 
-from ..profiles import cylindrical_lens, lens
+from ..profiles import circle, cylindrical_lens_phase, lens_phase
 from ..type_defs import Scalar, Vector2
 from .elements import PolychromaticModulationElement
 
@@ -50,7 +51,8 @@ class Lens(PolychromaticModulationElement):
 
     def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
         radius = self.length().min() / 2
-        return lens(self.shape, self.focal_length, radius, wavelength, self.spacing)
+        phase = lens_phase(self.shape, self.focal_length, radius, wavelength, self.spacing)
+        return circle(self.shape, radius, self.spacing) * torch.exp(1j * phase)
 
 
 class CylindricalLens(PolychromaticModulationElement):
@@ -94,4 +96,7 @@ class CylindricalLens(PolychromaticModulationElement):
 
     def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
         radius = self.length().min() / 2
-        return cylindrical_lens(self.shape, self.focal_length, radius, self.theta, wavelength, self.spacing)
+        phase = cylindrical_lens_phase(
+            self.shape, self.focal_length, radius, self.theta, wavelength, self.spacing
+        )
+        return circle(self.shape, radius, self.spacing) * torch.exp(1j * phase)

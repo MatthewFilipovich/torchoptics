@@ -9,12 +9,11 @@ from ..config import wavelength_or_default
 from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
-from .shapes import circle
 
-__all__ = ["lens", "cylindrical_lens"]
+__all__ = ["lens_phase", "cylindrical_lens_phase"]
 
 
-def lens(
+def lens_phase(
     shape: Vector2,
     focal_length: Scalar,
     radius: Scalar,
@@ -28,7 +27,7 @@ def lens(
     The quadratic phase profile is defined by the following equation:
 
     .. math::
-        \mathcal{M}(x, y) = \exp\left(-i \frac{\pi}{\lambda f} (x^2 + y^2) \right)
+        \psi(x, y) = -i \frac{\pi}{\lambda f} (x^2 + y^2)
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -46,12 +45,10 @@ def lens(
     x, y = planar_grid.meshgrid()
     radial_square = x**2 + y**2
 
-    quadratic_phase = torch.exp(-1j * torch.pi / (wavelength * focal_length) * radial_square)
-    circle_profile = circle(shape, radius, spacing=spacing, offset=offset)
-    return quadratic_phase * circle_profile
+    return -torch.pi / (wavelength * focal_length) * radial_square
 
 
-def cylindrical_lens(
+def cylindrical_lens_phase(
     shape: Vector2,
     focal_length: Scalar,
     radius: Scalar,
@@ -66,7 +63,7 @@ def cylindrical_lens(
     The quadratic phase profile is:
 
     .. math::
-        \mathcal{M}(x, y) = \exp\left(-i \frac{\pi}{\lambda f} (x_\theta)^2 \right)
+        \psi(x, y) = -i \frac{\pi}{\lambda f} (x_\theta)^2
 
     where :math:`x_\theta = x \cos\theta + y \sin\theta`.
 
@@ -88,7 +85,4 @@ def cylindrical_lens(
     x, y = planar_grid.meshgrid()
     x_theta = x * cos(theta) + y * sin(theta)
 
-    phase = torch.exp(-1j * torch.pi / (wavelength * focal_length) * x_theta**2)
-    aperture = circle(shape, radius, spacing=spacing, offset=offset)
-
-    return phase * aperture
+    return -torch.pi / (wavelength * focal_length) * x_theta**2

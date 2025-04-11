@@ -15,7 +15,7 @@ class TestLensProfile(unittest.TestCase):
         self.offset = (0.0, 0.0)
         self.is_circular_lens = True
 
-        self.phase_profile = lens(
+        self.phase_profile = lens_phase(
             shape=self.shape,
             focal_length=self.focal_length,
             wavelength=self.wavelength,
