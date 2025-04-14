@@ -8,4 +8,5 @@ from .lens_phase import cylindrical_lens_phase, lens_phase
 from .shapes import checkerboard, circle, rectangle, square, triangle
 from .spatial_coherence import gaussian_schell_model, schell_model
 from .special import airy, siemens_star, sinc
+from .waves import plane_wave, spherical_wave
 from .zernike import zernike
