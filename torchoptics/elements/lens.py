@@ -32,8 +32,6 @@ class Lens(PolychromaticModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
-        is_circular_lens (bool): If `True`, the lens is circular and the phase profile is set to zero outside
-            the lens diameter, otherwise lens is square. Default: `True`.
     """
 
     focal_length: Tensor
@@ -50,9 +48,10 @@ class Lens(PolychromaticModulationElement):
         self.register_optics_property("focal_length", focal_length, is_scalar=True)
 
     def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
+        phase = lens_phase(self.shape, self.focal_length, wavelength, self.spacing)
         radius = self.length().min() / 2
-        phase = lens_phase(self.shape, self.focal_length, radius, wavelength, self.spacing)
-        return circle(self.shape, radius, self.spacing) * torch.exp(1j * phase)
+        amplitude = circle(self.shape, radius, self.spacing)
+        return amplitude * torch.exp(1j * phase)
 
 
 class CylindricalLens(PolychromaticModulationElement):
@@ -95,8 +94,7 @@ class CylindricalLens(PolychromaticModulationElement):
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
+        phase = cylindrical_lens_phase(self.shape, self.focal_length, self.theta, wavelength, self.spacing)
         radius = self.length().min() / 2
-        phase = cylindrical_lens_phase(
-            self.shape, self.focal_length, radius, self.theta, wavelength, self.spacing
-        )
-        return circle(self.shape, radius, self.spacing) * torch.exp(1j * phase)
+        amplitude = circle(self.shape, radius, self.spacing)
+        return amplitude * torch.exp(1j * phase)
