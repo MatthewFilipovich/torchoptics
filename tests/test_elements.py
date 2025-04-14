@@ -307,11 +307,22 @@ class TestLens(unittest.TestCase):
         lens = Lens(shape, focal_length, 0, spacing)
         self.assertEqual(lens.shape, shape)
         self.assertEqual(lens.focal_length, focal_length)
-        self.assertTrue(lens.is_circular_lens)
-        with self.assertRaises(TypeError):
-            lens.is_circular_lens = "not a bool"
         self.assertTrue(lens.modulation_profile(wavelength).dtype == torch.cdouble)
-        self.assertTrue("is_circular_lens=True" in repr(lens))
+        field = Field(torch.ones(3, *shape), wavelength=wavelength, spacing=spacing)
+        output_field = lens(field)
+        self.assertIsInstance(output_field, torchoptics.Field)
+
+
+class TestCylindricalLens(unittest.TestCase):
+    def test_cylindrical_lens(self):
+        shape = (64, 64)
+        focal_length = 50.0
+        wavelength = 500e-9
+        spacing = 1e-5
+        lens = CylindricalLens(shape, focal_length, 0, spacing=spacing)
+        self.assertEqual(lens.shape, shape)
+        self.assertEqual(lens.focal_length, focal_length)
+        self.assertTrue(lens.modulation_profile(wavelength).dtype == torch.cdouble)
         field = Field(torch.ones(3, *shape), wavelength=wavelength, spacing=spacing)
         output_field = lens(field)
         self.assertIsInstance(output_field, torchoptics.Field)
