@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from torchoptics import Field, SpatialCoherence
+from torchoptics import Field, PlanarGrid, SpatialCoherence
 from torchoptics.profiles import *
 
 
@@ -13,7 +13,6 @@ class TestLensProfile(unittest.TestCase):
         self.wavelength = 0.5
         self.spacing = (0.1, 0.1)
         self.offset = (0.0, 0.0)
-        self.is_circular_lens = True
 
         self.phase_profile = lens_phase(
             shape=self.shape,
@@ -21,27 +20,68 @@ class TestLensProfile(unittest.TestCase):
             wavelength=self.wavelength,
             spacing=self.spacing,
             offset=self.offset,
-            is_circular_lens=self.is_circular_lens,
         )
 
-    def test_lens(self):
+    def test_shape(self):
         self.assertEqual(self.phase_profile.shape, self.shape)
-        self.assertTrue(torch.is_complex(self.phase_profile))
-        self.assertAlmostEqual(
-            self.phase_profile[self.shape[0] // 2, self.shape[1] // 2].abs().item(), 1.0, places=5
-        )
-        self.assertEqual(self.phase_profile.dtype, torch.cdouble)
 
-    def test_circular_lens_mask(self):
-        radial_dist = torch.sqrt(
-            torch.square(torch.linspace(-5, 5, self.shape[0]).unsqueeze(1))
-            + torch.square(torch.linspace(-5, 5, self.shape[1]).unsqueeze(0))
-        )
-        lens_diameter = min(self.shape) * self.spacing[0]
-        mask = radial_dist > lens_diameter / 2
+    def test_dtype(self):
+        self.assertEqual(self.phase_profile.dtype, torch.double)
 
-        self.assertTrue(torch.all(self.phase_profile[mask] == 0))
-        self.assertEqual(self.phase_profile.dtype, torch.cdouble)
+
+class TestCylindricalLensPhase(unittest.TestCase):
+    def setUp(self):
+        self.shape = (100, 100)
+        self.focal_length = 50.0
+        self.theta = torch.pi / 4  # 45 degrees
+        self.wavelength = 0.5
+        self.spacing = (0.1, 0.1)
+        self.offset = (0.0, 0.0)
+
+        self.phase_profile = cylindrical_lens_phase(
+            shape=self.shape,
+            focal_length=self.focal_length,
+            theta=self.theta,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+
+    def test_shape(self):
+        self.assertEqual(self.phase_profile.shape, self.shape)
+
+    def test_dtype(self):
+        self.assertEqual(self.phase_profile.dtype, torch.double)
+
+    def test_zero_theta(self):
+        # Test with theta = 0 (should reduce to a phase profile along x-axis)
+        phase_profile_zero_theta = cylindrical_lens_phase(
+            shape=self.shape,
+            focal_length=self.focal_length,
+            theta=0.0,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        planar_grid = PlanarGrid(self.shape, spacing=self.spacing, offset=self.offset)
+        x, _ = planar_grid.meshgrid()
+        expected_phase = -torch.pi / (self.wavelength * self.focal_length) * x**2
+        self.assertTrue(torch.allclose(phase_profile_zero_theta, expected_phase, atol=1e-5))
+
+    def test_pi_over_2_theta(self):
+        # Test with theta = pi/2 (should reduce to a phase profile along y-axis)
+        phase_profile_pi_over_2_theta = cylindrical_lens_phase(
+            shape=self.shape,
+            focal_length=self.focal_length,
+            theta=torch.pi / 2,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        planar_grid = PlanarGrid(self.shape, spacing=self.spacing, offset=self.offset)
+        _, y = planar_grid.meshgrid()
+        expected_phase = -torch.pi / (self.wavelength * self.focal_length) * y**2
+        self.assertTrue(torch.allclose(phase_profile_pi_over_2_theta, expected_phase, atol=1e-5))
 
 
 class TestHermiteGaussianProfile(unittest.TestCase):
