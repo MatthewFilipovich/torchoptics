@@ -10,8 +10,8 @@ import torch
 
 import torchoptics
 from torchoptics import Field, System
-from torchoptics.elements import AmplitudeModulator, Lens
-from torchoptics.profiles import circle
+from torchoptics.elements import Modulator
+from torchoptics.profiles import circle, lens_phase
 
 # %%
 # Simulation Setup
@@ -67,14 +67,13 @@ for diameter in aperture_diameters:
     label = f"{diameter * 1e3:.0f} μm"
 
     # Circular aperture at lens plane
-    aperture = AmplitudeModulator(circle(shape, radius=diameter / 2), z=lens_z)
-    aperture.visualize(title=f"Aperture Mask (Diameter = {label})")
-
-    # Lens at same plane
-    lens = Lens(shape, focal_length, z=lens_z)
+    ampltidue = circle(shape, diameter / 2)
+    phase = lens_phase(shape, focal_length)
+    lens = Modulator(ampltidue * torch.exp(1j * phase), z=lens_z)
+    lens.visualize(title=f"Aperture Mask (Diameter = {label})")
 
     # Build optical system
-    system = System(lens, aperture)
+    system = System(lens)
 
     # Propagate field to image plane
     field_image = system.measure_at_z(input_field, z=image_z)
