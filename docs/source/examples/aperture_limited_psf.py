@@ -67,9 +67,9 @@ for diameter in aperture_diameters:
     label = f"{diameter * 1e3:.0f} μm"
 
     # Circular aperture at lens plane
-    ampltidue = circle(shape, diameter / 2)
+    amplitude = circle(shape, diameter / 2)
     phase = lens_phase(shape, focal_length)
-    lens = Modulator(ampltidue * torch.exp(1j * phase), z=lens_z)
+    lens = Modulator(amplitude * torch.exp(1j * phase), z=lens_z)
     lens.visualize(title=f"Aperture Mask (Diameter = {label})")
 
     # Build optical system
