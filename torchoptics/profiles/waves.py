@@ -27,16 +27,12 @@ def plane_wave_phase(
     The phase argument is defined as:
 
     .. math::
-        \Phi(x, y, z) = k_x x + k_y y + k_z z
+        \psi(x, y, z) = k_x x + k_y y + k_z z
 
     where:
         - :math:`k_x = \frac{2\pi}{\lambda} \sin\theta \cos\phi`
         - :math:`k_y = \frac{2\pi}{\lambda} \sin\theta \sin\phi`
         - :math:`k_z = \frac{2\pi}{\lambda} \cos\theta`
-
-    This corresponds to the spatial phase of a plane wave propagating in direction
-    :math:`(\theta, \phi)` in spherical coordinates. The full complex field is
-    :math:`\exp(i \Phi(x, y, z))`, but this function returns only the real-valued phase argument.
 
     Args:
         shape (Vector2): Number of grid points along planar dimensions.
@@ -80,17 +76,12 @@ def spherical_wave_phase(
     The phase argument is defined as:
 
     .. math::
-        \Phi(x, y, z) = k \cdot r, \quad
-        r = \sqrt{(x - x_0)^2 + (y - y_0)^2 + z^2}
+        \psi(x, y, z) = k \cdot r, \quad
+        r = \sqrt{x^2 + y^2 + z^2}
 
     where:
-        - :math:`(x_0, y_0)` is the transverse offset of the source (default: 0),
         - :math:`z` is the axial distance from the source to the observation plane,
         - :math:`k = \frac{2\pi}{\lambda}` is the wavenumber.
-
-    This represents the phase accumulated by a spherical wave at each point in the plane located at `z`.
-    The full complex field is :math:`\exp(i \Phi(x, y, z))`, but this function returns only the phase
-    argument.
 
     Args:
         shape (Vector2): Grid shape (height, width).
