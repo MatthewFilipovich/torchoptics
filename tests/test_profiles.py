@@ -84,6 +84,81 @@ class TestCylindricalLensPhase(unittest.TestCase):
         self.assertTrue(torch.allclose(phase_profile_pi_over_2_theta, expected_phase, atol=1e-5))
 
 
+class TestWaveProfiles(unittest.TestCase):
+    def setUp(self):
+        self.shape = (100, 100)
+        self.spacing = (0.1, 0.1)
+        self.offset = (0.0, 0.0)
+        self.wavelength = 0.5
+        self.z = 1.0
+
+    def test_plane_wave_shape_and_dtype(self):
+        theta = torch.pi / 4
+        phi = torch.pi / 6
+        wave = plane_wave(
+            shape=self.shape,
+            theta=theta,
+            phi=phi,
+            z=self.z,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        self.assertEqual(wave.shape, self.shape)
+        self.assertTrue(torch.is_complex(wave))
+        self.assertEqual(wave.dtype, torch.cdouble)
+
+    def test_plane_wave_phase(self):
+        theta = 0.0  # Wave propagating along z-axis
+        phi = 0.0
+        wave = plane_wave(
+            shape=self.shape,
+            theta=theta,
+            phi=phi,
+            z=self.z,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        self.assertTrue(torch.allclose(wave.abs(), torch.ones_like(wave.abs())))
+
+    def test_spherical_wave_shape_and_dtype(self):
+        wave = spherical_wave(
+            shape=self.shape,
+            z=self.z,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+            include_amplitude=True,
+        )
+        self.assertEqual(wave.shape, self.shape)
+        self.assertTrue(torch.is_complex(wave))
+        self.assertEqual(wave.dtype, torch.cdouble)
+
+    def test_spherical_wave_amplitude(self):
+        wave = spherical_wave(
+            shape=self.shape,
+            z=self.z,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+            include_amplitude=False,
+        )
+        self.assertTrue(torch.allclose(wave.abs(), torch.ones_like(wave.abs())))
+
+        wave_with_amplitude = spherical_wave(
+            shape=self.shape,
+            z=self.z,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+            include_amplitude=True,
+        )
+        self.assertFalse(
+            torch.allclose(wave_with_amplitude.abs(), torch.ones_like(wave_with_amplitude.abs()))
+        )
+
+
 class TestHermiteGaussianProfile(unittest.TestCase):
     def setUp(self):
         self.shape = (300, 300)
