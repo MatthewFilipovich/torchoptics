@@ -84,6 +84,41 @@ class TestCylindricalLensPhase(unittest.TestCase):
         self.assertTrue(torch.allclose(phase_profile_pi_over_2_theta, expected_phase, atol=1e-5))
 
 
+class TestWaveProfiles(unittest.TestCase):
+    def setUp(self):
+        self.shape = (100, 100)
+        self.spacing = (0.1, 0.1)
+        self.offset = (0.0, 0.0)
+        self.wavelength = 0.5
+        self.z = 1.0
+
+    def test_plane_wave_shape_and_dtype(self):
+        theta = torch.pi / 4
+        phi = torch.pi / 6
+        wave = plane_wave_phase(
+            shape=self.shape,
+            theta=theta,
+            phi=phi,
+            z=self.z,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        self.assertEqual(wave.shape, self.shape)
+        self.assertEqual(wave.dtype, torch.double)
+
+    def test_spherical_wave_shape_and_dtype(self):
+        wave = spherical_wave_phase(
+            shape=self.shape,
+            z=self.z,
+            wavelength=self.wavelength,
+            spacing=self.spacing,
+            offset=self.offset,
+        )
+        self.assertEqual(wave.shape, self.shape)
+        self.assertEqual(wave.dtype, torch.double)
+
+
 class TestHermiteGaussianProfile(unittest.TestCase):
     def setUp(self):
         self.shape = (300, 300)
