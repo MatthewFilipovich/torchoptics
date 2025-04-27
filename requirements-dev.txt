@@ -6,4 +6,5 @@ isort
 mypy
 pre-commit
 pylint
+pytest
 scipy
