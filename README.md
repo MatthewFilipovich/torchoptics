@@ -42,7 +42,7 @@ Read the full documentation at [torchoptics.readthedocs.io](https://torchoptics.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MatthewFilipovich/torchoptics/blob/main/docs/source/_static/torchoptics_colab.ipynb)
 
-This example demonstrates how to simulate a 4f imaging system using TorchOptics. The field at each focal plane along the z-axis is computed and visualized:
+This example shows how to simulate a 4f imaging system using TorchOptics, computing and visualizing the field at each focal plane along the optical axis:
 
 ```python
 import torch
