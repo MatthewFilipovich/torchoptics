@@ -2,8 +2,6 @@
   <img src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/torchoptics_logo.png" width="700px">
 </p>
 
-> TorchOptics is an open-source Python library for differentiable wave optics simulations with PyTorch.
-
 <div align="center">
 
 [![build](https://github.com/MatthewFilipovich/torchoptics/actions/workflows/build.yml/badge.svg)](https://github.com/MatthewFilipovich/torchoptics/actions/workflows/build.yml)
@@ -15,38 +13,32 @@
 
 </div>
 
+> TorchOptics is a differentiable wave optics simulation library built on PyTorch.
+
+---
+
 # Key Features
 
-- 🌊 **Differentiable Wave Optics**: A comprehensive framework for modeling, analyzing, and designing optical systems using differentiable Fourier optics.
-- 🔥 **Built on PyTorch**: Leverages PyTorch for GPU acceleration, batch processing, automatic differentiation, and efficient gradient-based optimization.
-- 🛠️ **End-to-End Optimization**: Enables optimization of optical hardware and deep learning models within a unified, differentiable pipeline.
-- 🔬 **Optical Elements**: Features standard optical elements like modulators, lenses, detectors, and polarizers.
-- 🖼️ **Spatial Profiles**: Provides a wide range of spatial profiles, including Hermite-Gaussian and Laguerre-Gaussian beams.
-- 🔆 **Polarization & Coherence**: Supports simulations of polarized light and optical fields with arbitrary spatial coherence.
+- 🌊 **Differentiable Wave Optics** — Model, analyze, and optimize optical systems using Fourier optics.
+- 🔥 **Built on PyTorch** — GPU acceleration, batch processing, and automatic differentiation.
+- 🛠️ **End-to-End Optimization** — Joint optimization of optical hardware and machine learning models.
+- 🔬 **Optical Elements** — Lenses, modulators, detectors, polarizers, and more.
+- 🖼️ **Spatial Profiles** — Hermite-Gaussian, Laguerre-Gaussian, Zernike modes, and others.
+- 🔆 **Polarization and Coherence** — Simulate polarized light and fields with arbitrary spatial coherence.
 
-Our research paper, available on [arXiv](https://arxiv.org/abs/2411.18591), introduces the TorchOptics library and provides a comprehensive review of its features and applications.
+Learn more about TorchOptics in our research paper on [arXiv](https://arxiv.org/abs/2411.18591).
 
-## Documentation
+# Installation
 
-Access the latest documentation at [torchoptics.readthedocs.io](https://torchoptics.readthedocs.io/).
+TorchOptics is available on [PyPI](https://pypi.org/project/torchoptics/) and can be installed with:
 
-## Installation
-
-To install the latest **stable release** of TorchOptics from [PyPI](https://pypi.org/project/torchoptics/), run:
-
-```sh
+```bash
 pip install torchoptics
 ```
 
-For the latest **development version**, install directly from [GitHub](https://github.com/MatthewFilipovich/torchoptics):
+## Documentation
 
-```sh
-git clone https://github.com/MatthewFilipovich/torchoptics
-cd torchoptics
-pip install -e '.[dev]'
-```
-
-This installs the library in editable mode, along with additional dependencies for development and testing.
+Read the full documentation at [torchoptics.readthedocs.io](https://torchoptics.readthedocs.io/).
 
 ## Usage
 
@@ -113,16 +105,7 @@ _For more examples and detailed usage, please refer to the [documentation](https
 
 ## Contributing
 
-We welcome bug reports, questions, and feature suggestions to improve TorchOptics.
-
-- **Found a bug or have a question?** Please [open an issue on GitHub](https://github.com/MatthewFilipovich/torchoptics/issues).
-- **Want to contribute a new feature?** Follow these steps:
-
-1. **Fork the repository**: Go to <https://github.com/MatthewFilipovich/torchoptics/fork>
-2. **Create a feature branch**: `git checkout -b feature/fooBar`
-3. **Commit your changes**: `git commit -am 'Add some fooBar'`
-4. **Push to the branch**: `git push origin feature/fooBar`
-5. **Submit a Pull Request**: Open a Pull Request on GitHub
+We welcome contributions! See our [Contributing Guide](https://github.com/MatthewFilipovich/torchoptics/blob/main/CONTRIBUTING.md) for details.
 
 ## Citing TorchOptics
 
