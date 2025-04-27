@@ -60,12 +60,15 @@ Submit your changes by opening a pull request from your fork.
 If you want to update the documentation, you can preview it locally before submitting a pull request.
 
 1. **Install documentation dependencies**:
+
    ```bash
    pip install -r docs/requirements-docs.txt
    ```
+
 2. **Serve the documentation locally**:
+
    ```bash
-   mkdocs serve
+   sphinx-autobuild docs/source docs/build/html
    ```
 
 The site will be available at [http://localhost:8000/](http://localhost:8000/).
