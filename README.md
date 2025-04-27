@@ -15,8 +15,6 @@
 
 > TorchOptics is a differentiable wave optics simulation library built on PyTorch.
 
----
-
 # Key Features
 
 - 🌊 **Differentiable Wave Optics** — Model, analyze, and optimize optical systems using Fourier optics.
