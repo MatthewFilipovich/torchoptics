@@ -24,7 +24,6 @@ To prepare your environment for development and testing:
    ```
 4. **Install pre-commit hooks**:
    ```bash
-   pip install pre-commit
    pre-commit install
    ```
 
