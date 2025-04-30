@@ -83,5 +83,5 @@ def update(frame):
 
 
 # Generate and display the animation
-ani = animation.FuncAnimation(fig, update, frames=num_frames, interval=30)
+anim = animation.FuncAnimation(fig, update, frames=num_frames, interval=30)
 plt.show()
