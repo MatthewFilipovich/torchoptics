@@ -23,11 +23,10 @@ def test_complex_tensor():
 
 
 def test_visualize_tensor_show_called():
-    tensor = torch.rand(10, 10)
-
-    with patch("matplotlib.pyplot.show") as mock_show:
-        visualize_tensor(tensor, show=True)
-        mock_show.assert_called_once()
+    for tensor in [torch.rand(10, 10), torch.rand(10, 10, dtype=torch.complex64)]:
+        with patch("matplotlib.pyplot.show") as mock_show:
+            visualize_tensor(tensor, show=True)
+            mock_show.assert_called_once()
 
 
 def test_invalid_tensor_shape_3d():
@@ -75,12 +74,17 @@ def test_animate_tensor_show_called():
         mock_show.assert_called_once()
 
 
-def test_complex_animate_tensor_show_called():
-    tensor = torch.rand(8, 10, 10, dtype=torch.complex64)
+def test_animate_tensor_calls_update():
+    for tensor in [torch.rand(4, 10, 10), torch.rand(4, 10, 10, dtype=torch.complex64)]:
+        with patch("matplotlib.pyplot.show") as mock_show:
+            anim = animate_tensor(tensor, show=True)
+            mock_show.assert_called_once()
 
-    with patch("matplotlib.pyplot.show") as mock_show:
-        animate_tensor(tensor, show=True)
-        mock_show.assert_called_once()
+        update_func = anim._func  # internal update function
+        for frame in range(tensor.shape[0]):
+            update_func(frame)
+
+        assert callable(update_func)
 
 
 def test_animate_tensor_invalid_shape():
