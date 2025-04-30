@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import matplotlib.pyplot as plt
 import pytest
 import torch
@@ -18,6 +20,14 @@ def test_complex_tensor():
     fig = visualize_tensor(tensor, title="Complex Tensor", show=False, return_fig=True)
     assert isinstance(fig, plt.Figure)
     assert len(fig.axes) == 4  # two subplots for magnitude and phase, and two colorbar
+
+
+def test_visualize_tensor_show_called():
+    tensor = torch.rand(10, 10)
+
+    with patch("matplotlib.pyplot.show") as mock_show:
+        visualize_tensor(tensor, show=True)
+        mock_show.assert_called_once()
 
 
 def test_invalid_tensor_shape_3d():
@@ -57,6 +67,22 @@ def test_animate_complex_tensor():
     assert isinstance(anim, FuncAnimation)
 
 
+def test_animate_tensor_show_called():
+    tensor = torch.rand(8, 10, 10)
+
+    with patch("matplotlib.pyplot.show") as mock_show:
+        animate_tensor(tensor, show=True)
+        mock_show.assert_called_once()
+
+
+def test_complex_animate_tensor_show_called():
+    tensor = torch.rand(8, 10, 10, dtype=torch.complex64)
+
+    with patch("matplotlib.pyplot.show") as mock_show:
+        animate_tensor(tensor, show=True)
+        mock_show.assert_called_once()
+
+
 def test_animate_tensor_invalid_shape():
     tensor = torch.rand(10, 10, 10, 10)
     with pytest.raises(ValueError):
@@ -66,6 +92,7 @@ def test_animate_tensor_invalid_shape():
 def test_animate_tensor_with_titles_vmins_vmaxes():
     tensor = torch.rand(5, 10, 10)  # 5 frames of 10x10 tensors
 
+    # Create titles, vmins, and vmaxs for each frame
     titles = [f"Frame {i}" for i in range(5)]
     vmins = torch.arange(5)
     vmaxs = torch.arange(5) + 1
@@ -77,8 +104,18 @@ def test_animate_tensor_with_titles_vmins_vmaxes():
         vmax=vmaxs,
         show=False,
     )
-
     assert isinstance(anim, Animation)
+
+    # Check raises error for mismatched lengths
+    vmins_incorrect = [1, 2]
+    with pytest.raises(ValueError):
+        animate_tensor(
+            tensor,
+            title=titles,
+            vmin=vmins_incorrect,
+            vmax=vmaxs,
+            show=False,
+        )
 
 
 def test_animate_tensor_with_custom_kwargs():
