@@ -103,55 +103,6 @@ def visualize_tensor(
     return fig if return_fig else None
 
 
-def create_image_subplot(
-    ax: Any,
-    tensor: Tensor,
-    extent: Optional[Sequence[float]] = None,
-    vmin: Optional[float] = None,
-    vmax: Optional[float] = None,
-    cmap: Optional[str] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    ax_title: Optional[str] = None,
-    interpolation: Optional[str] = None,
-    cbar_ticks: Optional[Sequence[float]] = None,
-    cbar_ticklabels: Optional[Sequence[str]] = None,
-) -> Any:
-    """
-    Create an image subplot with colorbar, axis labels, and optional title.
-
-    Args:
-        ax (Any): Matplotlib axis to draw on.
-        tensor (Tensor): 2D tensor to visualize.
-        extent (Sequence[float], optional): Bounding box (left, right, bottom, top).
-        vmin (float, optional): Minimum color scale.
-        vmax (float, optional): Maximum color scale.
-        cmap (str, optional): Colormap name.
-        xlabel (str, optional): Label for x-axis.
-        ylabel (str, optional): Label for y-axis.
-        ax_title (str, optional): Title of the subplot.
-        interpolation (str, optional): Interpolation type for imshow.
-        cbar_ticks (Sequence[float], optional): Ticks to display on the colorbar.
-        cbar_ticklabels (Sequence[str], optional): Labels for the colorbar ticks.
-
-    Returns:
-        Any: The image object returned by `imshow`.
-    """
-    extent_tuple = tuple(extent) if extent is not None else None
-    im = ax.imshow(tensor, extent=extent_tuple, vmin=vmin, vmax=vmax, cmap=cmap, interpolation=interpolation)
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    colorbar = plt.colorbar(im, cax=cax, orientation="vertical")
-    if cbar_ticks is not None:
-        colorbar.set_ticks(cbar_ticks)
-    if cbar_ticklabels is not None:
-        colorbar.set_ticklabels(cbar_ticklabels)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_title(ax_title)
-    return im
-
-
 def animate_tensor(
     tensor: Tensor,
     title: Union[str, Sequence[str], None] = None,
@@ -244,3 +195,52 @@ def animate_tensor(
         plt.show()
 
     return anim
+
+
+def create_image_subplot(
+    ax: Any,
+    tensor: Tensor,
+    extent: Optional[Sequence[float]] = None,
+    vmin: Optional[float] = None,
+    vmax: Optional[float] = None,
+    cmap: Optional[str] = None,
+    xlabel: Optional[str] = None,
+    ylabel: Optional[str] = None,
+    ax_title: Optional[str] = None,
+    interpolation: Optional[str] = None,
+    cbar_ticks: Optional[Sequence[float]] = None,
+    cbar_ticklabels: Optional[Sequence[str]] = None,
+) -> Any:
+    """
+    Create an image subplot with colorbar, axis labels, and optional title.
+
+    Args:
+        ax (Any): Matplotlib axis to draw on.
+        tensor (Tensor): 2D tensor to visualize.
+        extent (Sequence[float], optional): Bounding box (left, right, bottom, top).
+        vmin (float, optional): Minimum color scale.
+        vmax (float, optional): Maximum color scale.
+        cmap (str, optional): Colormap name.
+        xlabel (str, optional): Label for x-axis.
+        ylabel (str, optional): Label for y-axis.
+        ax_title (str, optional): Title of the subplot.
+        interpolation (str, optional): Interpolation type for imshow.
+        cbar_ticks (Sequence[float], optional): Ticks to display on the colorbar.
+        cbar_ticklabels (Sequence[str], optional): Labels for the colorbar ticks.
+
+    Returns:
+        Any: The image object returned by `imshow`.
+    """
+    extent_tuple = tuple(extent) if extent is not None else None
+    im = ax.imshow(tensor, extent=extent_tuple, vmin=vmin, vmax=vmax, cmap=cmap, interpolation=interpolation)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    colorbar = plt.colorbar(im, cax=cax, orientation="vertical")
+    if cbar_ticks is not None:
+        colorbar.set_ticks(cbar_ticks)
+    if cbar_ticklabels is not None:
+        colorbar.set_ticklabels(cbar_ticklabels)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(ax_title)
+    return im

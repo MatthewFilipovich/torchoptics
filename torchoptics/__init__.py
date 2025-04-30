@@ -13,4 +13,4 @@ from torchoptics.fields import Field, SpatialCoherence
 from torchoptics.optics_module import OpticsModule
 from torchoptics.planar_grid import PlanarGrid
 from torchoptics.system import System
-from torchoptics.visualization import animate_tensor, visualize_tensor
+from torchoptics.visualization.visualization import animate_tensor, visualize_tensor

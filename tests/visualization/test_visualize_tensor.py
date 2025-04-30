@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pytest
 import torch
 
-from torchoptics.visualization import visualize_tensor
+from torchoptics.visualization.visualization import visualize_tensor
 
 
 def test_real_tensor():
