@@ -1,6 +1,6 @@
 """
-Animations
-==========
+Animate Propagation
+===================
 
 Demonstrates how to create animations of field propagation in TorchOptics.
 """
