@@ -12,7 +12,7 @@ from .functional import meshgrid2d
 from .optics_module import OpticsModule
 from .type_defs import Scalar, Vector2
 from .utils import initialize_shape
-from .visualization.visualization import visualize_tensor
+from .visualization import visualize_tensor
 
 __all__ = ["PlanarGrid"]
 

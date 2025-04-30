@@ -5,7 +5,7 @@ import pytest
 import torch
 from matplotlib.animation import Animation, FuncAnimation
 
-from torchoptics.visualization.visualization import animate_tensor, visualize_tensor
+from torchoptics.visualization import animate_tensor, visualize_tensor
 
 
 def test_real_tensor():
