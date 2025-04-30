@@ -142,8 +142,7 @@ def animate_tensor(
     symbol: Optional[str] = None,
     interpolation: Optional[str] = None,
     show: bool = True,
-    return_fig: bool = False,
-) -> Optional[plt.Figure]:
+) -> FuncAnimation:
     """
     Animates a 3D tensor over the first dimension.
 
@@ -160,7 +159,6 @@ def animate_tensor(
         symbol (str, optional): Symbol used in ax title. Default: `None`.
         interpolation (str, optional): The interpolation method to use. Default: `None`.
         show (bool, optional): Whether to display the plot. Default: `True`.
-        return_fig (bool, optional): Whether to return the figure. Default: `False`.
     """
     if tensor.ndim < 3 or not all(s == 1 for s in tensor.shape[:-3]):  # Check if squeezed tensor is 3D
         raise ValueError(f"Expected tensor to be 3D, but got shape {tensor.shape}.")
@@ -187,9 +185,9 @@ def animate_tensor(
         else:
             ax.set_title(f"{frame}")
 
-    _ = FuncAnimation(fig, update, frames=tensor.shape[0], interval=100)  # type: ignore[arg-type]
+    anim = FuncAnimation(fig, update, frames=tensor.shape[0], interval=100)  # type: ignore[arg-type]
 
     if show:
         plt.show()
 
-    return fig if return_fig else None
+    return anim
