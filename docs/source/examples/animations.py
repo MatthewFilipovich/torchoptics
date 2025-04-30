@@ -19,14 +19,18 @@ torchoptics.set_default_wavelength(700e-9)
 
 # Initialize a 1D field
 field = Field(circle(200, radius=50e-5))
-# field.visualize(vmax=2)
+field.visualize(vmax=2)
 
 # %%
 # Propagate
 
-z_values = torch.linspace(0, 0.5, 101)
+z_values = torch.linspace(0, 0.5, 201)
 intensities = torch.stack([field.propagate_to_z(z).intensity() for z in z_values])
 
 # %%
 # Animate
-animate_tensor(intensities, vmax=2)
+vmax = 3
+titles = [f"z = {z:.2f} m" for z in z_values]
+func_anim_kwargs = {"interval": 100}
+
+animate_tensor(intensities, vmax=vmax, title=titles, func_anim_kwargs=func_anim_kwargs)
