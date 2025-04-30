@@ -1,4 +1,4 @@
-"""This module defines functions for visualizing tensors."""
+"""Visualization utilities for real or complex-valued tensors using matplotlib."""
 
 from typing import Any, Optional, Sequence, Union
 
@@ -8,7 +8,7 @@ from matplotlib.animation import FuncAnimation
 from mpl_toolkits.axes_grid1 import make_axes_locatable  # type: ignore
 from torch import Tensor
 
-__all__ = ["visualize_tensor"]
+__all__ = ["visualize_tensor", "animate_tensor"]
 # pylint: disable=too-many-locals
 
 
@@ -27,33 +27,37 @@ def visualize_tensor(
     return_fig: bool = False,
 ) -> Optional[plt.Figure]:
     """
-    Visualizes a 2D real or complex-valued tensor.
+    Visualize a 2D real or complex-valued tensor using matplotlib.
+
+    If the tensor is complex, two subplots are shown: one for the magnitude squared and one for the phase.
 
     Args:
-        tensor (Tensor): The 2D tensor to visualize.
-        title (str, optional): The title of the plot. Default: `None`.
-        extent (Sequence[float], optional): The bounding box in data coordinates that the image will fill
-            (left, right, bottom, top). Default: `None`.
-        vmin (float, optional): The minimum value of the color scale. Default: `None`.
-        vmax (float, optional): The maximum value of the color scale. Default: `None`.
-        cmap (str, optional): The colormap to use. Default: `"inferno"`.
-        xlabel (str, optional): The label for the x-axis. Default: `None`.
-        ylabel (str, optional): The label for the y-axis. Default: `None`.
-        symbol (str, optional): Symbol used in ax title. Default: `None`.
-        interpolation (str, optional): The interpolation method to use. Default: `None`.
-        show (bool, optional): Whether to display the plot. Default: `True`.
-        return_fig (bool, optional): Whether to return the figure. Default: `False`.
-    """
+        tensor (Tensor): A 2D tensor of shape (H, W).
+        title (str, optional): Title for the figure.
+        extent (Sequence[float], optional): Bounding box in data coordinates (left, right, bottom, top).
+        vmin (float, optional): Minimum value for color scaling.
+        vmax (float, optional): Maximum value for color scaling.
+        cmap (str, optional): Colormap for the magnitude or real plot. Defaults to "inferno".
+        xlabel (str, optional): Label for the x-axis.
+        ylabel (str, optional): Label for the y-axis.
+        symbol (str, optional): Symbol used in subplot titles for LaTeX rendering.
+        interpolation (str, optional): Interpolation method for imshow.
+        show (bool, optional): Whether to call `plt.show()`. Defaults to True.
+        return_fig (bool, optional): If True, returns the matplotlib Figure.
 
-    if tensor.ndim < 2 or not all(s == 1 for s in tensor.shape[:-2]):  # Check if squeezed tensor is 2D
+    Returns:
+        Optional[plt.Figure]: The matplotlib Figure if `return_fig` is True, else None.
+    """
+    if tensor.ndim < 2 or not all(s == 1 for s in tensor.shape[:-2]):
         raise ValueError(f"Expected tensor to be 2D, but got shape {tensor.shape}.")
+
     tensor = tensor.detach().cpu().view(tensor.shape[-2], tensor.shape[-1])
 
     if tensor.is_complex():
         fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-        tensor = torch.where(tensor == -0.0 - 0.0j, 0, tensor)  # Remove numerical artifacts
+        tensor = torch.where(tensor == -0.0 - 0.0j, 0, tensor)
 
-        create_image_subplot(  # Plot absolute square
+        create_image_subplot(  # Plot magnitude squared
             axes[0],
             tensor.abs().square(),
             extent,
@@ -62,11 +66,11 @@ def visualize_tensor(
             cmap,
             xlabel,
             ylabel,
-            rf"$|${symbol}$|^2$" if symbol is not None else None,
+            rf"$|${symbol}$|^2$" if symbol else None,
             interpolation,
         )
 
-        create_image_subplot(  # plot angle
+        create_image_subplot(  # Plot phase
             axes[1],
             tensor.angle(),
             extent,
@@ -113,8 +117,26 @@ def create_image_subplot(
     cbar_ticks: Optional[Sequence[float]] = None,
     cbar_ticklabels: Optional[Sequence[str]] = None,
 ) -> Any:
-    """Creates an imshow plot with colorbar and axis labels, returns the image object."""
-    # type: ignore[arg-type]
+    """
+    Create an image subplot with colorbar, axis labels, and optional title.
+
+    Args:
+        ax (Any): Matplotlib axis to draw on.
+        tensor (Tensor): 2D tensor to visualize.
+        extent (Sequence[float], optional): Bounding box (left, right, bottom, top).
+        vmin (float, optional): Minimum color scale.
+        vmax (float, optional): Maximum color scale.
+        cmap (str, optional): Colormap name.
+        xlabel (str, optional): Label for x-axis.
+        ylabel (str, optional): Label for y-axis.
+        ax_title (str, optional): Title of the subplot.
+        interpolation (str, optional): Interpolation type for imshow.
+        cbar_ticks (Sequence[float], optional): Ticks to display on the colorbar.
+        cbar_ticklabels (Sequence[str], optional): Labels for the colorbar ticks.
+
+    Returns:
+        Any: The image object returned by `imshow`.
+    """
     extent_tuple = tuple(extent) if extent is not None else None
     im = ax.imshow(tensor, extent=extent_tuple, vmin=vmin, vmax=vmax, cmap=cmap, interpolation=interpolation)
     divider = make_axes_locatable(ax)
@@ -145,13 +167,28 @@ def animate_tensor(
     func_anim_kwargs: Optional[dict] = None,
 ) -> FuncAnimation:
     """
-    Animates a 3D tensor over the first dimension.
+    Animate a 3D tensor over time using matplotlib.
 
-    All arguments except `tensor`, `cmap`, and `show` can be:
-    - A single static value
-    - A sequence of values (one per frame)
+    The first dimension of the tensor is treated as time or frame index. If the tensor is complex,
+    each frame is visualized as both magnitude squared and phase.
+
+    Args:
+        tensor (Tensor): A 3D tensor of shape (T, H, W).
+        title (str or Sequence[str], optional): Title for each frame, or a static title.
+        extent (Sequence[float], optional): Image extent in data coordinates.
+        vmin (float or Sequence[float], optional): Minimum value(s) for color scaling.
+        vmax (float or Sequence[float], optional): Maximum value(s) for color scaling.
+        cmap (str, optional): Colormap for the plot. Defaults to "inferno".
+        xlabel (str, optional): Label for the x-axis.
+        ylabel (str, optional): Label for the y-axis.
+        symbol (str, optional): Symbol used in subplot titles.
+        interpolation (str, optional): Interpolation type for imshow.
+        show (bool, optional): Whether to display the animation immediately.
+        func_anim_kwargs (dict, optional): Additional keyword arguments for `FuncAnimation`.
+
+    Returns:
+        FuncAnimation: The matplotlib animation object.
     """
-
     if tensor.ndim < 3 or not all(s == 1 for s in tensor.shape[:-3]):
         raise ValueError(f"Expected tensor to be 3D, but got shape {tensor.shape}.")
 
@@ -164,9 +201,8 @@ def animate_tensor(
             if len(arg) != num_frames:
                 raise ValueError(f"{name} must have length {num_frames}, but got {len(arg)}.")
             return arg
-        return [arg] * num_frames  # broadcast scalar to all frames
+        return [arg] * num_frames
 
-    # Validate and normalize all per-frame arguments
     titles = validate_sequence(title, "title")
     vmins = validate_sequence(vmin, "vmin")
     vmaxs = validate_sequence(vmax, "vmax")
@@ -199,8 +235,7 @@ def animate_tensor(
             ims[1].set_array(tensor[frame].angle())
         else:
             ims[0].set_array(tensor[frame])
-
-        fig.suptitle(titles[frame], y=0.95)  # Update title
+        fig.suptitle(titles[frame], y=0.95)
         ims[0].set_clim(vmins[frame], vmaxs[frame])
 
     anim = FuncAnimation(fig, update, frames=num_frames, **(func_anim_kwargs or {}))  # type: ignore[arg-type]
