@@ -15,16 +15,13 @@ __all__ = ["visualize_tensor", "animate_tensor"]
 def visualize_tensor(
     tensor: Tensor,
     title: Optional[str] = None,
-    extent: Optional[Sequence[float]] = None,
-    vmin: Optional[float] = None,
-    vmax: Optional[float] = None,
-    cmap: str = "inferno",
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     symbol: Optional[str] = None,
-    interpolation: Optional[str] = None,
+    # interpolation: Optional[str] = None,
     show: bool = True,
     return_fig: bool = False,
+    **kwargs,
 ) -> Optional[plt.Figure]:
     """
     Visualize a 2D real or complex-valued tensor using matplotlib.
@@ -58,39 +55,50 @@ def visualize_tensor(
         tensor = torch.where(tensor == -0.0 - 0.0j, 0, tensor)
 
         create_image_subplot(  # Plot magnitude squared
-            axes[0],
-            tensor.abs().square(),
-            extent,
-            vmin,
-            vmax,
-            cmap,
-            xlabel,
-            ylabel,
-            rf"$|${symbol}$|^2$" if symbol else None,
-            interpolation,
+            ax=axes[0],
+            tensor=tensor.abs().square(),
+            # extent,
+            # vmin,
+            # vmax,
+            # cmap,
+            xlabel=xlabel,
+            ylabel=ylabel,
+            ax_title=rf"$|${symbol}$|^2$" if symbol else None,
+            # interpolation,
+            **kwargs,
         )
 
+        kwargs.update({"vmin": -torch.pi, "vmax": torch.pi, "cmap": "twilight_shifted", "norm": None})
         create_image_subplot(  # Plot phase
-            axes[1],
-            tensor.angle(),
-            extent,
-            -torch.pi,
-            torch.pi,
-            "twilight_shifted",
-            xlabel,
-            ylabel,
-            r"$\arg \{$" + symbol + r"$\}$" if symbol is not None else None,
-            interpolation,
+            ax=axes[1],
+            tensor=tensor.angle(),
+            # extent,
+            # -torch.pi,
+            # torch.pi,
+            # "twilight_shifted",
+            xlabel=xlabel,
+            ylabel=ylabel,
+            ax_title=r"$\arg \{$" + symbol + r"$\}$" if symbol is not None else None,
+            # interpolation,
             cbar_ticks=[-torch.pi, 0, torch.pi],
             cbar_ticklabels=[r"$-\pi$", r"$0$", r"$\pi$"],
+            **kwargs,
         )
 
         axes[1].get_images()[0].set_interpolation("none")
         plt.subplots_adjust(wspace=0.4, hspace=0.4)
     else:
         fig, ax = plt.subplots(figsize=(5, 5))
-        create_image_subplot(ax, tensor, extent, vmin, vmax, cmap, xlabel, ylabel, symbol)
-
+        # create_image_subplot(ax, tensor, extent, vmin, vmax, cmap, xlabel, ylabel, symbol)
+        # create_image_subplot(ax, tensor, xlabel, ylabel, symbol, kwargs)
+        create_image_subplot(  # Plot magnitude squared
+            ax=ax,
+            tensor=tensor,
+            xlabel=xlabel,
+            ylabel=ylabel,
+            ax_title=symbol,
+            **kwargs,
+        )
     if title:
         fig.suptitle(title, y=0.95)
 
@@ -200,16 +208,17 @@ def animate_tensor(
 def create_image_subplot(
     ax: Any,
     tensor: Tensor,
-    extent: Optional[Sequence[float]] = None,
-    vmin: Optional[float] = None,
-    vmax: Optional[float] = None,
-    cmap: Optional[str] = None,
+    # extent: Optional[Sequence[float]] = None,
+    # vmin: Optional[float] = None,
+    # vmax: Optional[float] = None,
+    # cmap: Optional[str] = None,
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     ax_title: Optional[str] = None,
-    interpolation: Optional[str] = None,
+    # interpolation: Optional[str] = None,
     cbar_ticks: Optional[Sequence[float]] = None,
     cbar_ticklabels: Optional[Sequence[str]] = None,
+    **kwargs,
 ) -> Any:
     """
     Create an image subplot with colorbar, axis labels, and optional title.
@@ -231,8 +240,18 @@ def create_image_subplot(
     Returns:
         Any: The image object returned by `imshow`.
     """
-    extent_tuple = tuple(extent) if extent is not None else None
-    im = ax.imshow(tensor, extent=extent_tuple, vmin=vmin, vmax=vmax, cmap=cmap, interpolation=interpolation)
+    if "extent" in kwargs:
+        kwargs.update(tuple(kwargs.get("extent")))  # type: ignore[arg-type]
+    # if 'log' in kwargs.get("norm", ""):
+    #     # kwargs.pop('vmin')
+    #     # kwargs.pop('vmax')
+    #     kwargs['cmap'] = None
+    #     cbar_ticks = None
+    #     cbar_ticklabels = None
+
+    im = ax.imshow(
+        tensor, **kwargs
+    )  # extent=extent_tuple, vmin=vmin, vmax=vmax, cmap=cmap, interpolation=interpolation)
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
     colorbar = plt.colorbar(im, cax=cax, orientation="vertical")
