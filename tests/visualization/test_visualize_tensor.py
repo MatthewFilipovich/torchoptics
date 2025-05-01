@@ -54,6 +54,38 @@ def test_visualize_tensor_all_options():
     assert isinstance(fig, plt.Figure)
 
 
+def test_visualize_tensor_extra_imshow_kwargs():
+    import matplotlib as mpl
+
+    tensor = torch.rand(10, 10)
+
+    fig = visualize_tensor(
+        tensor,
+        xlabel="X",
+        ylabel="Y",
+        title="Labeled Tensor",
+        symbol="u",
+        show=False,
+        return_fig=True,
+        cmap="viridis",
+        norm="log",
+        vmin=0.2,
+        vmax=0.8,
+        aspect="equal",
+        interpolation="nearest",
+        interpolation_stage="data",
+        alpha=0.5,
+        origin="lower",
+        extent=[0, 1, 0, 1],
+        filternorm=False,
+        filterrad=1.0,
+        resample=False,
+        url="https://github.com/MatthewFilipovich/torchoptics",
+    )
+
+    assert isinstance(fig, plt.Figure)
+
+
 def test_animate_real_tensor():
     tensor = torch.rand(5, 10, 10)
     anim = animate_tensor(tensor, title="Real Animation", show=False)
