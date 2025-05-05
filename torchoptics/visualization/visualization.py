@@ -141,7 +141,8 @@ def animate_tensor(
     num_frames = tensor.shape[0]
     is_complex = tensor.is_complex()
 
-    titles = title if isinstance(title, Sequence) else [title] * num_frames  # type: ignore[list-item]
+    titles = [title] * num_frames if isinstance(title, str) or title is None else list(title)
+
     if len(titles) != num_frames:
         raise ValueError(f"`title` must have length {num_frames}, but got {len(titles)}.")
 
@@ -169,7 +170,9 @@ def animate_tensor(
             ims[1].set_array(tensor[frame].angle())
         else:
             ims[0].set_array(tensor[frame])
-        fig.suptitle(titles[frame], y=0.95)
+
+        if titles[frame]:
+            fig.suptitle(titles[frame], y=0.95)  # type: ignore[arg-type]
 
     anim = FuncAnimation(fig, update, frames=num_frames, **(func_anim_kwargs or {}))  # type: ignore[arg-type]
 
