@@ -92,10 +92,9 @@ def test_animate_tensor_calls_update():
             mock_show.assert_called_once()
 
         update_func = anim._func  # internal update function
+        assert callable(update_func)
         for frame in range(tensor.shape[0]):
             update_func(frame)
-
-        assert callable(update_func)
 
 
 def test_animate_tensor_invalid_shape():
@@ -107,25 +106,18 @@ def test_animate_tensor_invalid_shape():
 def test_animate_tensor_with_titles():
     with patch("matplotlib.pyplot.show") as mock_show:
         tensor = torch.rand(5, 10, 10)  # 5 frames of 10x10 tensors
-
-        # Create titles, vmins, and vmaxs for each frame
         titles = [f"Frame {i}" for i in range(5)]
-
-        anim = animate_tensor(
-            tensor,
-            title=titles,
-            show=True,
-        )
+        anim = animate_tensor(tensor, title=titles, show=True)
         assert isinstance(anim, Animation)
+
+        update_func = anim._func  # internal update function
+        for frame in range(tensor.shape[0]):
+            update_func(frame)
 
         # Check raises error for mismatched lengths
         titles_incorrect = [f"Frame {i}" for i in range(6)]
         with pytest.raises(ValueError):
-            animate_tensor(
-                tensor,
-                title=titles_incorrect,
-                show=True,
-            )
+            animate_tensor(tensor, title=titles_incorrect, show=True)
 
 
 def test_animate_tensor_extra_imshow_kwargs():
