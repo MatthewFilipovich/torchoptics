@@ -35,7 +35,8 @@ def visualize_tensor(
         symbol (str, optional): Symbol used in subplot titles for LaTeX rendering.
         show (bool, optional): Whether to call `plt.show()`. Defaults to True.
         return_fig (bool, optional): If True, returns the matplotlib Figure.
-        imshow_kwargs (dict, optional): Additional keyword arguments when calling matplotlib's `imshow()`.
+        **imshow_kwargs: Additional keyword arguments passed directly to `matplotlib.pyplot.imshow()`, such as
+            `cmap`, `vmin`, `vmax`, `interpolation`, etc.
 
     Returns:
         Optional[plt.Figure]: The matplotlib Figure if `return_fig` is True, else None.
@@ -45,7 +46,7 @@ def visualize_tensor(
 
     tensor = tensor.detach().cpu().view(tensor.shape[-2], tensor.shape[-1])
 
-    if tensor.is_complex():
+    if tensor.is_complex():  # Creates two subplots for complex tensors
         fig, axes = plt.subplots(1, 2, figsize=(10, 5))
         tensor = torch.where(tensor == -0.0 - 0.0j, 0, tensor)
 
@@ -58,7 +59,15 @@ def visualize_tensor(
             **imshow_kwargs,
         )
 
-        imshow_kwargs.update({"vmin": -torch.pi, "vmax": torch.pi, "cmap": "twilight_shifted", "norm": None})
+        imshow_phase_kwargs = {  # Override imshow kwargs for phase plot
+            **imshow_kwargs,
+            "vmin": -torch.pi,
+            "vmax": torch.pi,
+            "cmap": "twilight_shifted",
+            "norm": None,
+            "interpolation": "none",
+        }
+
         create_image_subplot(  # Plot phase
             ax=axes[1],
             tensor=tensor.angle(),
@@ -67,14 +76,14 @@ def visualize_tensor(
             ax_title=r"$\arg \{$" + symbol + r"$\}$" if symbol is not None else None,
             cbar_ticks=[-torch.pi, 0, torch.pi],
             cbar_ticklabels=[r"$-\pi$", r"$0$", r"$\pi$"],
-            **imshow_kwargs,
+            **imshow_phase_kwargs,
         )
 
-        axes[1].get_images()[0].set_interpolation("none")
         plt.subplots_adjust(wspace=0.4, hspace=0.4)
-    else:
+
+    else:  # Plots a single subplot for real tensors
         fig, ax = plt.subplots(figsize=(5, 5))
-        create_image_subplot(  # Plot magnitude squared
+        create_image_subplot(
             ax=ax,
             tensor=tensor,
             xlabel=xlabel,
@@ -82,6 +91,7 @@ def visualize_tensor(
             ax_title=symbol,
             **imshow_kwargs,
         )
+
     if title:
         fig.suptitle(title, y=0.95)
 
@@ -97,16 +107,12 @@ def visualize_tensor(
 def animate_tensor(
     tensor: Tensor,
     title: Union[str, Sequence[str], None] = None,
-    extent: Optional[Sequence[float]] = None,
-    vmin: Union[float, Sequence[float], None] = None,
-    vmax: Union[float, Sequence[float], None] = None,
-    cmap: str = "inferno",
     xlabel: Optional[str] = None,
     ylabel: Optional[str] = None,
     symbol: Optional[str] = None,
-    interpolation: Optional[str] = None,
     show: bool = True,
     func_anim_kwargs: Optional[dict] = None,
+    **imshow_kwargs,
 ) -> FuncAnimation:
     """
     Animate a 3D tensor over time using matplotlib.
@@ -117,16 +123,13 @@ def animate_tensor(
     Args:
         tensor (Tensor): A 3D tensor of shape (T, H, W).
         title (str or Sequence[str], optional): Title for each frame, or a static title.
-        extent (Sequence[float], optional): Image extent in data coordinates.
-        vmin (float or Sequence[float], optional): Minimum value(s) for color scaling.
-        vmax (float or Sequence[float], optional): Maximum value(s) for color scaling.
-        cmap (str, optional): Colormap for the plot. Defaults to "inferno".
         xlabel (str, optional): Label for the x-axis.
         ylabel (str, optional): Label for the y-axis.
-        symbol (str, optional): Symbol used in subplot titles.
-        interpolation (str, optional): Interpolation type for imshow.
-        show (bool, optional): Whether to display the animation immediately.
+        symbol (str, optional): Symbol used in subplot titles for LaTeX rendering.
+        show (bool, optional): Whether to call `plt.show()`. Defaults to True.
         func_anim_kwargs (dict, optional): Additional keyword arguments for `FuncAnimation`.
+        **imshow_kwargs: Additional keyword arguments passed directly to `matplotlib.pyplot.imshow()`, such as
+            `cmap`, `vmin`, `vmax`, `interpolation`, etc.
 
     Returns:
         FuncAnimation: The matplotlib animation object.
@@ -138,30 +141,20 @@ def animate_tensor(
     num_frames = tensor.shape[0]
     is_complex = tensor.is_complex()
 
-    def validate_sequence(arg: Union[None, str, float, Sequence], name: str):
-        if isinstance(arg, torch.Tensor) or (isinstance(arg, Sequence) and not isinstance(arg, str)):
-            if len(arg) != num_frames:
-                raise ValueError(f"{name} must have length {num_frames}, but got {len(arg)}.")
-            return arg
-        return [arg] * num_frames
+    titles = [title] * num_frames if isinstance(title, str) or title is None else list(title)
 
-    titles = validate_sequence(title, "title")
-    vmins = validate_sequence(vmin, "vmin")
-    vmaxs = validate_sequence(vmax, "vmax")
+    if len(titles) != num_frames:
+        raise ValueError(f"`title` must have length {num_frames}, but got {len(titles)}.")
 
     fig: plt.Figure = visualize_tensor(  # type: ignore[assignment]
         tensor[0],
         title=titles[0],
-        extent=extent,
-        vmin=vmins[0],
-        vmax=vmaxs[0],
-        cmap=cmap,
         xlabel=xlabel,
         ylabel=ylabel,
         symbol=symbol,
-        interpolation=interpolation,
         show=False,
         return_fig=True,
+        **imshow_kwargs,
     )
 
     axes = fig.axes
@@ -177,8 +170,9 @@ def animate_tensor(
             ims[1].set_array(tensor[frame].angle())
         else:
             ims[0].set_array(tensor[frame])
-        fig.suptitle(titles[frame], y=0.95)
-        ims[0].set_clim(vmins[frame], vmaxs[frame])
+
+        if titles[frame]:
+            fig.suptitle(titles[frame], y=0.95)  # type: ignore[arg-type]
 
     anim = FuncAnimation(fig, update, frames=num_frames, **(func_anim_kwargs or {}))  # type: ignore[arg-type]
 
@@ -209,13 +203,13 @@ def create_image_subplot(
         ax_title (str, optional): Title of the subplot.
         cbar_ticks (Sequence[float], optional): Ticks to display on the colorbar.
         cbar_ticklabels (Sequence[str], optional): Labels for the colorbar ticks.
-        imshow_kwargs (dict, optional): Additional keyword arguments when calling matplotlib's `imshow()`.
+        **imshow_kwargs: Additional keyword arguments passed directly to `matplotlib.pyplot.imshow()`, such as
+            `cmap`, `vmin`, `vmax`, `interpolation`, etc.
 
     Returns:
         Any: The image object returned by `imshow`.
     """
-    if (extent := imshow_kwargs.get("extent")) is not None:
-        imshow_kwargs.update(extent=tuple(extent))
+    imshow_kwargs.setdefault("cmap", "inferno")
 
     im = ax.imshow(tensor, **imshow_kwargs)
     divider = make_axes_locatable(ax)

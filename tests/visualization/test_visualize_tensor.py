@@ -35,28 +35,7 @@ def test_invalid_tensor_shape_3d():
         visualize_tensor(tensor)
 
 
-def test_visualize_tensor_all_options():
-    tensor = torch.rand(10, 10)
-
-    fig = visualize_tensor(
-        tensor,
-        extent=[0, 1, 0, 1],
-        xlabel="X",
-        ylabel="Y",
-        title="Labeled Tensor",
-        vmin=0.2,
-        vmax=0.8,
-        symbol="u",
-        show=False,
-        return_fig=True,
-    )
-
-    assert isinstance(fig, plt.Figure)
-
-
 def test_visualize_tensor_extra_imshow_kwargs():
-    import matplotlib as mpl
-
     tensor = torch.rand(10, 10)
 
     fig = visualize_tensor(
@@ -113,10 +92,9 @@ def test_animate_tensor_calls_update():
             mock_show.assert_called_once()
 
         update_func = anim._func  # internal update function
+        assert callable(update_func)
         for frame in range(tensor.shape[0]):
             update_func(frame)
-
-        assert callable(update_func)
 
 
 def test_animate_tensor_invalid_shape():
@@ -125,36 +103,49 @@ def test_animate_tensor_invalid_shape():
         animate_tensor(tensor)
 
 
-def test_animate_tensor_with_titles_vmins_vmaxes():
-    tensor = torch.rand(5, 10, 10)  # 5 frames of 10x10 tensors
+def test_animate_tensor_with_titles():
+    with patch("matplotlib.pyplot.show") as mock_show:
+        tensor = torch.rand(5, 10, 10)  # 5 frames of 10x10 tensors
+        titles = [f"Frame {i}" for i in range(5)]
+        anim = animate_tensor(tensor, title=titles, show=True)
+        assert isinstance(anim, Animation)
 
-    # Create titles, vmins, and vmaxs for each frame
-    titles = [f"Frame {i}" for i in range(5)]
-    vmins = torch.arange(5)
-    vmaxs = torch.arange(5) + 1
+        update_func = anim._func  # internal update function
+        for frame in range(tensor.shape[0]):
+            update_func(frame)
+
+        # Check raises error for mismatched lengths
+        titles_incorrect = [f"Frame {i}" for i in range(6)]
+        with pytest.raises(ValueError):
+            animate_tensor(tensor, title=titles_incorrect, show=True)
+
+
+def test_animate_tensor_extra_imshow_kwargs():
+    tensor = torch.rand(5, 10, 10)
+    func_anim_kwargs = {"interval": 500}
 
     anim = animate_tensor(
         tensor,
-        title=titles,
-        vmin=vmins,
-        vmax=vmaxs,
+        xlabel="X",
+        ylabel="Y",
+        title="Labeled Tensor",
+        symbol="u",
         show=False,
+        func_anim_kwargs=func_anim_kwargs,
+        cmap="viridis",
+        norm="log",
+        vmin=0.2,
+        vmax=0.8,
+        aspect="equal",
+        interpolation="nearest",
+        interpolation_stage="data",
+        alpha=0.5,
+        origin="lower",
+        extent=[0, 1, 0, 1],
+        filternorm=False,
+        filterrad=1.0,
+        resample=False,
+        url="https://github.com/MatthewFilipovich/torchoptics",
     )
-    assert isinstance(anim, Animation)
 
-    # Check raises error for mismatched lengths
-    vmins_incorrect = [1, 2]
-    with pytest.raises(ValueError):
-        animate_tensor(
-            tensor,
-            title=titles,
-            vmin=vmins_incorrect,
-            vmax=vmaxs,
-            show=False,
-        )
-
-
-def test_animate_tensor_with_custom_kwargs():
-    tensor = torch.rand(5, 10, 10)
-    anim = animate_tensor(tensor, func_anim_kwargs={"interval": 500}, show=False)
     assert isinstance(anim, FuncAnimation)
