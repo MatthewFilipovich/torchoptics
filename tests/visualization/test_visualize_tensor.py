@@ -35,28 +35,7 @@ def test_invalid_tensor_shape_3d():
         visualize_tensor(tensor)
 
 
-def test_visualize_tensor_all_options():
-    tensor = torch.rand(10, 10)
-
-    fig = visualize_tensor(
-        tensor,
-        extent=[0, 1, 0, 1],
-        xlabel="X",
-        ylabel="Y",
-        title="Labeled Tensor",
-        vmin=0.2,
-        vmax=0.8,
-        symbol="u",
-        show=False,
-        return_fig=True,
-    )
-
-    assert isinstance(fig, plt.Figure)
-
-
 def test_visualize_tensor_extra_imshow_kwargs():
-    import matplotlib as mpl
-
     tensor = torch.rand(10, 10)
 
     fig = visualize_tensor(
@@ -125,36 +104,55 @@ def test_animate_tensor_invalid_shape():
         animate_tensor(tensor)
 
 
-def test_animate_tensor_with_titles_vmins_vmaxes():
+def test_animate_tensor_with_titles():
     tensor = torch.rand(5, 10, 10)  # 5 frames of 10x10 tensors
 
     # Create titles, vmins, and vmaxs for each frame
     titles = [f"Frame {i}" for i in range(5)]
-    vmins = torch.arange(5)
-    vmaxs = torch.arange(5) + 1
 
     anim = animate_tensor(
         tensor,
         title=titles,
-        vmin=vmins,
-        vmax=vmaxs,
         show=False,
     )
     assert isinstance(anim, Animation)
 
     # Check raises error for mismatched lengths
-    vmins_incorrect = [1, 2]
+    titles_incorrect = [f"Frame {i}" for i in range(6)]
     with pytest.raises(ValueError):
         animate_tensor(
             tensor,
-            title=titles,
-            vmin=vmins_incorrect,
-            vmax=vmaxs,
+            title=titles_incorrect,
             show=False,
         )
 
 
-def test_animate_tensor_with_custom_kwargs():
+def test_animate_tensor_extra_imshow_kwargs():
     tensor = torch.rand(5, 10, 10)
-    anim = animate_tensor(tensor, func_anim_kwargs={"interval": 500}, show=False)
+    func_anim_kwargs = {"interval": 500}
+
+    anim = animate_tensor(
+        tensor,
+        xlabel="X",
+        ylabel="Y",
+        title="Labeled Tensor",
+        symbol="u",
+        show=False,
+        func_anim_kwargs=func_anim_kwargs,
+        cmap="viridis",
+        norm="log",
+        vmin=0.2,
+        vmax=0.8,
+        aspect="equal",
+        interpolation="nearest",
+        interpolation_stage="data",
+        alpha=0.5,
+        origin="lower",
+        extent=[0, 1, 0, 1],
+        filternorm=False,
+        filterrad=1.0,
+        resample=False,
+        url="https://github.com/MatthewFilipovich/torchoptics",
+    )
+
     assert isinstance(anim, FuncAnimation)
