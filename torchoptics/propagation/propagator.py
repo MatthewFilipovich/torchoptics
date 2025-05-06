@@ -61,10 +61,6 @@ def propagator(
     if output_plane.z != field.z:  # Propagate to output plane z
         propagation_plane = get_propagation_plane(field, output_plane)
         is_asm = use_angular_spectrum_method(field, propagation_plane, propagation_method)
-        if is_asm:
-            field = asm_propagation(field, propagation_plane, propagation_method, asm_pad_factor)
-        else:
-            field = dim_propagation(field, propagation_plane, propagation_method)
 
         logger.info("--- Propagating using %s method ---", "ASM" if is_asm else "DIM")
         critical_z = calculate_critical_propagation_distance(field, propagation_plane)
@@ -73,6 +69,11 @@ def propagator(
             logger.info("ASM padding factor: %s", asm_pad_factor)
         logger.info("Input field plane: %s", field.geometry_str())
         logger.info("Propagation plane: %s", propagation_plane.geometry_str())
+
+        if is_asm:
+            field = asm_propagation(field, propagation_plane, propagation_method, asm_pad_factor)
+        else:
+            field = dim_propagation(field, propagation_plane, propagation_method)
 
     if not output_plane.is_same_geometry(field):  # Interpolate to output plane geometry
         transformed_data = plane_sample(field.data, field, output_plane, interpolation_mode)
