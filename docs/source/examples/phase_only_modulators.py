@@ -75,7 +75,7 @@ print(system)
 
 input_field = Field(torch.ones(shape, shape)).to(device)
 output_field = system.measure_at_z(input_field, z=2 * focal_length)
-output_field.visualize(title="Output Field", vmax=1)
+output_field.visualize(title="2f", vmax=1)
 
 # %%
 # Insert a Circular Amplitude Aperture at the Focal Plane to Modify the Output
@@ -83,13 +83,16 @@ output_field.visualize(title="Output Field", vmax=1)
 circular_aperture = AmplitudeModulator(circle(shape, 1e-3, offset=(-3.5e-3, 0)), z=2 * focal_length).to(
     device
 )
-circular_aperture.visualize(title="Circular Aperture")
+circular_aperture.visualize(title="Circular Aperture at 2f")
 
 # %%
-updated_system = System(phase_modulator, Lens(shape, focal_length, z=focal_length), circular_aperture).to(
-    device
-)
+updated_system = System(
+    phase_modulator,
+    Lens(shape, focal_length, z=focal_length),
+    circular_aperture,
+    Lens(shape, focal_length, z=3 * focal_length),
+).to(device)
 print(system)
 
-output_field = updated_system.measure_at_z(input_field, z=2 * focal_length)
-output_field.visualize(title="Output Field")
+output_field = updated_system.measure_at_z(input_field, z=4 * focal_length)
+output_field.visualize(title="Output Field (4f)")
