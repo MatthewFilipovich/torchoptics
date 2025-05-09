@@ -134,5 +134,6 @@ class PlanarGrid(OpticsModule):  # pylint: disable=abstract-method
     def _visualize(self, data: Tensor, index: tuple = (), show_bounds: bool = False, **kwargs) -> Any:
         """Visualizes the data tensor."""
         if show_bounds:
-            kwargs.update({"extent": torch.cat((self.bounds()[2:], self.bounds()[:2])).cpu().detach()})
+            bounds = self.bounds().detach().cpu()
+            kwargs.update({"extent": [bounds[2], bounds[3], bounds[1], bounds[0]]})
         return visualize_tensor(data[index + (slice(None), slice(None))], **kwargs)
