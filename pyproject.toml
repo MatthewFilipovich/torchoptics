@@ -40,13 +40,11 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = [
-  "black",
   "coverage",
-  "isort",
-  "mypy",
   "pre-commit",
-  "pylint",
+  "pyright",
   "pytest",
+  "ruff",
   "scipy"
 ]
 
