@@ -58,7 +58,7 @@ Tracker = "https://github.com/MatthewFilipovich/torchoptics/issues"
 [tool.setuptools.package-data]
 "torchoptics" = ["py.typed"]
 
-[tool.black]
+[tool.ruff]
 line-length = 110
 
 [tool.coverage.report]
@@ -69,19 +69,3 @@ exclude_lines = [
 
 [tool.coverage.run]
 omit = ["tests/*"]
-
-[tool.isort]
-profile = "black"
-line_length = 110
-
-[tool.pylint]
-
-[tool.pylint.format]
-max-line-length = 110
-
-[tool.pylint."messages control"]
-disable = [
-  "too-many-arguments",
-  "too-few-public-methods",
-  "too-many-positional-arguments"
-]
