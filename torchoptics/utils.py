@@ -74,7 +74,7 @@ def initialize_shape(shape: Vector2) -> tuple[int, int]:
         shape (Vector2): The shape to initialize.
     """
     shape_tensor = initialize_tensor("shape", shape, is_vector2=True, is_integer=True, is_positive=True)
-    return (shape_tensor[0].item(), shape_tensor[1].item())  # type: ignore[return-value]
+    return (shape_tensor[0].item(), shape_tensor[1].item())  # type: ignore
 
 
 def validate_tensor_ndim(tensor: Tensor, name: str, ndim: int) -> None:

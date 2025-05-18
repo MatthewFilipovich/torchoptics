@@ -82,8 +82,8 @@ class LeftCircularPolarizer(PolarizedModulationElement):
     def polarized_modulation_profile(self) -> Tensor:
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)
         tensor[0, 0] = 0.5
-        tensor[0, 1] = -0.5j  # type: ignore[assignment]
-        tensor[1, 0] = 0.5j  # type: ignore[assignment]
+        tensor[0, 1] = -0.5j  # type: ignore
+        tensor[1, 0] = 0.5j  # type: ignore
         tensor[1, 1] = 0.5
         tensor[2, 2] = 1
         return tensor
@@ -114,8 +114,8 @@ class RightCircularPolarizer(PolarizedModulationElement):
     def polarized_modulation_profile(self) -> Tensor:
         tensor = torch.zeros(3, 3, *self.shape, dtype=torch.cdouble, device=next(self.buffers()).device)
         tensor[0, 0] = 0.5
-        tensor[0, 1] = 0.5j  # type: ignore[assignment]
-        tensor[1, 0] = -0.5j  # type: ignore[assignment]
+        tensor[0, 1] = 0.5j  # type: ignore
+        tensor[1, 0] = -0.5j  # type: ignore
         tensor[1, 1] = 0.5
         tensor[2, 2] = 1
         return tensor

@@ -92,7 +92,7 @@ def test_animate_tensor_calls_update():
             mock_show.assert_called_once()
 
         # Internal update function
-        update_func = anim._func  # type: ignore[reportArgumentType]
+        update_func = anim._func  # type: ignore
         assert callable(update_func)
         for frame in range(tensor.shape[0]):
             update_func(frame)
@@ -111,7 +111,7 @@ def test_animate_tensor_with_titles():
         anim = animate_tensor(tensor, title=titles, show=True)
         assert isinstance(anim, Animation)
 
-        update_func = anim._func  # type: ignore[reportArgumentType]
+        update_func = anim._func  # type: ignore
         for frame in range(tensor.shape[0]):
             update_func(frame)
 

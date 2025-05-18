@@ -39,7 +39,7 @@ def test_field_initialization():
     assert torch.equal(pg.offset, torch.tensor([0.0, 0.0], dtype=torch.double))
     assert torch.equal(pg.wavelength, torch.tensor(0.3, dtype=torch.double))
     with pytest.raises(TypeError):
-        Field("Wrong type", spacing=1, wavelength=1)  # type: ignore[arg-type]
+        Field("Wrong type", spacing=1, wavelength=1)  # type: ignore
     with pytest.raises(ValueError):
         Field(torch.ones(10), spacing=1, wavelength=1)
 
@@ -254,7 +254,7 @@ def test_field_propagate_methods():
     assert torch.allclose(field_propagate_to_z.data, field_propagate.data)
     assert torch.allclose(field_propagate_to_plane.data, field_propagate.data)
     with pytest.raises(TypeError):
-        field.propagate_to_plane("Not a PlanarGrid object")  # type: ignore[arg-type]
+        field.propagate_to_plane("Not a PlanarGrid object")  # type: ignore
 
 
 def test_field_modulate():

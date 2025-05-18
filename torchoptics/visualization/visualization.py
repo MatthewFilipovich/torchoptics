@@ -1,12 +1,12 @@
 """Visualization utilities for real or complex-valued tensors using matplotlib."""
 
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union, cast
 
 import matplotlib.pyplot as plt
 import torch
 from matplotlib.animation import FuncAnimation
 from matplotlib.figure import Figure
-from mpl_toolkits.axes_grid1 import make_axes_locatable  # type: ignore
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from torch import Tensor
 
 
@@ -144,7 +144,7 @@ def animate_tensor(
     if len(titles) != num_frames:
         raise ValueError(f"`title` must have length {num_frames}, but got {len(titles)}.")
 
-    fig: plt.Figure = visualize_tensor(  # type: ignore[assignment]
+    fig = visualize_tensor(
         tensor[0],
         title=titles[0],
         xlabel=xlabel,
@@ -154,8 +154,9 @@ def animate_tensor(
         return_fig=True,
         **imshow_kwargs,
     )
-
+    fig = cast(Figure, fig)
     axes = fig.axes
+
     if is_complex:
         tensor = torch.where(tensor == -0.0 - 0.0j, 0, tensor)  # Remove numerical artifacts
         ims = [axes[0].get_images()[0], axes[1].get_images()[0]]
@@ -170,9 +171,9 @@ def animate_tensor(
             ims[0].set_array(tensor[frame])
 
         if titles[frame]:
-            fig.suptitle(titles[frame], y=0.95)  # type: ignore[arg-type]
+            fig.suptitle(titles[frame], y=0.95)  # type: ignore
 
-    anim = FuncAnimation(fig, update, frames=num_frames, **(func_anim_kwargs or {}))  # type: ignore[arg-type]
+    anim = FuncAnimation(fig, update, frames=num_frames, **(func_anim_kwargs or {}))  # type: ignore
 
     if show:
         plt.show()

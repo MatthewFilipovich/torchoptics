@@ -161,7 +161,7 @@ def meshgrid2d(bounds: Union[Tensor, Sequence[Tensor]], shape: Sequence) -> tupl
         linspace_grad(bounds[0], bounds[1], shape[0]),
         linspace_grad(bounds[2], bounds[3], shape[1]),
         indexing="ij",
-    )  # type: ignore[return-value]
+    )  # type: ignore
 
 
 def outer2d(vec1: Tensor, vec2: Tensor) -> Tensor:

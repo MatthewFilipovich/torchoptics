@@ -101,7 +101,7 @@ class AmplitudeModulator(ModulationElement):
         self.register_optics_property("amplitude", amplitude)
 
     def modulation_profile(self) -> Tensor:
-        return self.amplitude.cdouble()  # type: ignore
+        return self.amplitude.to(torch.cdouble)
 
 
 class PolychromaticPhaseModulator(PolychromaticModulationElement):

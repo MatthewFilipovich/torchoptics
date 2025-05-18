@@ -67,11 +67,11 @@ def test_amplitude_modulation_profile_consistency():
 def test_error_on_invalid_tensor_input():
     z = 1.5
     with pytest.raises(TypeError):
-        Modulator("not a tensor", z)  # type: ignore[arg-type]
+        Modulator("not a tensor", z)  # type: ignore
     with pytest.raises(TypeError):
-        PhaseModulator("not a tensor", z)  # type: ignore[arg-type]
+        PhaseModulator("not a tensor", z)  # type: ignore
     with pytest.raises(TypeError):
-        AmplitudeModulator("not a tensor", z)  # type: ignore[arg-type]
+        AmplitudeModulator("not a tensor", z)  # type: ignore
 
 
 def test_error_on_incorrect_dimensions():

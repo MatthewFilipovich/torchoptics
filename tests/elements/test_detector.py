@@ -23,6 +23,6 @@ def test_linear_detector():
     assert isinstance(fig, Figure)
 
     with pytest.raises(TypeError):
-        LinearDetector("not a tensor", spacing=spacing)  # type: ignore[arg-type]
+        LinearDetector("not a tensor", spacing=spacing)  # type: ignore
     with pytest.raises(ValueError):
         LinearDetector(torch.rand(1, 2, 3, 4), spacing=spacing)
