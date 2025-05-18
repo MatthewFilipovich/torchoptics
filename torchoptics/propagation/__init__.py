@@ -5,8 +5,8 @@ from .propagator import (
     VALID_PROPAGATION_METHODS,
     calculate_critical_propagation_distance,
     get_propagation_plane,
+    is_angular_spectrum_method,
     propagator,
-    use_angular_spectrum_method,
 )
 
 __all__ = [
@@ -14,6 +14,6 @@ __all__ = [
     "VALID_PROPAGATION_METHODS",
     "calculate_critical_propagation_distance",
     "get_propagation_plane",
-    "use_angular_spectrum_method",
+    "is_angular_spectrum_method",
     "propagator",
 ]

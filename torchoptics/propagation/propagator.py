@@ -60,7 +60,7 @@ def propagator(
 
     if output_plane.z != field.z:  # Propagate to output plane z
         propagation_plane = get_propagation_plane(field, output_plane)
-        is_asm = use_angular_spectrum_method(field, propagation_plane, propagation_method)
+        is_asm = is_angular_spectrum_method(field, propagation_plane, propagation_method)
 
         logger.info("--- Propagating using %s method ---", "ASM" if is_asm else "DIM")
         critical_z = calculate_critical_propagation_distance(field, propagation_plane)
@@ -124,7 +124,7 @@ def get_propagation_plane(field: Field, output_plane: PlanarGrid) -> PlanarGrid:
     return PlanarGrid(propagation_shape, output_plane.z, field.spacing, output_plane.offset)
 
 
-def use_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str):
+def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str):
     """Returns whether propagation using ASM should be used.
 
     Returns `True` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_FRESNEL"`.
