@@ -1,7 +1,7 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 import torch
+from matplotlib.figure import Figure
 from scipy.special import fresnel
 
 from torchoptics import Field, PlanarGrid
@@ -39,7 +39,7 @@ def test_field_initialization():
     assert torch.equal(pg.offset, torch.tensor([0.0, 0.0], dtype=torch.double))
     assert torch.equal(pg.wavelength, torch.tensor(0.3, dtype=torch.double))
     with pytest.raises(TypeError):
-        Field("Wrong type", spacing=1, wavelength=1)
+        Field("Wrong type", spacing=1, wavelength=1)  # type: ignore[arg-type]
     with pytest.raises(ValueError):
         Field(torch.ones(10), spacing=1, wavelength=1)
 
@@ -55,7 +55,7 @@ def test_field_centroid_and_std():
     sigma_x, sigma_y = 2.6, 1.75
     mu_x, mu_y = -2.34, 3.23
     data = (gaussian_2d(x, y, sigma_x, sigma_y, mu_x, mu_y)) ** 0.5
-    field = Field(data.cdouble(), wavelength, z, spacing, offset)
+    field = Field(data.to(torch.cdouble), wavelength, z, spacing, offset)
     centroid = field.centroid()
     std = field.std()
     assert torch.allclose(centroid, torch.tensor([mu_x, mu_y], dtype=torch.double), atol=1e-3)
@@ -72,7 +72,7 @@ def test_field_propagation_square_aperture():
         for propagation_method in VALID_PROPAGATION_METHODS:
             square_field = torch.ones(shape, shape, device=device)
             input_field = Field(
-                square_field.cdouble(),
+                square_field.to(torch.cdouble),
                 spacing=spacing,
                 wavelength=wavelength,
             ).to(device)
@@ -254,7 +254,7 @@ def test_field_propagate_methods():
     assert torch.allclose(field_propagate_to_z.data, field_propagate.data)
     assert torch.allclose(field_propagate_to_plane.data, field_propagate.data)
     with pytest.raises(TypeError):
-        field.propagate_to_plane("Not a PlanarGrid object")
+        field.propagate_to_plane("Not a PlanarGrid object")  # type: ignore[arg-type]
 
 
 def test_field_modulate():
@@ -290,7 +290,7 @@ def test_field_visualize():
     data = torch.ones(shape, dtype=torch.cdouble)
     field = Field(data, wavelength=1, spacing=1)
     fig = field.visualize(show=False, return_fig=True)
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)
 
 
 def test_field_polarized_split():

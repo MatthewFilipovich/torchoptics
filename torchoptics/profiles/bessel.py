@@ -55,4 +55,4 @@ def bessel(
     r = torch.sqrt(x**2 + y**2)
 
     # Calculate the zeroth-order Bessel beam
-    return torch.special.bessel_j0(k_r * r)  # pylint: disable=not-callable
+    return torch.special.bessel_j0(k_r * r)

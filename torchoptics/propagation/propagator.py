@@ -147,7 +147,7 @@ def calculate_critical_propagation_distance(field: Field, propagation_plane: Pla
     The returned value is a tensor of shape (2,) containing the critical distances in both planar dimensions.
     """
     grid_bounds_abs = calculate_grid_bounds(field, propagation_plane).abs()
-    max_distance = torch.stack([max(grid_bounds_abs[:2]), max(grid_bounds_abs[2:])])
+    max_distance = torch.stack([grid_bounds_abs[:2].max(), grid_bounds_abs[2:].max()])
     return 2 * max_distance * field.spacing / field.wavelength
 
 

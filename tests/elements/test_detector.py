@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
 import pytest
 import torch
+from matplotlib.figure import Figure
 
 from torchoptics import Field
 from torchoptics.elements import LinearDetector
@@ -20,9 +20,9 @@ def test_linear_detector():
     assert output.shape == (2,)
     assert torch.allclose(output, torch.tensor([3000.0, 1200.0], dtype=torch.double))
     fig = detector.visualize(0, show=False, return_fig=True)
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)
 
     with pytest.raises(TypeError):
-        LinearDetector("not a tensor", spacing=spacing)
+        LinearDetector("not a tensor", spacing=spacing)  # type: ignore[arg-type]
     with pytest.raises(ValueError):
         LinearDetector(torch.rand(1, 2, 3, 4), spacing=spacing)

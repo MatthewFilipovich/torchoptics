@@ -15,7 +15,7 @@ from .type_defs import Scalar, Vector2
 from .utils import copy, validate_tensor_min_ndim
 
 
-class Field(PlanarGrid):  # pylint: disable=abstract-method
+class Field(PlanarGrid):
     """Optical field class.
 
     Args:
@@ -256,7 +256,7 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
             )
 
 
-class SpatialCoherence(Field):  # pylint: disable=abstract-method
+class SpatialCoherence(Field):
     """Spatial Coherence class.
 
     Args:
@@ -272,8 +272,8 @@ class SpatialCoherence(Field):  # pylint: disable=abstract-method
 
     DATA_MIN_NDIM = 4
     POLARIZATION_DIM = -5
-    propagate = get_coherence_evolution(Field.propagate)
-    modulate = get_coherence_evolution(Field.modulate)
+    propagate = get_coherence_evolution(Field.propagate)  # type: ignore
+    modulate = get_coherence_evolution(Field.modulate)  # type: ignore
 
     def intensity(self) -> Tensor:
         if self.data.shape[-1] != self.data.shape[-3] or self.data.shape[-2] != self.data.shape[-4]:

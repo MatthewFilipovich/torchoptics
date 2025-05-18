@@ -58,5 +58,5 @@ def test_gaussian_schell_model_incoherent():
         spacing=spacing,
     )
     incoherent_data = incoherent_data.view(shape[0] * shape[1], -1)
-    incoherent_data[torch.eye(shape[0] * shape[1], dtype=bool)] = 0
+    incoherent_data[torch.eye(shape[0] * shape[1], dtype=torch.bool)] = 0
     assert torch.all(incoherent_data == 0)

@@ -7,7 +7,7 @@ from torch.nn import Module, Parameter
 from .utils import initialize_tensor
 
 
-class OpticsModule(Module):  # pylint: disable=abstract-method
+class OpticsModule(Module):
     """
     Base class for all optics modules.
 

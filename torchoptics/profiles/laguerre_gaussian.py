@@ -80,7 +80,6 @@ def laguerre_gaussian(
     Returns:
         Tensor: The generated Laguerre-Gaussian profile.
     """
-    # pylint: disable=too-many-locals
     p = initialize_tensor("p", p, is_scalar=True, is_integer=True, is_non_negative=True)
     l = initialize_tensor("l", l, is_scalar=True, is_integer=True)
     waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)

@@ -5,6 +5,7 @@ from typing import Any, Optional, Sequence, Union
 import matplotlib.pyplot as plt
 import torch
 from matplotlib.animation import FuncAnimation
+from matplotlib.figure import Figure
 from mpl_toolkits.axes_grid1 import make_axes_locatable  # type: ignore
 from torch import Tensor
 
@@ -18,7 +19,7 @@ def visualize_tensor(
     show: bool = True,
     return_fig: bool = False,
     **imshow_kwargs,
-) -> Optional[plt.Figure]:
+) -> Optional[Figure]:
     """
     Visualize a 2D real or complex-valued tensor using matplotlib.
 

@@ -76,7 +76,7 @@ def test_elements_along_field_path():
     system1 = System(modulator1, detector, modulator2)
     with pytest.raises(TypeError):
         system1(input_field)
-    detector.z = 3 * propagation_distance
+    detector.z = 3 * propagation_distance  # type: ignore
     system1 = System(modulator1, detector, modulator2)
     system1(input_field)
     system1.measure_at_z(input_field, 2.5 * propagation_distance)
