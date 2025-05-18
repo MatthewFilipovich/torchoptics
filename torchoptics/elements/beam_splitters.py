@@ -11,7 +11,7 @@ from ..utils import copy
 from .elements import Element
 
 
-class BeamSplitter(Element):  # pylint: disable=W0223
+class BeamSplitter(Element):
     r"""
     Beam splitter element.
 
@@ -98,7 +98,7 @@ class BeamSplitter(Element):  # pylint: disable=W0223
         return copy(field, data=output_data0), copy(field, data=output_data1)
 
 
-class PolarizingBeamSplitter(Element):  # pylint: disable=W0223
+class PolarizingBeamSplitter(Element):
     """
     Polarizing beam splitter element.
 

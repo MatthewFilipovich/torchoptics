@@ -4,7 +4,7 @@ from ..fields import Field
 from .elements import Element
 
 
-class IdentityElement(Element):  # pylint: disable=W0223
+class IdentityElement(Element):
     """
     Identity element.
 

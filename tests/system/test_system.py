@@ -86,8 +86,8 @@ def test_elements_along_field_path():
         system1.measure_at_z(input_field, 4 * propagation_distance)
     with pytest.raises(ValueError):
         system1.measure_at_z(input_field, -1)
-    with pytest.raises(TypeError):
-        System(PlanarGrid(shape, z=0, spacing=spacing))  # Should be type Element
+    with pytest.raises(TypeError):  # Should be type Element
+        System(PlanarGrid(shape, z=0, spacing=spacing))  # type: ignore[reportArgumentType]
 
 
 def test_dunder_methods():
@@ -137,4 +137,4 @@ def test_last_element():
     system = System()
     plane = PlanarGrid(shape, z=2 * propagation_distance, spacing=spacing)
     with pytest.raises(TypeError):
-        system.elements_in_field_path(input_field, plane)
+        system.elements_in_field_path(input_field, plane)  # type: ignore[reportGeneralTypeIssues]

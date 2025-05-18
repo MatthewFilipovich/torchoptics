@@ -11,7 +11,7 @@ from ..utils import validate_tensor_ndim
 from .elements import Element
 
 
-class Detector(Element):  # pylint: disable=W0223
+class Detector(Element):
     r"""
     Detector element.
 
