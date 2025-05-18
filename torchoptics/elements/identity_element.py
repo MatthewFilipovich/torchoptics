@@ -3,10 +3,8 @@
 from ..fields import Field
 from .elements import Element
 
-__all__ = ["IdentityElement"]
 
-
-class IdentityElement(Element):  # pylint: disable=W0223
+class IdentityElement(Element):
     """
     Identity element.
 

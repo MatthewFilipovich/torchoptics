@@ -37,18 +37,20 @@ torchoptics.set_default_spacing(10e-6)
 # This function overlays the intensity distributions of the three fields
 # as red, green, and blue channels.
 
-def plot_rgb_intensities(fields, title=None):
+
+def plot_rgb_intensities(fields, title):
     """Plots the RGB intensities of three fields as an RGB image."""
     if not isinstance(fields, list) or len(fields) != 3:
         raise ValueError("`fields` must be a list of 3 Fields (R, G, B).")
-    
+
     rgb_intensities = torch.stack([field.intensity() for field in fields], dim=-1).cpu().numpy()
-    
+
     plt.figure()
     plt.imshow(rgb_intensities.clip(0, 1))
     plt.axis("off")
     plt.title(title)
     plt.show()
+
 
 # %%
 # Generating Polychromatic Gaussian Fields
@@ -72,7 +74,7 @@ phase = blazed_grating(shape, grating_period, height=wavelengths[0])
 system = System(PolychromaticPhaseModulator(phase)).to(device)
 
 # Visualize the phase modulation at one of the wavelengths
-system[0].visualize(wavelengths[0], title="Blazed Grating Phase Modulation")
+system[0].visualize(wavelength=wavelengths[0], title="Blazed Grating Phase Modulation")
 
 # %%
 # Propagation Through the Grating System

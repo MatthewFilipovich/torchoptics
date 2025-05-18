@@ -14,12 +14,9 @@ from .propagation import propagator
 from .type_defs import Scalar, Vector2
 from .utils import copy, validate_tensor_min_ndim
 
-__all__ = ["Field", "SpatialCoherence"]
 
-
-class Field(PlanarGrid):  # pylint: disable=abstract-method
-    """
-    Optical field class.
+class Field(PlanarGrid):
+    """Optical field class.
 
     Args:
         data (Tensor): The complex-valued field data.
@@ -29,6 +26,7 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     DATA_MIN_NDIM = 2
@@ -44,7 +42,6 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         spacing: Optional[Vector2] = None,
         offset: Optional[Vector2] = None,
     ) -> None:
-
         validate_tensor_min_ndim(data, "data", self.DATA_MIN_NDIM)
         super().__init__(data.shape[-2:], z, spacing, offset)
         self.register_optics_property("data", data, is_complex=True)
@@ -78,8 +75,7 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         asm_pad_factor: Vector2 = 2,
         interpolation_mode: str = "nearest",
     ) -> Field:
-        """
-        Propagates the field through free-space to a plane defined by the input parameters.
+        """Propagates the field through free-space to a plane defined by the input parameters.
 
         Args:
             shape (Vector2): Number of grid points along the planar dimensions.
@@ -95,14 +91,14 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
 
         Returns:
             Field: Output field after propagating to the plane.
+
         """
         return propagator(
             self, shape, z, spacing, offset, propagation_method, asm_pad_factor, interpolation_mode
         )
 
     def propagate_to_z(self, z: Scalar, **prop_kwargs) -> Field:
-        """
-        Propagates the field through free-space to a plane at a specific z position.
+        """Propagates the field through free-space to a plane at a specific z position.
 
         The plane has the same ``shape``, ``spacing``, and ``offset`` as the input field.
 
@@ -116,13 +112,12 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
 
         Returns:
             Field: Output field after propagating to the plane.
-        """
 
+        """
         return self.propagate(self.shape, z, self.spacing, self.offset, **prop_kwargs)
 
     def propagate_to_plane(self, plane: PlanarGrid, **prop_kwargs) -> Field:
-        """
-        Propagates the field through free-space to a plane defined by a :class:`PlanarGrid` object.
+        """Propagates the field through free-space to a plane defined by a :class:`PlanarGrid` object.
 
         Args:
             plane (PlanarGrid): Plane grid.
@@ -134,34 +129,34 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
 
         Returns:
             Field: Output field after propagating to the plane.
-        """
 
+        """
         if not isinstance(plane, PlanarGrid):
             raise TypeError(f"Expected plane to be a PlanarGrid, but got {type(plane).__name__}.")
         return self.propagate(plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
 
     def modulate(self, modulation_profile: Tensor) -> Field:
-        """
-        Modulates the field by a modulation profile.
+        """Modulates the field by a modulation profile.
 
         Args:
             modulation_profile (Tensor): The modulation profile.
 
         Returns:
             Field: Modulated field.
+
         """
         modulated_data = self.data * modulation_profile
         return copy(self, data=modulated_data)
 
     def polarized_modulate(self, polarized_modulation_profile: Tensor) -> Field:
-        """
-        Modulates the field by a polarized modulation profile.
+        """Modulates the field by a polarized modulation profile.
 
         Args:
             polarized_modulation_profile (Tensor): The polarized modulation profile.
 
         Returns:
             Field: Modulated field.
+
         """
         self._validate_polarization_dim()
         modulated_data = (self.data.unsqueeze(self.POLARIZATION_DIM - 1) * polarized_modulation_profile).sum(
@@ -170,11 +165,11 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         return copy(self, data=modulated_data)
 
     def polarized_split(self) -> tuple[Field, Field, Field]:
-        """
-        Splits the field into three polarized fields.
+        """Splits the field into three polarized fields.
 
         Returns:
             tuple[Field, Field, Field]: The split fields.
+
         """
         self._validate_polarization_dim()
         fields = tuple(copy(self, data=torch.zeros_like(self.data)) for _ in range(3))
@@ -183,14 +178,14 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         return fields
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
-        """
-        Normalizes the field to a specified power.
+        """Normalizes the field to a specified power.
 
         Args:
             normalized_power (Scalar): The normalized power. Default: `1.0`.
 
         Returns:
             Field: Normalized field.
+
         """
         ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None]), 0)
         normalized_data = self.data * ratio.sqrt()
@@ -198,14 +193,14 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         return copy(self, data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
-        """
-        Returns the inner product of the field (last two data dimensions) with another field.
+        """Returns the inner product of the field (last two data dimensions) with another field.
 
         Args:
             other (Field): The other field.
 
         Returns:
             Tensor: The inner product.
+
         """
         if not self.is_same_geometry(other):
             raise ValueError(
@@ -215,14 +210,14 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         return inner2d(self.data, other.data) * self.cell_area()
 
     def outer(self, other: Field) -> Tensor:
-        """
-        Returns the outer product of the field (last two data dimensions) with another field.
+        """Returns the outer product of the field (last two data dimensions) with another field.
 
         Args:
             other (Field): The other field.
 
         Returns:
             Tensor: The outer product.
+
         """
         if not self.is_same_geometry(other):
             raise ValueError(
@@ -232,13 +227,13 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         return outer2d(self.data, other.data) * self.cell_area()
 
     def visualize(self, *index: int, **kwargs) -> Any:
-        """
-        Visualizes the field.
+        """Visualizes the field.
 
         Args:
             *index (int): Index of the data tensor to visualize.
             intensity (bool): Whether to visualize only the intensity. Default: `False`.
             **kwargs: Additional keyword arguments for visualization.
+
         """
         kwargs.update({"symbol": r"$\psi$"})
         return self._visualize(self.data, index, **kwargs)
@@ -247,13 +242,12 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         if self.data.ndim < abs(self.POLARIZATION_DIM) or self.data.shape[self.POLARIZATION_DIM] != 3:
             raise ValueError(
                 f"Expected data tensor to have polarization dimension of size 3 at "
-                f"dim={self.POLARIZATION_DIM}, but data has shape {self.data.shape}."
+                f"dim={self.POLARIZATION_DIM}, but data has shape {self.data.shape}.",
             )
 
 
-class SpatialCoherence(Field):  # pylint: disable=abstract-method
-    """
-    Spatial Coherence class.
+class SpatialCoherence(Field):
+    """Spatial Coherence class.
 
     Args:
         data (Tensor): The complex-valued spatial coherence data.
@@ -263,12 +257,13 @@ class SpatialCoherence(Field):  # pylint: disable=abstract-method
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     DATA_MIN_NDIM = 4
     POLARIZATION_DIM = -5
-    propagate = get_coherence_evolution(Field.propagate)
-    modulate = get_coherence_evolution(Field.modulate)
+    propagate = get_coherence_evolution(Field.propagate)  # type: ignore
+    modulate = get_coherence_evolution(Field.modulate)  # type: ignore
 
     def intensity(self) -> Tensor:
         if self.data.shape[-1] != self.data.shape[-3] or self.data.shape[-2] != self.data.shape[-4]:
@@ -282,7 +277,7 @@ class SpatialCoherence(Field):  # pylint: disable=abstract-method
                 "Spatial coherence diagonal values are expected to be real, but significant imaginary "
                 "components were found.\n"
                 f"Max absolute real part: {intensity.real.abs().max().item():.4e}\n"
-                f"Max absolute imaginary part: {intensity.imag.abs().max().item():.4e}\n"
+                f"Max absolute imaginary part: {intensity.imag.abs().max().item():.4e}\n",
             )
 
         return intensity.real
@@ -301,13 +296,13 @@ class SpatialCoherence(Field):  # pylint: disable=abstract-method
         raise TypeError("outer() is not applicable for SpatialCoherence.")
 
     def visualize(self, *index: int, **kwargs) -> Any:
-        """
-        Visualizes the the time-averaged intensity (diagonal of the spatial coherence matrix).
+        """Visualizes the the time-averaged intensity (diagonal of the spatial coherence matrix).
 
         Args:
             *index (int): Index of the data tensor to visualize.
             intensity (bool): Whether to visualize only the intensity. Default: `False`.
             **kwargs: Additional keyword arguments for visualization.
+
         """
         kwargs.update({"symbol": r"diag$(\Gamma)$"})
         return self._visualize(self.intensity(), index, **kwargs)

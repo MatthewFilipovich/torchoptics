@@ -10,8 +10,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["airy", "siemens_star", "sinc"]
-
 
 def airy(
     shape: Vector2, scale: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
@@ -44,7 +42,7 @@ def airy(
     x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
     r = torch.sqrt(x**2 + y**2)
     scaled_r = r / scale
-    airy_pattern = (2 * bessel_j1(scaled_r) / (scaled_r)) ** 2  # pylint: disable=not-callable
+    airy_pattern = (2 * bessel_j1(scaled_r) / (scaled_r)) ** 2
     airy_pattern[r == 0] = 1.0  # Handle the value at r = 0
     return airy_pattern
 

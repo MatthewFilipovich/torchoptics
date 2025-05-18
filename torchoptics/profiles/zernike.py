@@ -10,8 +10,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["zernike"]
-
 
 def zernike(
     shape: Vector2,

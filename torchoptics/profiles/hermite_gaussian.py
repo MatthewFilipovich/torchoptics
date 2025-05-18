@@ -11,8 +11,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["hermite_gaussian", "gaussian"]
-
 
 def hermite_gaussian(
     shape: Vector2,
@@ -82,8 +80,6 @@ def hermite_gaussian(
     Returns:
         Tensor: The generated Hermite-Gaussian profile.
     """
-    # pylint: disable=too-many-locals
-
     m = initialize_tensor("m", m, is_scalar=True, is_integer=True, is_non_negative=True)
     n = initialize_tensor("n", n, is_scalar=True, is_integer=True, is_non_negative=True)
     waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)

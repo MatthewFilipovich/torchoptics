@@ -1,4 +1,3 @@
-import pytest
 import torch
 
 from torchoptics.functional import fftfreq_grad

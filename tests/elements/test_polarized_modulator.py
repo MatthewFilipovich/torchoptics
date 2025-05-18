@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
 import pytest
 import torch
+from matplotlib.figure import Figure
 
 import torchoptics
 from torchoptics import Field
@@ -31,7 +31,7 @@ def test_polarized_amplitude_modulator_initialization_and_profile():
     amplitude_profile = torch.rand((3, 3, 10, 12))
     z = 1.5
     amplitude_modulator = PolarizedAmplitudeModulator(amplitude_profile, z)
-    expected_profile = amplitude_profile.cdouble()
+    expected_profile = amplitude_profile.to(torch.cdouble)
     assert torch.allclose(amplitude_modulator.polarized_modulation_profile(), expected_profile)
     polarized_field = Field(torch.ones(4, 3, 10, 12), wavelength=700e-9, z=z, spacing=1)
     assert isinstance(amplitude_modulator(polarized_field), Field)
@@ -51,7 +51,7 @@ def test_amplitude_modulation_profile_consistency():
     amplitude_profile = torch.rand((3, 3, 10, 12))
     z = 1.5
     amplitude_modulator = PolarizedAmplitudeModulator(amplitude_profile, z)
-    modulator = PolarizedModulator(amplitude_profile.cdouble(), z)
+    modulator = PolarizedModulator(amplitude_profile.to(torch.cdouble), z)
     assert torch.allclose(
         modulator.polarized_modulation_profile(), amplitude_modulator.polarized_modulation_profile()
     )
@@ -60,11 +60,11 @@ def test_amplitude_modulation_profile_consistency():
 def test_error_on_invalid_tensor_input():
     z = 1.5
     with pytest.raises(TypeError):
-        PolarizedModulator("not a tensor", z)
+        PolarizedModulator("not a tensor", z)  # type: ignore
     with pytest.raises(TypeError):
-        PolarizedPhaseModulator("not a tensor", z)
+        PolarizedPhaseModulator("not a tensor", z)  # type: ignore
     with pytest.raises(TypeError):
-        PolarizedAmplitudeModulator("not a tensor", z)
+        PolarizedAmplitudeModulator("not a tensor", z)  # type: ignore
 
 
 def test_error_on_incorrect_dimensions():
@@ -80,4 +80,4 @@ def test_visualization():
     z = 1.5
     modulator = PolarizedModulator(polarized_modulation_profile, z)
     fig = modulator.visualize(0, 0, show=False, return_fig=True)
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)

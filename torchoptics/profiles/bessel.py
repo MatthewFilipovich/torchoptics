@@ -10,8 +10,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["bessel"]
-
 
 def bessel(
     shape: Vector2,
@@ -57,4 +55,4 @@ def bessel(
     r = torch.sqrt(x**2 + y**2)
 
     # Calculate the zeroth-order Bessel beam
-    return torch.special.bessel_j0(k_r * r)  # pylint: disable=not-callable
+    return torch.special.bessel_j0(k_r * r)

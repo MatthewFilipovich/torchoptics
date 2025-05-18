@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
-import matplotlib.pyplot as plt
 import pytest
 import torch
 from matplotlib.animation import Animation, FuncAnimation
+from matplotlib.figure import Figure
 
 from torchoptics.visualization import animate_tensor, visualize_tensor
 
@@ -11,14 +11,14 @@ from torchoptics.visualization import animate_tensor, visualize_tensor
 def test_real_tensor():
     tensor = torch.rand(10, 10)
     fig = visualize_tensor(tensor, title="Real Tensor", show=False, return_fig=True)
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)
     assert len(fig.axes) == 2  # Main plot and colorbar
 
 
 def test_complex_tensor():
     tensor = torch.rand(10, 10, dtype=torch.complex64)
     fig = visualize_tensor(tensor, title="Complex Tensor", show=False, return_fig=True)
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)
     assert len(fig.axes) == 4  # two subplots for magnitude and phase, and two colorbar
 
 
@@ -62,7 +62,7 @@ def test_visualize_tensor_extra_imshow_kwargs():
         url="https://github.com/MatthewFilipovich/torchoptics",
     )
 
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)
 
 
 def test_animate_real_tensor():
@@ -91,7 +91,8 @@ def test_animate_tensor_calls_update():
             anim = animate_tensor(tensor, show=True)
             mock_show.assert_called_once()
 
-        update_func = anim._func  # internal update function
+        # Internal update function
+        update_func = anim._func  # type: ignore
         assert callable(update_func)
         for frame in range(tensor.shape[0]):
             update_func(frame)
@@ -104,13 +105,13 @@ def test_animate_tensor_invalid_shape():
 
 
 def test_animate_tensor_with_titles():
-    with patch("matplotlib.pyplot.show") as mock_show:
+    with patch("matplotlib.pyplot.show"):
         tensor = torch.rand(5, 10, 10)  # 5 frames of 10x10 tensors
         titles = [f"Frame {i}" for i in range(5)]
         anim = animate_tensor(tensor, title=titles, show=True)
         assert isinstance(anim, Animation)
 
-        update_func = anim._func  # internal update function
+        update_func = anim._func  # type: ignore
         for frame in range(tensor.shape[0]):
             update_func(frame)
 

@@ -14,10 +14,8 @@ from .type_defs import Scalar, Vector2
 from .utils import initialize_shape
 from .visualization import visualize_tensor
 
-__all__ = ["PlanarGrid"]
 
-
-class PlanarGrid(OpticsModule):  # pylint: disable=abstract-method
+class PlanarGrid(OpticsModule):
     """
     Base class for TorchOptics classes with 2D planar grid geometries.
 

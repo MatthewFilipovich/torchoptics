@@ -1,32 +1,15 @@
 repos:
-  - repo: https://github.com/psf/black
-    rev: 25.1.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.11.10
     hooks:
-      - id: black
-        files: "^(torchoptics|tests)/"
-
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+      # Run the linter.
+      - id: ruff-check
+        args: [--fix]
+      # Run the formatter.
+      - id: ruff-format
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.400
     hooks:
-      - id: isort
-        name: isort
-        args: ["--profile=black"]
-        files: "^(torchoptics|tests)/"
-
-  - repo: https://github.com/PyCQA/pylint
-    rev: v3.3.3
-    hooks:
-      - id: pylint
-        args: [
-            "-rn", # Only display messages
-            "-sn", # Don't display the score
-          ]
-        files: "^torchoptics/"
-        additional_dependencies: [torch, matplotlib]
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.15.0"
-    hooks:
-      - id: mypy
-        files: "^torchoptics/"
-        additional_dependencies: [torch, matplotlib]
+      - id: pyright
+        additional_dependencies: [torch, matplotlib, pytest, scipy]

@@ -9,31 +9,20 @@ from torch import Tensor
 from torch.fft import fft2, fftfreq, ifft2
 from torch.nn.functional import grid_sample
 
+from torchoptics.type_defs import Int
+
 from ..utils import copy
 
 if TYPE_CHECKING:
     from ..planar_grid import PlanarGrid
 
-__all__ = [
-    "calculate_centroid",
-    "calculate_std",
-    "conv2d_fft",
-    "fftfreq_grad",
-    "get_coherence_evolution",
-    "inner2d",
-    "linspace_grad",
-    "meshgrid2d",
-    "outer2d",
-    "plane_sample",
-]
-
 
 def _calculate_centroid(intensity, meshgrid):
-    meshgrid = torch.stack(meshgrid)
+    meshgrid_stack = torch.stack(meshgrid)
     intensity = intensity.unsqueeze(-3)
     normalized_intensity = intensity / intensity.sum((-2, -1), keepdim=True)
-    centroid = (meshgrid * normalized_intensity).sum(dim=(-2, -1))
-    return centroid, meshgrid, normalized_intensity
+    centroid = (meshgrid_stack * normalized_intensity).sum(dim=(-2, -1))
+    return centroid, meshgrid_stack, normalized_intensity
 
 
 def calculate_centroid(intensity: Tensor, meshgrid: tuple[Tensor, Tensor]) -> Tensor:
@@ -44,13 +33,15 @@ def calculate_centroid(intensity: Tensor, meshgrid: tuple[Tensor, Tensor]) -> Te
 
 def calculate_std(intensity: Tensor, meshgrid: tuple[Tensor, Tensor]) -> Tensor:
     """Calculates the standard deviation of an intensity distribution."""
-    centroid, meshgrid, normalized_intensity = _calculate_centroid(intensity, meshgrid)
-    return torch.sqrt(
-        ((meshgrid - centroid.unsqueeze(-1).unsqueeze(-1)) ** 2 * normalized_intensity).sum(dim=(-2, -1))
+    centroid, meshgrid_stacked, normalized_intensity = _calculate_centroid(intensity, meshgrid)
+    return (
+        ((meshgrid_stacked - centroid.unsqueeze(-1).unsqueeze(-1)) ** 2 * normalized_intensity)
+        .sum(dim=(-2, -1))
+        .sqrt()
     )
 
 
-def conv2d_fft(input: Tensor, weight: Tensor) -> Tensor:  # pylint: disable=redefined-builtin
+def conv2d_fft(input: Tensor, weight: Tensor) -> Tensor:
     """
     Performs a 2D convolution using Fast Fourier Transforms (FFT).
 
@@ -67,7 +58,6 @@ def conv2d_fft(input: Tensor, weight: Tensor) -> Tensor:  # pylint: disable=rede
     Returns:
         torch.Tensor: Convolved output tensor of shape :math:`(..., oH, oW)`.
     """
-    # pylint: disable=not-callable
     input_fr = fft2(input)
     output_size = (input_fr.size(-2) - weight.size(-2) + 1, input_fr.size(-1) - weight.size(-1) + 1)
     weight_fr = fft2(weight.flip(-1, -2).conj(), s=(input_fr.size(-2), input_fr.size(-1)))
@@ -76,7 +66,7 @@ def conv2d_fft(input: Tensor, weight: Tensor) -> Tensor:  # pylint: disable=rede
     return output
 
 
-def fftfreq_grad(n: int, d: Tensor) -> Tensor:
+def fftfreq_grad(n: Int, d: Tensor) -> Tensor:
     """
     Returns the Discrete Fourier Transform sample frequencies with gradient tracking.
 
@@ -87,7 +77,7 @@ def fftfreq_grad(n: int, d: Tensor) -> Tensor:
     Returns:
         torch.Tensor: The sample frequencies.
     """
-    return fftfreq(n, d=1.0, dtype=d.dtype, device=d.device) / d  # pylint: disable=not-callable
+    return fftfreq(n, d=1.0, dtype=d.dtype, device=d.device) / d
 
 
 def get_coherence_evolution(evolution_func):
@@ -171,7 +161,7 @@ def meshgrid2d(bounds: Union[Tensor, Sequence[Tensor]], shape: Sequence) -> tupl
         linspace_grad(bounds[0], bounds[1], shape[0]),
         linspace_grad(bounds[2], bounds[3], shape[1]),
         indexing="ij",
-    )  # type: ignore[return-value]
+    )  # type: ignore
 
 
 def outer2d(vec1: Tensor, vec2: Tensor) -> Tensor:
@@ -206,7 +196,6 @@ def plane_sample(
     Returns:
         torch.Tensor: The interpolated data.
     """
-    # pylint: disable=too-many-locals
     data_plane_half_length = data_plane.length(use_grid_points=False) / 2
     relative_bounds = interpolated_plane.bounds(use_grid_points=True) - data_plane.offset.repeat_interleave(2)
     extent_ratio = relative_bounds / data_plane_half_length.repeat_interleave(2)

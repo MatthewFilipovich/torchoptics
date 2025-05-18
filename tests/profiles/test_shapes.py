@@ -48,7 +48,8 @@ def test_triangle():
     args = make_shape_args()
     base = 10.0
     height = 20.0
-    profile = shapes.triangle(base=base, height=height, **args)
+    updated_args = {**args, "theta": 0.0}
+    profile = shapes.triangle(base=base, height=height, **updated_args)
     assert profile.shape == args["shape"]
     assert torch.all((profile == 0) | (profile == 1))
     assert profile.dtype == torch.double

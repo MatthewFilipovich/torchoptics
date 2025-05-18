@@ -9,8 +9,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["checkerboard", "circle", "rectangle", "square", "triangle"]
-
 
 def checkerboard(
     shape: Vector2,

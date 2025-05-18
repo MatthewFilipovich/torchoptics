@@ -16,12 +16,6 @@ from .direct_integration_method import calculate_grid_bounds, dim_propagation
 if TYPE_CHECKING:
     from ..fields import Field
 
-__all__ = [
-    "propagator",
-    "get_propagation_plane",
-    "is_asm",
-    "calculate_critical_propagation_distance",
-]
 
 VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_FRESNEL", "ASM", "ASM_FRESNEL", "DIM", "DIM_FRESNEL"}
 VALID_INTERPOLATION_MODES = {"none", "bilinear", "bicubic", "nearest"}
@@ -153,7 +147,7 @@ def calculate_critical_propagation_distance(field: Field, propagation_plane: Pla
     The returned value is a tensor of shape (2,) containing the critical distances in both planar dimensions.
     """
     grid_bounds_abs = calculate_grid_bounds(field, propagation_plane).abs()
-    max_distance = torch.stack([max(grid_bounds_abs[:2]), max(grid_bounds_abs[2:])])
+    max_distance = torch.stack([grid_bounds_abs[:2].max(), grid_bounds_abs[2:].max()])
     return 2 * max_distance * field.spacing / field.wavelength
 
 

@@ -17,8 +17,6 @@ from ..utils import copy, initialize_tensor
 if TYPE_CHECKING:
     from ..fields import Field
 
-__all__ = ["asm_propagation"]
-
 
 def asm_propagation(
     field: Field, propagation_plane: PlanarGrid, propagation_method: str, asm_pad_factor: Vector2
@@ -50,7 +48,6 @@ def calculate_transfer_function(
     field: Field, propagation_distance: Tensor, asm_pad_factor: Tensor, propagation_method: str
 ) -> Tensor:
     """Calculate the transfer function for ASM propagation."""
-    # pylint: disable=not-callable
     padded_input_shape = torch.tensor(field.shape) * (2 * asm_pad_factor + 1)
     freq_x, freq_y = (fftshift(fftfreq_grad(n, d)) for n, d in zip(padded_input_shape, field.spacing))
     kx, ky = torch.meshgrid(freq_x * 2 * torch.pi, freq_y * 2 * torch.pi, indexing="ij")
@@ -67,7 +64,6 @@ def calculate_transfer_function(
 
 def apply_transfer_function(transfer_function: Tensor, field: Field, asm_pad_factor: Tensor) -> Tensor:
     """Apply the transfer function to the field for ASM propagation."""
-    # pylint: disable=not-callable
     pad_x, pad_y = [int(asm_pad_factor[i] * field.shape[i]) for i in range(2)]
     data = pad(field.data, (pad_y, pad_y, pad_x, pad_x), mode="constant", value=0)
     data = fftshift(fft2(data))

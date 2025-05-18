@@ -1,5 +1,6 @@
 """This module defines a function to generate a Laguerre-Gaussian profile."""
 
+# ruff: noqa: E741
 import math
 from typing import Callable, Optional
 
@@ -9,8 +10,6 @@ from torch import Tensor
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 from .hermite_gaussian import calculate_beam_properties
-
-__all__ = ["laguerre_gaussian"]
 
 
 def laguerre_gaussian(
@@ -81,7 +80,6 @@ def laguerre_gaussian(
     Returns:
         Tensor: The generated Laguerre-Gaussian profile.
     """
-    # pylint: disable=too-many-locals
     p = initialize_tensor("p", p, is_scalar=True, is_integer=True, is_non_negative=True)
     l = initialize_tensor("l", l, is_scalar=True, is_integer=True)
     waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)

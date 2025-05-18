@@ -10,10 +10,8 @@ from ..type_defs import Scalar, Vector2
 from ..utils import validate_tensor_ndim
 from .elements import Element
 
-__all__ = ["Detector", "LinearDetector"]
 
-
-class Detector(Element):  # pylint: disable=W0223
+class Detector(Element):
     r"""
     Detector element.
 
@@ -106,7 +104,7 @@ class LinearDetector(Element):
         """
         self.validate_field(field)
         intensity_flat, weight_flat = field.intensity().flatten(-2), self.weight.flatten(-2)
-        return linear(intensity_flat, weight_flat) * self.cell_area()  # pylint: disable=not-callable
+        return linear(intensity_flat, weight_flat) * self.cell_area()
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """

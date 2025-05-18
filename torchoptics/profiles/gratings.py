@@ -8,8 +8,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["binary_grating", "blazed_grating", "sinusoidal_grating"]
-
 
 def binary_grating(
     shape: Vector2,
