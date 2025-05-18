@@ -3,6 +3,7 @@
 import torchoptics.elements as elements
 import torchoptics.functional as functional
 import torchoptics.profiles as profiles
+import torchoptics.propagation as propagation
 from torchoptics.config import (
     get_default_spacing,
     get_default_wavelength,
@@ -34,4 +35,5 @@ __all__ = [
     "elements",
     "functional",
     "profiles",
+    "propagation",
 ]
