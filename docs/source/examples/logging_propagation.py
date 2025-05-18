@@ -14,7 +14,7 @@ from torchoptics.profiles import circle
 
 # %%
 # Set up logging to display propagation events
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 # %%
 # Create an example field with a circular profile

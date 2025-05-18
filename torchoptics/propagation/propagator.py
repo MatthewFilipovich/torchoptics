@@ -64,11 +64,13 @@ def propagator(
 
         logger.info("--- Propagating using %s method ---", "ASM" if is_asm else "DIM")
         critical_z = calculate_critical_propagation_distance(field, propagation_plane)
-        logger.info("Critical propagation distance: [%.2e, %.2e]", critical_z[0].item(), critical_z[1].item())
+        logger.debug(
+            "Critical propagation distance: [%.2e, %.2e]", critical_z[0].item(), critical_z[1].item()
+        )
         if is_asm:
-            logger.info("ASM padding factor: %s", asm_pad_factor)
-        logger.info("Input field plane: %s", field.geometry_str())
-        logger.info("Propagation plane: %s", propagation_plane.geometry_str())
+            logger.debug("ASM padding factor: %s", asm_pad_factor)
+        logger.debug("Input field plane: %s", field.geometry_str())
+        logger.debug("Propagation plane: %s", propagation_plane.geometry_str())
 
         if is_asm:
             field = asm_propagation(field, propagation_plane, propagation_method, asm_pad_factor)
@@ -80,7 +82,7 @@ def propagator(
         field = copy(field, data=transformed_data, spacing=output_plane.spacing, offset=output_plane.offset)
 
         logger.info("--- Interpolating to output plane geometry ---")
-        logger.info("Output plane: %s", output_plane.geometry_str())
+        logger.debug("Output plane: %s", output_plane.geometry_str())
 
     return field
 
