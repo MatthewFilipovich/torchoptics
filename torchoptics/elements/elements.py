@@ -43,6 +43,10 @@ class Element(PlanarGrid):  # pylint: disable=abstract-method
                 f"\nElement geometry: {self.geometry_str()}"
             )
 
+    def visualize(self, **kwargs) -> Any:
+        """Visualize the Element."""
+        raise NotImplementedError(f"Visualization is not implemented for {self.__class__.__name__}.")
+
 
 class ModulationElement(Element, ABC):
     """
