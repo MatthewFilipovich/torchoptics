@@ -9,7 +9,6 @@ def test_gaussian_schell_model_shape():
     waist_radius = 50e-6
     coherence_width = torch.inf
     spacing = 10e-6
-    wavelength = 700e-9
     coherence_data = gaussian_schell_model(
         shape=shape,
         waist_radius=waist_radius,

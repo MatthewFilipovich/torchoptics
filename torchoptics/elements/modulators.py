@@ -10,8 +10,6 @@ from ..type_defs import Scalar, Vector2
 from ..utils import validate_tensor_ndim
 from .elements import ModulationElement, PolychromaticModulationElement
 
-__all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator", "PolychromaticPhaseModulator"]
-
 
 class Modulator(ModulationElement):
     """

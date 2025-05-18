@@ -9,8 +9,6 @@ from ..profiles import circle, cylindrical_lens_phase, lens_phase
 from ..type_defs import Scalar, Vector2
 from .elements import PolychromaticModulationElement
 
-__all__ = ["Lens", "CylindricalLens"]
-
 
 class Lens(PolychromaticModulationElement):
     r"""

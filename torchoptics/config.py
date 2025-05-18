@@ -7,8 +7,6 @@ from torch import Tensor
 from .type_defs import Scalar, Vector2
 from .utils import initialize_tensor
 
-__all__ = ["get_default_spacing", "set_default_spacing", "get_default_wavelength", "set_default_wavelength"]
-
 
 class Config:
     """Global configuration values for torchoptics."""

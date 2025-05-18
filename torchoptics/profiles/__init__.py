@@ -10,3 +10,28 @@ from .spatial_coherence import gaussian_schell_model, schell_model
 from .special import airy, siemens_star, sinc
 from .waves import plane_wave_phase, spherical_wave_phase
 from .zernike import zernike
+
+__all__ = [
+    "bessel",
+    "binary_grating",
+    "blazed_grating",
+    "sinusoidal_grating",
+    "gaussian",
+    "hermite_gaussian",
+    "laguerre_gaussian",
+    "lens_phase",
+    "cylindrical_lens_phase",
+    "checkerboard",
+    "circle",
+    "rectangle",
+    "square",
+    "triangle",
+    "gaussian_schell_model",
+    "schell_model",
+    "airy",
+    "sinc",
+    "siemens_star",
+    "spherical_wave_phase",
+    "plane_wave_phase",
+    "zernike",
+]

@@ -8,9 +8,6 @@ from matplotlib.animation import FuncAnimation
 from mpl_toolkits.axes_grid1 import make_axes_locatable  # type: ignore
 from torch import Tensor
 
-__all__ = ["visualize_tensor", "animate_tensor"]
-# pylint: disable=too-many-locals
-
 
 def visualize_tensor(
     tensor: Tensor,

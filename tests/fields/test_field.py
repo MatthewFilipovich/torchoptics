@@ -5,7 +5,6 @@ import torch
 from scipy.special import fresnel
 
 from torchoptics import Field, PlanarGrid
-from torchoptics.functional import outer2d
 from torchoptics.propagation import VALID_PROPAGATION_METHODS
 
 # Helper for gaussian_2d

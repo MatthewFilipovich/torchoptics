@@ -22,7 +22,7 @@ def make_laguerre_gaussian_profiles():
             offset=offset,
         )
         for p in range(3)
-        for l in range(-2, 3)
+        for l in range(-2, 3)  # noqa: E741
         if p + abs(l) < 3
     ]
     return profiles

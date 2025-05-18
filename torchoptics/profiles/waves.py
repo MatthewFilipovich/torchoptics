@@ -9,8 +9,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["plane_wave_phase", "spherical_wave_phase"]
-
 
 def plane_wave_phase(
     shape: Vector2,

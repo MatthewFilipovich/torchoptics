@@ -104,7 +104,7 @@ def test_animate_tensor_invalid_shape():
 
 
 def test_animate_tensor_with_titles():
-    with patch("matplotlib.pyplot.show") as mock_show:
+    with patch("matplotlib.pyplot.show"):
         tensor = torch.rand(5, 10, 10)  # 5 frames of 10x10 tensors
         titles = [f"Frame {i}" for i in range(5)]
         anim = animate_tensor(tensor, title=titles, show=True)

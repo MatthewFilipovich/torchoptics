@@ -10,8 +10,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["lens_phase", "cylindrical_lens_phase"]
-
 
 def lens_phase(
     shape: Vector2,

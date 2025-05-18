@@ -10,8 +10,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["airy", "siemens_star", "sinc"]
-
 
 def airy(
     shape: Vector2, scale: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None

@@ -108,7 +108,7 @@ plt.show()
 # We inspect the phase modulation layers after training.
 
 for i, element in enumerate(system):
-    element.visualize(title=f"Phase Modulator {i+1}")
+    element.visualize(title=f"Phase Modulator {i + 1}")
 
 # %%
 # Output Field After Training

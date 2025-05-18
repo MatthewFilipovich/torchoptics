@@ -14,8 +14,6 @@ from ..utils import copy
 if TYPE_CHECKING:
     from ..fields import Field
 
-__all__ = ["dim_propagation"]
-
 
 def dim_propagation(field: Field, propagation_plane: PlanarGrid, propagation_method: str) -> Field:
     """

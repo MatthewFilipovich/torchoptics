@@ -11,8 +11,6 @@ from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 
-__all__ = ["hermite_gaussian", "gaussian"]
-
 
 def hermite_gaussian(
     shape: Vector2,

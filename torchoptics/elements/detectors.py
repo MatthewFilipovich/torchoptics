@@ -10,8 +10,6 @@ from ..type_defs import Scalar, Vector2
 from ..utils import validate_tensor_ndim
 from .elements import Element
 
-__all__ = ["Detector", "LinearDetector"]
-
 
 class Detector(Element):  # pylint: disable=W0223
     r"""

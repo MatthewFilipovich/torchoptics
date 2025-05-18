@@ -16,12 +16,6 @@ from .direct_integration_method import calculate_grid_bounds, dim_propagation
 if TYPE_CHECKING:
     from ..fields import Field
 
-__all__ = [
-    "propagator",
-    "get_propagation_plane",
-    "is_asm",
-    "calculate_critical_propagation_distance",
-]
 
 VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_FRESNEL", "ASM", "ASM_FRESNEL", "DIM", "DIM_FRESNEL"}
 VALID_INTERPOLATION_MODES = {"none", "bilinear", "bicubic", "nearest"}

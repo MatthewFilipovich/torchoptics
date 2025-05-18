@@ -10,8 +10,6 @@ from ..type_defs import Scalar, Vector2
 from ..utils import copy
 from .elements import Element
 
-__all__ = ["BeamSplitter", "PolarizingBeamSplitter"]
-
 
 class BeamSplitter(Element):  # pylint: disable=W0223
     r"""

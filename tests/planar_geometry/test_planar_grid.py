@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import matplotlib
-import pytest
 import torch
 
 import torchoptics

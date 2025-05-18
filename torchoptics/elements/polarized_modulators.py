@@ -9,8 +9,6 @@ from ..type_defs import Scalar, Vector2
 from ..utils import validate_tensor_ndim
 from .elements import PolarizedModulationElement
 
-__all__ = ["PolarizedModulator", "PolarizedPhaseModulator", "PolarizedAmplitudeModulator"]
-
 
 class PolarizedModulator(PolarizedModulationElement):
     """

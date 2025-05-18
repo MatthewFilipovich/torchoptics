@@ -17,8 +17,6 @@ from ..utils import copy, initialize_tensor
 if TYPE_CHECKING:
     from ..fields import Field
 
-__all__ = ["asm_propagation"]
-
 
 def asm_propagation(
     field: Field, propagation_plane: PlanarGrid, propagation_method: str, asm_pad_factor: Vector2

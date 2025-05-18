@@ -1,5 +1,6 @@
 """This module defines a function to generate a Laguerre-Gaussian profile."""
 
+# ruff: noqa: E741
 import math
 from typing import Callable, Optional
 
@@ -9,8 +10,6 @@ from torch import Tensor
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 from .hermite_gaussian import calculate_beam_properties
-
-__all__ = ["laguerre_gaussian"]
 
 
 def laguerre_gaussian(
