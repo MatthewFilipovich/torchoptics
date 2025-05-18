@@ -14,8 +14,6 @@ from .type_defs import Scalar, Vector2
 from .utils import initialize_shape
 from .visualization import visualize_tensor
 
-__all__ = ["PlanarGrid"]
-
 
 class PlanarGrid(OpticsModule):  # pylint: disable=abstract-method
     """
@@ -130,6 +128,10 @@ class PlanarGrid(OpticsModule):  # pylint: disable=abstract-method
         spacing_str = f"({self.spacing[0].item():.2e}, {self.spacing[1].item():.2e})"
         offset_str = f"({self.offset[0].item():.2e}, {self.offset[1].item():.2e})"
         return f"shape={shape_str}, z={self.z.item():.2e}, spacing={spacing_str}, offset={offset_str}"
+
+    def visualize(self, **kwargs) -> Any:
+        """Raises NotImplementedError; placeholder for visualization logic."""
+        raise NotImplementedError(f"Visualization is not implemented for {self.__class__.__name__}.")
 
     def _visualize(self, data: Tensor, index: tuple = (), show_bounds: bool = False, **kwargs) -> Any:
         """Visualizes the data tensor."""
