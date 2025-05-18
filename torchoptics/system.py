@@ -2,14 +2,12 @@
 
 from typing import Optional
 
-from torch.nn import Module, ModuleList
+from torch.nn import Module
 
 from .elements import Element, IdentityElement
 from .fields import Field
 from .planar_grid import PlanarGrid
 from .type_defs import Scalar, Vector2
-
-__all__ = ["System"]
 
 
 class System(Module):
@@ -55,16 +53,25 @@ class System(Module):
 
     def __init__(self, *elements: Element) -> None:
         super().__init__()
-        self.elements = ModuleList(elements)
+        for i, element in enumerate(elements):
+            if not isinstance(element, Element):
+                raise TypeError(f"Expected element {i} to be an Element, but got {type(element).__name__}.")
+            self.add_module(str(i), element)
+        self._elements = tuple(elements)
 
     def __iter__(self):
         return iter(self.elements)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> Element:
         return self.elements[index]
 
     def __len__(self):
         return len(self.elements)
+
+    @property
+    def elements(self) -> tuple[Element, ...]:
+        """Returns the elements in the system."""
+        return self._elements
 
     def forward(self, field: Field, **prop_kwargs) -> Field:
         """
