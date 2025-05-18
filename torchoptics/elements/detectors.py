@@ -13,7 +13,7 @@ from .elements import Element
 __all__ = ["Detector", "LinearDetector"]
 
 
-class Detector(Element):
+class Detector(Element):  # pylint: disable=W0223
     r"""
     Detector element.
 

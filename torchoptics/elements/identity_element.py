@@ -6,7 +6,7 @@ from .elements import Element
 __all__ = ["IdentityElement"]
 
 
-class IdentityElement(Element):
+class IdentityElement(Element):  # pylint: disable=W0223
     """
     Identity element.
 

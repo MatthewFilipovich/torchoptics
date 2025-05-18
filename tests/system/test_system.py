@@ -86,12 +86,8 @@ def test_elements_along_field_path():
         system1.measure_at_z(input_field, 4 * propagation_distance)
     with pytest.raises(ValueError):
         system1.measure_at_z(input_field, -1)
-    system2 = System()
-    with pytest.raises(ValueError):
-        system2(input_field)
-    system3 = System(PlanarGrid(shape, z=0, spacing=spacing))
     with pytest.raises(TypeError):
-        system3(input_field)
+        System(PlanarGrid(shape, z=0, spacing=spacing))  # Should be type Element
 
 
 def test_dunder_methods():
@@ -134,3 +130,11 @@ def test_identity_element():
     elements_in_path = system.elements_in_field_path(input_field, output_element)
     assert len(elements_in_path) == 1
     assert elements_in_path[0] is output_element
+
+
+def test_last_element():
+    shape, spacing, _, propagation_distance, _, _, _, _, _, input_field, _ = make_system_setup()
+    system = System()
+    plane = PlanarGrid(shape, z=2 * propagation_distance, spacing=spacing)
+    with pytest.raises(TypeError):
+        system.elements_in_field_path(input_field, plane)
