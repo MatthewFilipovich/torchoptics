@@ -176,6 +176,10 @@ class System(Module):
         elements_in_path = [element for element in self.sorted_elements() if field.z <= element.z]
 
         if last_element:
+            if not isinstance(last_element, Element):
+                raise TypeError(
+                    f"Expected last_element to be an Element, but got {type(last_element).__name__}."
+                )
             if last_element.z < field.z:
                 raise ValueError(f"Field z ({field.z}) is greater than last element z ({last_element.z}).")
 
@@ -186,11 +190,6 @@ class System(Module):
                 elements_in_path.pop()
 
             elements_in_path.append(last_element)
-
-        if not elements_in_path:
-            raise ValueError("No elements found in the field path.")
-        if not all(isinstance(element, Element) for element in elements_in_path):
-            raise TypeError("All elements in the field path must be instances of Element.")
 
         return tuple(elements_in_path)
 
