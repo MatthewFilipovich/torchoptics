@@ -12,4 +12,4 @@ repos:
     rev: v1.1.400
     hooks:
       - id: pyright
-        additional_dependencies: [torch, matplotlib]
+        additional_dependencies: [torch, matplotlib, pytest]
