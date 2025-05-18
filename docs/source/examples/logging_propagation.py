@@ -6,17 +6,18 @@ Displays log messages during field propagation.
 """
 
 # %%
-# Set up logging to display propagation events
 import logging
 
-logging.basicConfig(level=logging.INFO)
-
-
-# %%
-# Create an example field with a circular profile
 import torchoptics
 from torchoptics import Field
 from torchoptics.profiles import circle
+
+# %%
+# Set up logging to display propagation events
+logging.basicConfig(level=logging.INFO)
+
+# %%
+# Create an example field with a circular profile
 
 # Set default simulation parameters
 torchoptics.set_default_spacing(10e-6)
