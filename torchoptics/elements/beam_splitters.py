@@ -13,7 +13,7 @@ from .elements import Element
 __all__ = ["BeamSplitter", "PolarizingBeamSplitter"]
 
 
-class BeamSplitter(Element):
+class BeamSplitter(Element):  # pylint: disable=W0223
     r"""
     Beam splitter element.
 
@@ -100,7 +100,7 @@ class BeamSplitter(Element):
         return copy(field, data=output_data0), copy(field, data=output_data1)
 
 
-class PolarizingBeamSplitter(Element):
+class PolarizingBeamSplitter(Element):  # pylint: disable=W0223
     """
     Polarizing beam splitter element.
 

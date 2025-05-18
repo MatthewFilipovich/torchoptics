@@ -12,7 +12,7 @@ from ..type_defs import Scalar
 __all__ = ["Element", "ModulationElement", "PolarizedModulationElement"]
 
 
-class Element(PlanarGrid):  # pylint: disable=abstract-method
+class Element(PlanarGrid):
     """
     Base class for optical elements.
 
