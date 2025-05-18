@@ -89,9 +89,8 @@ def test_elements_along_field_path():
     system2 = System()
     with pytest.raises(ValueError):
         system2(input_field)
-    system3 = System(PlanarGrid(shape, z=0, spacing=spacing))
     with pytest.raises(TypeError):
-        system3(input_field)
+        System(PlanarGrid(shape, z=0, spacing=spacing))
 
 
 def test_dunder_methods():
