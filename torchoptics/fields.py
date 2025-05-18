@@ -46,10 +46,7 @@ class Field(PlanarGrid):
         super().__init__(data.shape[-2:], z, spacing, offset)
         self.register_optics_property("data", data, is_complex=True)
         self.register_optics_property(
-            "wavelength",
-            wavelength_or_default(wavelength),
-            is_scalar=True,
-            is_positive=True,
+            "wavelength", wavelength_or_default(wavelength), is_scalar=True, is_positive=True
         )
 
     def intensity(self) -> Tensor:
@@ -97,14 +94,7 @@ class Field(PlanarGrid):
 
         """
         return propagator(
-            self,
-            shape,
-            z,
-            spacing,
-            offset,
-            propagation_method,
-            asm_pad_factor,
-            interpolation_mode,
+            self, shape, z, spacing, offset, propagation_method, asm_pad_factor, interpolation_mode
         )
 
     def propagate_to_z(self, z: Scalar, **prop_kwargs) -> Field:
@@ -170,7 +160,7 @@ class Field(PlanarGrid):
         """
         self._validate_polarization_dim()
         modulated_data = (self.data.unsqueeze(self.POLARIZATION_DIM - 1) * polarized_modulation_profile).sum(
-            self.POLARIZATION_DIM,
+            self.POLARIZATION_DIM
         )
         return copy(self, data=modulated_data)
 
@@ -215,7 +205,7 @@ class Field(PlanarGrid):
         if not self.is_same_geometry(other):
             raise ValueError(
                 "Fields must have the same geometry, but got geometries:"
-                f"\n{self.geometry_str()}\n{other.geometry_str()}",
+                f"\n{self.geometry_str()}\n{other.geometry_str()}"
             )
         return inner2d(self.data, other.data) * self.cell_area()
 
@@ -232,7 +222,7 @@ class Field(PlanarGrid):
         if not self.is_same_geometry(other):
             raise ValueError(
                 "Fields must have the same geometry, but got geometries:"
-                f"\n{self.geometry_str()}\n{other.geometry_str()}",
+                f"\n{self.geometry_str()}\n{other.geometry_str()}"
             )
         return outer2d(self.data, other.data) * self.cell_area()
 
