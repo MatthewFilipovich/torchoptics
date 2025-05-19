@@ -6,9 +6,9 @@ from typing import Optional
 import torch
 
 from ..config import wavelength_or_default
-from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
+from ._profile_meshgrid import profile_meshgrid
 
 
 def lens_phase(
@@ -37,8 +37,7 @@ def lens_phase(
     wavelength = wavelength_or_default(wavelength)
     focal_length = initialize_tensor("focal_length", focal_length, is_scalar=True)
 
-    planar_grid = PlanarGrid(shape, spacing=spacing, offset=offset)
-    x, y = planar_grid.meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     radial_square = x**2 + y**2
 
     return -torch.pi / (wavelength * focal_length) * radial_square
@@ -75,8 +74,7 @@ def cylindrical_lens_phase(
     focal_length = initialize_tensor("focal_length", focal_length, is_scalar=True)
     theta = initialize_tensor("theta", theta, is_scalar=True)
 
-    planar_grid = PlanarGrid(shape, spacing=spacing, offset=offset)
-    x, y = planar_grid.meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     x_theta = x * cos(theta) + y * sin(theta)
 
     return -torch.pi / (wavelength * focal_length) * x_theta**2
