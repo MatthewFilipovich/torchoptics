@@ -8,8 +8,7 @@ from .utils import initialize_tensor
 
 
 class OpticsModule(Module):
-    """
-    Base class for all optics modules.
+    """Base class for all optics modules.
 
     This class facilitates the registration of tensors, representing optics-related properties, as either
     PyTorch parameters or buffers. These properties are validated and registered using
@@ -40,8 +39,7 @@ class OpticsModule(Module):
         self._initialized = True
 
     def __setattr__(self, name: str, value: Any) -> None:
-        """
-        Sets the attribute of the module.
+        """Sets the attribute of the module.
 
         If the attribute name is a registered optics property, the optics property value is set using the
         :meth:`set_optics_property()` method. Otherwise, the attribute is set normally.
@@ -49,6 +47,7 @@ class OpticsModule(Module):
         Args:
             name (str): The name of the attribute.
             value (Any): The value to set for the attribute.
+
         """
         if self._initialized and name in self._optics_property_configs:
             self.set_optics_property(name, value)
@@ -56,8 +55,7 @@ class OpticsModule(Module):
             super().__setattr__(name, value)
 
     def register_optics_property(self, name: str, value: Any, **kwargs) -> None:
-        """
-        Registers an optics property as a PyTorch parameter or buffer.
+        """Registers an optics property as a PyTorch parameter or buffer.
 
         Args:
             name (str): Name of the optics property.
@@ -69,9 +67,11 @@ class OpticsModule(Module):
                 values. Default: `False`.
             is_non_negative (bool): Whether to validate that the property tensor contains only
                 non-negative. Default: `False`.
+
         """
         if not self._initialized:
-            raise AttributeError("Cannot register optics property before __init__() call.")
+            msg = "Cannot register optics property before __init__() call."
+            raise AttributeError(msg)
         tensor = initialize_tensor(name, value, **kwargs)
         self._optics_property_configs[name] = kwargs
 
@@ -81,8 +81,7 @@ class OpticsModule(Module):
             self.register_buffer(name, tensor)
 
     def set_optics_property(self, name: str, value: Any) -> None:
-        """
-        Sets the value of an existing optics property.
+        """Sets the value of an existing optics property.
 
         Args:
             name (str): Name of the optics property.
@@ -91,15 +90,20 @@ class OpticsModule(Module):
         Raises:
             AttributeError: If the property is not registered.
             ValueError: If the value does not match the property's conditions.
+
         """
         if self._initialized and name in self._optics_property_configs:
             updated_tensor = initialize_tensor(name, value, **self._optics_property_configs[name])
             attr_tensor = getattr(self, name)
             if updated_tensor.shape != attr_tensor.shape:
-                raise ValueError(
+                msg = (
                     f"Cannot set {name} with shape {updated_tensor.shape}. "
                     f"Expected shape: {attr_tensor.shape}."
                 )
+                raise ValueError(
+                    msg,
+                )
             attr_tensor.copy_(updated_tensor)
         else:
-            raise AttributeError(f"Cannot set unknown optics property: {name}.")
+            msg = f"Cannot set unknown optics property: {name}."
+            raise AttributeError(msg)

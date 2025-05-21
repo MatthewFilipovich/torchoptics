@@ -5,7 +5,7 @@ from torchoptics import Field
 from torchoptics.elements import PolarizingBeamSplitter
 
 
-def test_polarizing_beam_splitter():
+def test_polarizing_beam_splitter() -> None:
     shape = 32
     z = 0
     field = Field(torch.ones(4, 3, shape, shape), wavelength=700e-9, spacing=1e-5)

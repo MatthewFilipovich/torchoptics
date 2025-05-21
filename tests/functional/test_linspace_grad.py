@@ -3,7 +3,7 @@ import torch
 from torchoptics.functional import linspace_grad
 
 
-def test_output_values():
+def test_output_values() -> None:
     start_val, end_val = 0.0, 1.0
     steps = 10
     start = torch.tensor(start_val, requires_grad=True, dtype=torch.float64)
@@ -13,7 +13,7 @@ def test_output_values():
     assert torch.allclose(actual, expected)
 
 
-def test_edge_cases():
+def test_edge_cases() -> None:
     for start_val, end_val, steps in [(1, 1, 0), (1, 3, 0), (12, 12, 1), (12, 14, 1)]:
         start = torch.tensor(start_val, requires_grad=True, dtype=torch.float64)
         end = torch.tensor(end_val, requires_grad=True, dtype=torch.float64)
@@ -22,7 +22,7 @@ def test_edge_cases():
         assert torch.allclose(actual, expected)
 
 
-def test_differentiability():
+def test_differentiability() -> None:
     start = torch.tensor(-3, requires_grad=True, dtype=torch.float64)
     end = torch.tensor(1.0, requires_grad=True, dtype=torch.float64)
     steps = 10
@@ -33,7 +33,7 @@ def test_differentiability():
     assert end.grad is not None
 
 
-def test_dtype():
+def test_dtype() -> None:
     for device in ["cpu"] + (["cuda"] if torch.cuda.is_available() else []):
         for dtype in [torch.float32, torch.float64]:
             start = torch.tensor(0.0, requires_grad=True, device=device, dtype=dtype)

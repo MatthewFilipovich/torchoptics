@@ -4,7 +4,7 @@ from torchoptics import PlanarGrid
 from torchoptics.profiles import cylindrical_lens_phase
 
 
-def test_cylindrical_lens_phase_shape_and_dtype():
+def test_cylindrical_lens_phase_shape_and_dtype() -> None:
     shape = (100, 100)
     focal_length = 50.0
     theta = torch.pi / 4
@@ -23,7 +23,7 @@ def test_cylindrical_lens_phase_shape_and_dtype():
     assert phase_profile.dtype == torch.double
 
 
-def test_cylindrical_lens_phase_zero_theta():
+def test_cylindrical_lens_phase_zero_theta() -> None:
     shape = (100, 100)
     focal_length = 50.0
     wavelength = 0.5
@@ -43,7 +43,7 @@ def test_cylindrical_lens_phase_zero_theta():
     assert torch.allclose(phase_profile_zero_theta, expected_phase, atol=1e-5)
 
 
-def test_cylindrical_lens_phase_pi_over_2_theta():
+def test_cylindrical_lens_phase_pi_over_2_theta() -> None:
     shape = (100, 100)
     focal_length = 50.0
     wavelength = 0.5

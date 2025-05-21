@@ -5,7 +5,7 @@ from torchoptics.elements import Modulator
 from torchoptics.profiles import circle
 
 
-def test_profile_meshgrid_offset():
+def test_profile_meshgrid_offset() -> None:
     # Verify that applying the offset in the profile or in the PlanarGrid yields identical results
     shape = (500, 500)
     spacing = 1

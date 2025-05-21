@@ -5,15 +5,15 @@ from typing import Any, Optional
 from torch import Tensor
 from torch.nn.functional import linear
 
-from ..fields import Field
-from ..type_defs import Scalar, Vector2
-from ..utils import validate_tensor_ndim
+from torchoptics.fields import Field
+from torchoptics.type_defs import Scalar, Vector2
+from torchoptics.utils import validate_tensor_ndim
+
 from .elements import Element
 
 
 class Detector(Element):
-    r"""
-    Detector element.
+    r"""Detector element.
 
     Computes the power measured by the detector for each grid cell using the following equation:
 
@@ -31,25 +31,25 @@ class Detector(Element):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     def forward(self, field: Field) -> Tensor:
-        """
-        Calculates the power per cell area.
+        """Calculates the power per cell area.
 
         Args:
             field (Field): The input field.
 
         Returns:
             Tensor: The power per cell area.
+
         """
         self.validate_field(field)
         return field.intensity() * self.cell_area()
 
 
 class LinearDetector(Element):
-    r"""
-    Linear detector element, conceptually similar to :class:`torch.nn.Linear`.
+    r"""Linear detector element, conceptually similar to :class:`torch.nn.Linear`.
 
     Applies a spatially varying weight to the field intensity and integrates over the plane,
     producing a weighted sum for each output channel.
@@ -77,6 +77,7 @@ class LinearDetector(Element):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     weight: Tensor
@@ -93,27 +94,27 @@ class LinearDetector(Element):
         self.register_optics_property("weight", weight)
 
     def forward(self, field: Field) -> Tensor:
-        """
-        Calculates the weighted power.
+        """Calculates the weighted power.
 
         Args:
             field (Field): The input field.
 
         Returns:
             Tensor: The weighted power.
+
         """
         self.validate_field(field)
         intensity_flat, weight_flat = field.intensity().flatten(-2), self.weight.flatten(-2)
         return linear(intensity_flat, weight_flat) * self.cell_area()
 
     def visualize(self, *index: int, **kwargs) -> Any:
-        """
-        Visualizes the detector output or the weight matrix.
+        """Visualizes the detector output or the weight matrix.
 
         Args:
             *index (int): The index of the channel to visualize.
             sum_weight (bool): Whether to plot the sum of the weight matrix. Default: `False`.
             **kwargs: Additional keyword arguments for visualization.
+
         """
         kwargs.update({"symbol": r"$\mathcal{W}_{" + str(index[-1]) + r"}$"})
         return self._visualize(self.weight, index, **kwargs)

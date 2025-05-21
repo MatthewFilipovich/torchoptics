@@ -5,9 +5,10 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..config import wavelength_or_default
-from ..type_defs import Scalar, Vector2
-from ..utils import initialize_tensor
+from torchoptics.config import wavelength_or_default
+from torchoptics.type_defs import Scalar, Vector2
+from torchoptics.utils import initialize_tensor
+
 from ._profile_meshgrid import profile_meshgrid
 
 
@@ -18,8 +19,7 @@ def bessel(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a zeroth-order Bessel beam.
+    r"""Generates a zeroth-order Bessel beam.
 
     The zeroth-order Bessel beam is defined by the following equation:
 

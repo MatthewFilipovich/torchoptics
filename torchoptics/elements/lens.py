@@ -5,14 +5,14 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..profiles import circle, cylindrical_lens_phase, lens_phase
-from ..type_defs import Scalar, Vector2
+from torchoptics.profiles import circle, cylindrical_lens_phase, lens_phase
+from torchoptics.type_defs import Scalar, Vector2
+
 from .elements import PolychromaticModulationElement
 
 
 class Lens(PolychromaticModulationElement):
-    r"""
-    Lens element.
+    r"""Lens element.
 
     Represents a thin lens with the following modulation profile:
 
@@ -30,6 +30,7 @@ class Lens(PolychromaticModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     focal_length: Tensor
@@ -53,8 +54,7 @@ class Lens(PolychromaticModulationElement):
 
 
 class CylindricalLens(PolychromaticModulationElement):
-    r"""
-    Cylindrical lens element.
+    r"""Cylindrical lens element.
 
     Represents a thin cylindrical lens with the following modulation profile:
 
@@ -73,6 +73,7 @@ class CylindricalLens(PolychromaticModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     focal_length: Tensor

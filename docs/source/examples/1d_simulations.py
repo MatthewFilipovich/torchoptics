@@ -1,5 +1,4 @@
-"""
-1D Simulations
+"""1D Simulations.
 ===============
 
 Simulates 1D field propagation using the angular spectrum method (ASM).
@@ -8,9 +7,9 @@ We can perform 1D simulations using ASM along the :math:`x`-axis by ensuring the
 ``asm_pad_factor`` along the :math:`y`-axis are set to ``1`` and ``0``, respectively.
 """
 
-import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import torch
+from matplotlib import animation
 
 import torchoptics
 from torchoptics import Field

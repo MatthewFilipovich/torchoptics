@@ -5,18 +5,18 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Scalar, Vector2
+from torchoptics.type_defs import Scalar, Vector2
+
 from .elements import PolarizedModulationElement
 
 
 class LinearPolarizer(PolarizedModulationElement):
-    r"""
-    Linear polarizer element.
+    r"""Linear polarizer element.
 
     The linear polarizer is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \cos^2(\theta) & \cos(\theta) \sin(\theta) & 0 \\
             \cos(\theta) \sin(\theta) & \sin^2(\theta) & 0 \\
@@ -32,6 +32,7 @@ class LinearPolarizer(PolarizedModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     theta: Tensor
@@ -58,13 +59,12 @@ class LinearPolarizer(PolarizedModulationElement):
 
 
 class LeftCircularPolarizer(PolarizedModulationElement):
-    r"""
-    Left circular polarizer element.
+    r"""Left circular polarizer element.
 
     The left circular polarizer is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \frac{1}{2} & -\frac{i}{2} & 0 \\
             \frac{1}{2} & \frac{1}{2} & 0 \\
@@ -77,6 +77,7 @@ class LeftCircularPolarizer(PolarizedModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     def polarized_modulation_profile(self) -> Tensor:
@@ -90,8 +91,7 @@ class LeftCircularPolarizer(PolarizedModulationElement):
 
 
 class RightCircularPolarizer(PolarizedModulationElement):
-    r"""
-    Right circular polarizer element.
+    r"""Right circular polarizer element.
 
     The right circular polarizer is described by the following polarization matrix:
 
@@ -102,13 +102,14 @@ class RightCircularPolarizer(PolarizedModulationElement):
             \frac{-i}{2} & \frac{1}{2} & 0 \\
             0 & 0 & 1
         \end{bmatrix}
-    
+
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     def polarized_modulation_profile(self) -> Tensor:

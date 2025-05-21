@@ -1,5 +1,4 @@
-"""
-Spatial Coherence
+"""Spatial Coherence.
 ===================
 
 Simulates Gaussian beams with low and high spatial coherence.

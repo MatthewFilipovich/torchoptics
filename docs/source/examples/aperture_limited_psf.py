@@ -1,5 +1,4 @@
-"""
-Aperture-Limited PSF
+"""Aperture-Limited PSF.
 =====================
 
 Calculates the point spread function (PSF) of a point source imaged by a lens with various aperture diameters.
@@ -52,8 +51,6 @@ d_i = 1  # 1 m
 lens_z = d_o
 image_z = d_o + d_i
 
-print(f"Lens position: z = {lens_z} m")
-print(f"Image plane: z = {image_z} m")
 
 # %%
 # Resolution vs. Aperture Diameter

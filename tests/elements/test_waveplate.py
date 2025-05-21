@@ -4,7 +4,7 @@ from torchoptics import Field
 from torchoptics.elements import HalfWaveplate, QuarterWaveplate, Waveplate
 
 
-def test_waveplate_forward():
+def test_waveplate_forward() -> None:
     shape = (32, 32)
     phi = torch.tensor(torch.pi / 2)
     theta = torch.tensor(torch.pi / 4)
@@ -15,7 +15,7 @@ def test_waveplate_forward():
     assert isinstance(output_field, Field)
 
 
-def test_waveplate_modulation_profile():
+def test_waveplate_modulation_profile() -> None:
     shape = (32, 32)
     phi = torch.tensor(0.0)
     theta = torch.tensor(0.0)
@@ -37,7 +37,7 @@ def test_waveplate_modulation_profile():
     assert torch.allclose(polarized_modulation_profile[:2, :2], expected_matrix)
 
 
-def test_waveplate_profile():
+def test_waveplate_profile() -> None:
     shape = (32, 30)
     phi = torch.tensor(torch.pi / 2)
     theta = torch.tensor(torch.pi / 4)
@@ -55,7 +55,7 @@ def test_waveplate_profile():
     assert torch.allclose(polarized_modulation_profile, expected_matrix)
 
 
-def test_quarter_waveplate_profile():
+def test_quarter_waveplate_profile() -> None:
     shape = (32, 32)
     theta = torch.tensor(torch.pi / 4)
     spacing = 1
@@ -64,7 +64,7 @@ def test_quarter_waveplate_profile():
     assert torch.allclose(qwp.polarized_modulation_profile(), waveplate.polarized_modulation_profile())
 
 
-def test_half_waveplate_profile():
+def test_half_waveplate_profile() -> None:
     shape = (32, 32)
     theta = torch.tensor(torch.pi / 4)
     spacing = 1

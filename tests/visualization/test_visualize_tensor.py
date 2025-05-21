@@ -8,34 +8,34 @@ from matplotlib.figure import Figure
 from torchoptics.visualization import animate_tensor, visualize_tensor
 
 
-def test_real_tensor():
+def test_real_tensor() -> None:
     tensor = torch.rand(10, 10)
     fig = visualize_tensor(tensor, title="Real Tensor", show=False, return_fig=True)
     assert isinstance(fig, Figure)
     assert len(fig.axes) == 2  # Main plot and colorbar
 
 
-def test_complex_tensor():
+def test_complex_tensor() -> None:
     tensor = torch.rand(10, 10, dtype=torch.complex64)
     fig = visualize_tensor(tensor, title="Complex Tensor", show=False, return_fig=True)
     assert isinstance(fig, Figure)
     assert len(fig.axes) == 4  # two subplots for magnitude and phase, and two colorbar
 
 
-def test_visualize_tensor_show_called():
+def test_visualize_tensor_show_called() -> None:
     for tensor in [torch.rand(10, 10), torch.rand(10, 10, dtype=torch.complex64)]:
         with patch("matplotlib.pyplot.show") as mock_show:
             visualize_tensor(tensor, show=True)
             mock_show.assert_called_once()
 
 
-def test_invalid_tensor_shape_3d():
+def test_invalid_tensor_shape_3d() -> None:
     tensor = torch.rand(10, 10, 10)
     with pytest.raises(ValueError):
         visualize_tensor(tensor)
 
 
-def test_visualize_tensor_extra_imshow_kwargs():
+def test_visualize_tensor_extra_imshow_kwargs() -> None:
     tensor = torch.rand(10, 10)
 
     fig = visualize_tensor(
@@ -65,19 +65,19 @@ def test_visualize_tensor_extra_imshow_kwargs():
     assert isinstance(fig, Figure)
 
 
-def test_animate_real_tensor():
+def test_animate_real_tensor() -> None:
     tensor = torch.rand(5, 10, 10)
     anim = animate_tensor(tensor, title="Real Animation", show=False)
     assert isinstance(anim, FuncAnimation)
 
 
-def test_animate_complex_tensor():
+def test_animate_complex_tensor() -> None:
     tensor = torch.rand(5, 10, 10, dtype=torch.complex64)
     anim = animate_tensor(tensor, title="Complex Animation", show=False)
     assert isinstance(anim, FuncAnimation)
 
 
-def test_animate_tensor_show_called():
+def test_animate_tensor_show_called() -> None:
     tensor = torch.rand(8, 10, 10)
 
     with patch("matplotlib.pyplot.show") as mock_show:
@@ -85,7 +85,7 @@ def test_animate_tensor_show_called():
         mock_show.assert_called_once()
 
 
-def test_animate_tensor_calls_update():
+def test_animate_tensor_calls_update() -> None:
     for tensor in [torch.rand(4, 10, 10), torch.rand(4, 10, 10, dtype=torch.complex64)]:
         with patch("matplotlib.pyplot.show") as mock_show:
             anim = animate_tensor(tensor, show=True)
@@ -98,13 +98,13 @@ def test_animate_tensor_calls_update():
             update_func(frame)
 
 
-def test_animate_tensor_invalid_shape():
+def test_animate_tensor_invalid_shape() -> None:
     tensor = torch.rand(10, 10, 10, 10)
     with pytest.raises(ValueError):
         animate_tensor(tensor)
 
 
-def test_animate_tensor_with_titles():
+def test_animate_tensor_with_titles() -> None:
     with patch("matplotlib.pyplot.show"):
         tensor = torch.rand(5, 10, 10)  # 5 frames of 10x10 tensors
         titles = [f"Frame {i}" for i in range(5)]
@@ -121,7 +121,7 @@ def test_animate_tensor_with_titles():
             animate_tensor(tensor, title=titles_incorrect, show=True)
 
 
-def test_animate_tensor_extra_imshow_kwargs():
+def test_animate_tensor_extra_imshow_kwargs() -> None:
     tensor = torch.rand(5, 10, 10)
     func_anim_kwargs = {"interval": 500}
 

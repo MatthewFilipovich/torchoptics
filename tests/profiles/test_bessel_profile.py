@@ -3,7 +3,7 @@ import torch
 from torchoptics.profiles import bessel
 
 
-def test_bessel_shape_and_dtype():
+def test_bessel_shape_and_dtype() -> None:
     shape = (100, 100)
     cone_angle = torch.pi / 4
     wavelength = 0.5
@@ -20,7 +20,7 @@ def test_bessel_shape_and_dtype():
     assert profile.dtype == torch.double
 
 
-def test_bessel_values():
+def test_bessel_values() -> None:
     shape = (100, 100)
     cone_angle = torch.pi / 4
     wavelength = 0.5

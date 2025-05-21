@@ -1,5 +1,4 @@
-"""
-Logging Propagation
+"""Logging Propagation.
 ===================
 
 Displays log messages during field propagation.

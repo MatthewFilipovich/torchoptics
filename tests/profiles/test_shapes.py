@@ -4,10 +4,10 @@ from torchoptics.profiles import shapes
 
 
 def make_shape_args():
-    return dict(shape=(100, 100), spacing=(0.1, 0.1), offset=(0.0, 0.0))
+    return {"shape": (100, 100), "spacing": (0.1, 0.1), "offset": (0.0, 0.0)}
 
 
-def test_checkerboard():
+def test_checkerboard() -> None:
     args = make_shape_args()
     tile_length = (10, 10)
     num_tiles = (10, 10)
@@ -17,7 +17,7 @@ def test_checkerboard():
     assert pattern.dtype == torch.double
 
 
-def test_circle():
+def test_circle() -> None:
     args = make_shape_args()
     radius = 5.0
     profile = shapes.circle(radius=radius, **args)
@@ -26,7 +26,7 @@ def test_circle():
     assert profile.dtype == torch.double
 
 
-def test_rectangle():
+def test_rectangle() -> None:
     args = make_shape_args()
     side = (10, 20)
     profile = shapes.rectangle(side=side, **args)
@@ -35,7 +35,7 @@ def test_rectangle():
     assert profile.dtype == torch.double
 
 
-def test_square():
+def test_square() -> None:
     args = make_shape_args()
     side = 10.0
     profile = shapes.square(side=side, **args)
@@ -44,7 +44,7 @@ def test_square():
     assert profile.dtype == torch.double
 
 
-def test_triangle():
+def test_triangle() -> None:
     args = make_shape_args()
     base = 10.0
     height = 20.0

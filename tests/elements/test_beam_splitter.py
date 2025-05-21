@@ -4,7 +4,7 @@ import torchoptics
 from torchoptics.elements import BeamSplitter
 
 
-def test_beam_splitter():
+def test_beam_splitter() -> None:
     shape = 64
     z = 0
     field = torchoptics.Field(torch.ones(3, shape, shape), wavelength=700e-9, spacing=1e-5)

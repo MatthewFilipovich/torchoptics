@@ -6,16 +6,19 @@ import torch
 from torch import Tensor
 from torch.special import bessel_j1  # Bessel function of the first kind
 
-from ..type_defs import Int, Scalar, Vector2
-from ..utils import initialize_tensor
+from torchoptics.type_defs import Int, Scalar, Vector2
+from torchoptics.utils import initialize_tensor
+
 from ._profile_meshgrid import profile_meshgrid
 
 
 def airy(
-    shape: Vector2, scale: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2,
+    scale: Scalar,
+    spacing: Optional[Vector2] = None,
+    offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates an Airy pattern profile.
+    r"""Generates an Airy pattern profile.
 
     The Airy pattern is defined by the following equation:
 
@@ -37,6 +40,7 @@ def airy(
 
     Returns:
         Tensor: The generated Airy profile.
+
     """
     scale = initialize_tensor("scale", scale, is_scalar=True, is_positive=True)
     x, y = profile_meshgrid(shape, spacing, offset)
@@ -54,8 +58,7 @@ def siemens_star(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a `Siemens star pattern <https://en.wikipedia.org/wiki/Siemens_star>`_.
+    r"""Generates a `Siemens star pattern <https://en.wikipedia.org/wiki/Siemens_star>`_.
 
     A Siemens star is a radial resolution target with alternating spokes.
     The number of spokes determines the angular frequency, and the pattern is confined to
@@ -70,11 +73,13 @@ def siemens_star(
 
     Returns:
         Tensor: The generated Siemens star pattern with values in [0, 1].
+
     """
     num_spokes = initialize_tensor("num_spokes", num_spokes, is_integer=True, is_positive=True)
     radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
     if (num_spokes % 2).item() != 0:
-        raise ValueError("num_spokes must be an even integer.")
+        msg = "num_spokes must be an even integer."
+        raise ValueError(msg)
 
     x, y = profile_meshgrid(shape, spacing, offset)
     r = torch.sqrt(x**2 + y**2)
@@ -88,10 +93,12 @@ def siemens_star(
 
 
 def sinc(
-    shape: Vector2, scale: Vector2, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2,
+    scale: Vector2,
+    spacing: Optional[Vector2] = None,
+    offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a sinc profile.
+    r"""Generates a sinc profile.
 
     The sinc profile is defined by the following equation:
 
@@ -113,8 +120,8 @@ def sinc(
 
     Returns:
         Tensor: The generated sinc profile.
+
     """
     scale = initialize_tensor("scale", scale, is_vector2=True, is_positive=True)
     x, y = profile_meshgrid(shape, spacing, offset)
-    sinc_pattern = torch.sinc(x / scale[0]) * torch.sinc(y / scale[1]) / (scale[0] * scale[1]) ** 0.5
-    return sinc_pattern
+    return torch.sinc(x / scale[0]) * torch.sinc(y / scale[1]) / (scale[0] * scale[1]) ** 0.5

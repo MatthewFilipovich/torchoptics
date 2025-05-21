@@ -1,5 +1,4 @@
-"""
-4f System
+"""4f System.
 ==========
 
 Simulates 4f optical systems with two lenses using low-pass and high-pass filters.

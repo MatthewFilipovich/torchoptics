@@ -2,19 +2,20 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence, Union
+from typing import TYPE_CHECKING
 
 import torch
 from torch import Tensor
 from torch.fft import fft2, fftfreq, ifft2
 from torch.nn.functional import grid_sample
 
-from torchoptics.type_defs import Int
-
-from ..utils import copy
+from torchoptics.utils import copy
 
 if TYPE_CHECKING:
-    from ..planar_grid import PlanarGrid
+    from collections.abc import Sequence
+
+    from torchoptics.planar_grid import PlanarGrid
+    from torchoptics.type_defs import Int
 
 
 def _calculate_centroid(intensity, meshgrid):
@@ -42,8 +43,7 @@ def calculate_std(intensity: Tensor, meshgrid: tuple[Tensor, Tensor]) -> Tensor:
 
 
 def conv2d_fft(input: Tensor, weight: Tensor) -> Tensor:
-    """
-    Performs a 2D convolution using Fast Fourier Transforms (FFT).
+    """Performs a 2D convolution using Fast Fourier Transforms (FFT).
 
     Unlike the :func:`torch.nn.functional.conv2d` function, which performs cross-correlation,
     :func:`conv2d_fft` performs a convolution operation where the kernel is flipped.
@@ -57,18 +57,17 @@ def conv2d_fft(input: Tensor, weight: Tensor) -> Tensor:
 
     Returns:
         torch.Tensor: Convolved output tensor of shape :math:`(..., oH, oW)`.
+
     """
     input_fr = fft2(input)
     output_size = (input_fr.size(-2) - weight.size(-2) + 1, input_fr.size(-1) - weight.size(-1) + 1)
     weight_fr = fft2(weight.flip(-1, -2).conj(), s=(input_fr.size(-2), input_fr.size(-1)))
     output_fr = input_fr * weight_fr.conj()
-    output = ifft2(output_fr)[..., : output_size[0], : output_size[1]]
-    return output
+    return ifft2(output_fr)[..., : output_size[0], : output_size[1]]
 
 
 def fftfreq_grad(n: Int, d: Tensor) -> Tensor:
-    """
-    Returns the Discrete Fourier Transform sample frequencies with gradient tracking.
+    """Returns the Discrete Fourier Transform sample frequencies with gradient tracking.
 
     Args:
         n (int): The number of samples.
@@ -76,13 +75,13 @@ def fftfreq_grad(n: Int, d: Tensor) -> Tensor:
 
     Returns:
         torch.Tensor: The sample frequencies.
+
     """
     return fftfreq(n, d=1.0, dtype=d.dtype, device=d.device) / d
 
 
 def get_coherence_evolution(evolution_func):
-    r"""
-    Decorator that constructs the evolution function for spatial coherence given an evolution operator
+    r"""Decorator that constructs the evolution function for spatial coherence given an evolution operator
     :math:`U`.
 
     The input function applies the evolution :math:`U` to a :class:`~torchoptics.fields.Field` instance:
@@ -115,8 +114,7 @@ def get_coherence_evolution(evolution_func):
 
 
 def inner2d(vec1: Tensor, vec2: Tensor) -> Tensor:
-    """
-    Computes the inner product of two 2D vectors.
+    """Computes the inner product of two 2D vectors.
 
     Args:
         vec1 (torch.Tensor): The first vector.
@@ -124,13 +122,13 @@ def inner2d(vec1: Tensor, vec2: Tensor) -> Tensor:
 
     Returns:
         torch.Tensor: The inner product.
+
     """
     return (vec1 * vec2.conj()).sum(dim=(-1, -2))
 
 
 def linspace_grad(start: Tensor, end: Tensor, steps: int) -> Tensor:
-    """
-    Returns linspace values with gradient tracking.
+    """Returns linspace values with gradient tracking.
 
     Args:
         start (torch.Tensor): The starting value.
@@ -138,7 +136,9 @@ def linspace_grad(start: Tensor, end: Tensor, steps: int) -> Tensor:
         steps (int): The number of steps.
 
     Returns:
-        torch.Tensor: The linearly spaced values."""
+        torch.Tensor: The linearly spaced values.
+
+    """
     if steps == 1:
         return start
     step = (end - start) / (steps - 1)
@@ -146,9 +146,8 @@ def linspace_grad(start: Tensor, end: Tensor, steps: int) -> Tensor:
     return start + range_values * step
 
 
-def meshgrid2d(bounds: Union[Tensor, Sequence[Tensor]], shape: Sequence) -> tuple[Tensor, Tensor]:
-    """
-    Returns a 2D meshgrid with gradient tracking.
+def meshgrid2d(bounds: Tensor | Sequence[Tensor], shape: Sequence) -> tuple[Tensor, Tensor]:
+    """Returns a 2D meshgrid with gradient tracking.
 
     Args:
         bounds (Union[torch.Tensor, Sequence[torch.Tensor]]): The bounds of the grid.
@@ -156,6 +155,7 @@ def meshgrid2d(bounds: Union[Tensor, Sequence[Tensor]], shape: Sequence) -> tupl
 
     Returns:
         tuple[torch.Tensor, torch.Tensor]: The 2D meshgrid.
+
     """
     return torch.meshgrid(
         linspace_grad(bounds[0], bounds[1], shape[0]),
@@ -165,8 +165,7 @@ def meshgrid2d(bounds: Union[Tensor, Sequence[Tensor]], shape: Sequence) -> tupl
 
 
 def outer2d(vec1: Tensor, vec2: Tensor) -> Tensor:
-    """
-    Computes the outer product of two 2D vectors.
+    """Computes the outer product of two 2D vectors.
 
     Args:
         vec1 (torch.Tensor): The first vector.
@@ -174,6 +173,7 @@ def outer2d(vec1: Tensor, vec2: Tensor) -> Tensor:
 
     Returns:
         torch.Tensor: The outer product.
+
     """
     return vec1[..., None, None, :, :] * vec2.conj()[..., None, None]
 
@@ -184,8 +184,7 @@ def plane_sample(
     interpolated_plane: PlanarGrid,
     interpolation_mode: str,
 ) -> Tensor:
-    """
-    Interpolates data from a 2D plane onto a new plane.
+    """Interpolates data from a 2D plane onto a new plane.
 
     Args:
         data (torch.Tensor): The input data to interpolate.
@@ -195,6 +194,7 @@ def plane_sample(
 
     Returns:
         torch.Tensor: The interpolated data.
+
     """
     data_plane_half_length = data_plane.length(use_grid_points=False) / 2
     relative_bounds = interpolated_plane.bounds(use_grid_points=True) - data_plane.offset.repeat_interleave(2)

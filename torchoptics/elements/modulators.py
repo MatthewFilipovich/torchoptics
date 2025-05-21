@@ -5,15 +5,15 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..config import wavelength_or_default
-from ..type_defs import Scalar, Vector2
-from ..utils import validate_tensor_ndim
+from torchoptics.config import wavelength_or_default
+from torchoptics.type_defs import Scalar, Vector2
+from torchoptics.utils import validate_tensor_ndim
+
 from .elements import ModulationElement, PolychromaticModulationElement
 
 
 class Modulator(ModulationElement):
-    """
-    Modulator element.
+    """Modulator element.
 
     The modulator is described by a complex modulation profile.
 
@@ -23,6 +23,7 @@ class Modulator(ModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     modulation: Tensor
@@ -43,8 +44,7 @@ class Modulator(ModulationElement):
 
 
 class PhaseModulator(ModulationElement):
-    """
-    Phase-only modulator element.
+    """Phase-only modulator element.
 
     The phase modulator is described by a phase profile.
 
@@ -54,6 +54,7 @@ class PhaseModulator(ModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     phase: Tensor
@@ -74,8 +75,7 @@ class PhaseModulator(ModulationElement):
 
 
 class AmplitudeModulator(ModulationElement):
-    """
-    Amplitude-only modulator element.
+    """Amplitude-only modulator element.
 
     The amplitude modulator is described by an amplitude profile.
 
@@ -85,6 +85,7 @@ class AmplitudeModulator(ModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     amplitude: Tensor
@@ -105,8 +106,7 @@ class AmplitudeModulator(ModulationElement):
 
 
 class PolychromaticPhaseModulator(PolychromaticModulationElement):
-    r"""
-    Phase-only modulator element that modulates the optical field based on the optical path length (OPL).
+    r"""Phase-only modulator element that modulates the optical field based on the optical path length (OPL).
 
     The modulation is applied according to:
 
@@ -126,6 +126,7 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     optical_path_length: Tensor

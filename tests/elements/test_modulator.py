@@ -7,7 +7,7 @@ from torchoptics import Field
 from torchoptics.elements import AmplitudeModulator, Modulator, PhaseModulator, PolychromaticPhaseModulator
 
 
-def test_modulator_initialization():
+def test_modulator_initialization() -> None:
     complex_tensor = torch.rand((10, 12), dtype=torch.cdouble)
     z = 1.5
     field = Field(torch.ones(3, 10, 12), wavelength=700e-9, z=z, spacing=1)
@@ -17,7 +17,7 @@ def test_modulator_initialization():
     assert torch.equal(modulator.modulation_profile(), complex_tensor)
 
 
-def test_phase_modulator_initialization_and_profile():
+def test_phase_modulator_initialization_and_profile() -> None:
     phase_profile = torch.rand((10, 12))
     z = 1.5
     phase_modulator = PhaseModulator(phase_profile, z)
@@ -27,7 +27,7 @@ def test_phase_modulator_initialization_and_profile():
     assert isinstance(phase_modulator(field), Field)
 
 
-def test_amplitude_modulator_initialization_and_profile():
+def test_amplitude_modulator_initialization_and_profile() -> None:
     amplitude_profile = torch.rand((10, 12))
     z = 1.5
     amplitude_modulator = AmplitudeModulator(amplitude_profile, z)
@@ -37,7 +37,7 @@ def test_amplitude_modulator_initialization_and_profile():
     assert isinstance(amplitude_modulator(field), Field)
 
 
-def test_phase_modulation_profile_consistency():
+def test_phase_modulation_profile_consistency() -> None:
     phase_profile = torch.rand((10, 12))
     z = 1.5
     phase_modulator = PhaseModulator(phase_profile, z)
@@ -45,7 +45,7 @@ def test_phase_modulation_profile_consistency():
     assert torch.allclose(modulator.modulation_profile(), phase_modulator.modulation_profile())
 
 
-def test_polychromatic_phase_modulator():
+def test_polychromatic_phase_modulator() -> None:
     optical_path_length = torch.rand((10, 12), dtype=torch.double)
     z = 1.5
     polychromatic_modulator = PolychromaticPhaseModulator(optical_path_length, z)
@@ -56,7 +56,7 @@ def test_polychromatic_phase_modulator():
     assert isinstance(polychromatic_modulator(field), Field)
 
 
-def test_amplitude_modulation_profile_consistency():
+def test_amplitude_modulation_profile_consistency() -> None:
     amplitude_profile = torch.rand((10, 12))
     z = 1.5
     amplitude_modulator = AmplitudeModulator(amplitude_profile, z)
@@ -64,7 +64,7 @@ def test_amplitude_modulation_profile_consistency():
     assert torch.allclose(modulator.modulation_profile(), amplitude_modulator.modulation_profile())
 
 
-def test_error_on_invalid_tensor_input():
+def test_error_on_invalid_tensor_input() -> None:
     z = 1.5
     with pytest.raises(TypeError):
         Modulator("not a tensor", z)  # type: ignore
@@ -74,7 +74,7 @@ def test_error_on_invalid_tensor_input():
         AmplitudeModulator("not a tensor", z)  # type: ignore
 
 
-def test_error_on_incorrect_dimensions():
+def test_error_on_incorrect_dimensions() -> None:
     z = 1.5
     invalid_tensor = torch.rand((10, 10, 10))
     with pytest.raises(ValueError):
@@ -85,7 +85,7 @@ def test_error_on_incorrect_dimensions():
         AmplitudeModulator(invalid_tensor, z)
 
 
-def test_visualization():
+def test_visualization() -> None:
     complex_tensor = torch.rand((10, 12), dtype=torch.cdouble)
     z = 1.5
     modulator = Modulator(complex_tensor, z)
@@ -93,7 +93,7 @@ def test_visualization():
     assert isinstance(fig, Figure)
 
 
-def test_polychromatic_visualization():
+def test_polychromatic_visualization() -> None:
     optical_path_length = torch.rand((10, 12), dtype=torch.double)
     z = 1.5
     polychromatic_modulator = PolychromaticPhaseModulator(optical_path_length, z)

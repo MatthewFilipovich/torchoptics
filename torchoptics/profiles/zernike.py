@@ -6,8 +6,9 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Int, Scalar, Vector2
-from ..utils import initialize_tensor
+from torchoptics.type_defs import Int, Scalar, Vector2
+from torchoptics.utils import initialize_tensor
+
 from ._profile_meshgrid import profile_meshgrid
 
 
@@ -19,8 +20,7 @@ def zernike(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a Zernike polynomial profile over a 2D grid.
+    r"""Generates a Zernike polynomial profile over a 2D grid.
 
     `Zernike polynomials <https://en.wikipedia.org/wiki/Zernike_polynomials>`_ are a set of orthogonal
     polynomials defined on the unit disk, commonly used in optics for wavefront analysis and aberration
@@ -54,16 +54,18 @@ def zernike(
 
     Returns:
         Tensor: The generated Zernike polynomial profile.
-    """
 
+    """
     n = initialize_tensor("n", n, is_scalar=True, is_integer=True, is_non_negative=True)
     m = initialize_tensor("m", m, is_scalar=True, is_integer=True)
     radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
 
     if m.abs() > n:
-        raise ValueError("Azimuthal index m must satisfy |m| <= n.")
+        msg = "Azimuthal index m must satisfy |m| <= n."
+        raise ValueError(msg)
     if (n - m.abs()) % 2 != 0:
-        raise ValueError("The difference n - |m| must be even for a valid Zernike polynomial.")
+        msg = "The difference n - |m| must be even for a valid Zernike polynomial."
+        raise ValueError(msg)
 
     x, y = profile_meshgrid(shape, spacing, offset)
 
@@ -75,9 +77,7 @@ def zernike(
 
     # Apply the unit disk mask
     mask = rho <= 1.0
-    zernike_profile = radial_poly * angular_component * mask
-
-    return zernike_profile
+    return radial_poly * angular_component * mask
 
 
 def zernike_radial(n: Tensor, m: Tensor, rho: Tensor) -> Tensor:

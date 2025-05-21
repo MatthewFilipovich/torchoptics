@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import torch
 from torch import Tensor
@@ -11,8 +11,10 @@ from .config import wavelength_or_default
 from .functional import calculate_centroid, calculate_std, get_coherence_evolution, inner2d, outer2d
 from .planar_grid import PlanarGrid
 from .propagation import propagator
-from .type_defs import Scalar, Vector2
 from .utils import copy, validate_tensor_min_ndim
+
+if TYPE_CHECKING:
+    from .type_defs import Scalar, Vector2
 
 
 class Field(PlanarGrid):
@@ -37,16 +39,19 @@ class Field(PlanarGrid):
     def __init__(
         self,
         data: Tensor,
-        wavelength: Optional[Scalar] = None,
+        wavelength: Scalar | None = None,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         validate_tensor_min_ndim(data, "data", self.DATA_MIN_NDIM)
         super().__init__(data.shape[-2:], z, spacing, offset)
         self.register_optics_property("data", data, is_complex=True)
         self.register_optics_property(
-            "wavelength", wavelength_or_default(wavelength), is_scalar=True, is_positive=True
+            "wavelength",
+            wavelength_or_default(wavelength),
+            is_scalar=True,
+            is_positive=True,
         )
 
     def intensity(self) -> Tensor:
@@ -69,8 +74,8 @@ class Field(PlanarGrid):
         self,
         shape: Vector2,
         z: Scalar,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
         propagation_method: str = "AUTO",
         asm_pad_factor: Vector2 = 2,
         interpolation_mode: str = "nearest",
@@ -94,7 +99,14 @@ class Field(PlanarGrid):
 
         """
         return propagator(
-            self, shape, z, spacing, offset, propagation_method, asm_pad_factor, interpolation_mode
+            self,
+            shape,
+            z,
+            spacing,
+            offset,
+            propagation_method,
+            asm_pad_factor,
+            interpolation_mode,
         )
 
     def propagate_to_z(self, z: Scalar, **prop_kwargs) -> Field:
@@ -132,7 +144,8 @@ class Field(PlanarGrid):
 
         """
         if not isinstance(plane, PlanarGrid):
-            raise TypeError(f"Expected plane to be a PlanarGrid, but got {type(plane).__name__}.")
+            msg = f"Expected plane to be a PlanarGrid, but got {type(plane).__name__}."
+            raise TypeError(msg)
         return self.propagate(plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
 
     def modulate(self, modulation_profile: Tensor) -> Field:
@@ -160,7 +173,7 @@ class Field(PlanarGrid):
         """
         self._validate_polarization_dim()
         modulated_data = (self.data.unsqueeze(self.POLARIZATION_DIM - 1) * polarized_modulation_profile).sum(
-            self.POLARIZATION_DIM
+            self.POLARIZATION_DIM,
         )
         return copy(self, data=modulated_data)
 
@@ -203,9 +216,12 @@ class Field(PlanarGrid):
 
         """
         if not self.is_same_geometry(other):
-            raise ValueError(
+            msg = (
                 "Fields must have the same geometry, but got geometries:"
                 f"\n{self.geometry_str()}\n{other.geometry_str()}"
+            )
+            raise ValueError(
+                msg,
             )
         return inner2d(self.data, other.data) * self.cell_area()
 
@@ -220,9 +236,12 @@ class Field(PlanarGrid):
 
         """
         if not self.is_same_geometry(other):
-            raise ValueError(
+            msg = (
                 "Fields must have the same geometry, but got geometries:"
                 f"\n{self.geometry_str()}\n{other.geometry_str()}"
+            )
+            raise ValueError(
+                msg,
             )
         return outer2d(self.data, other.data) * self.cell_area()
 
@@ -240,9 +259,12 @@ class Field(PlanarGrid):
 
     def _validate_polarization_dim(self) -> None:
         if self.data.ndim < abs(self.POLARIZATION_DIM) or self.data.shape[self.POLARIZATION_DIM] != 3:
-            raise ValueError(
+            msg = (
                 f"Expected data tensor to have polarization dimension of size 3 at "
-                f"dim={self.POLARIZATION_DIM}, but data has shape {self.data.shape}.",
+                f"dim={self.POLARIZATION_DIM}, but data has shape {self.data.shape}."
+            )
+            raise ValueError(
+                msg,
             )
 
 
@@ -268,16 +290,20 @@ class SpatialCoherence(Field):
     def intensity(self) -> Tensor:
         if self.data.shape[-1] != self.data.shape[-3] or self.data.shape[-2] != self.data.shape[-4]:
             shape_str = ", ".join(str(dim) for dim in self.data.shape)
-            raise ValueError(f"Expected data tensor to have shape (..., H, W, H, W), but got ({shape_str}).")
+            msg = f"Expected data tensor to have shape (..., H, W, H, W), but got ({shape_str})."
+            raise ValueError(msg)
 
         data_flattened = self.data.flatten(-4, -3).flatten(-2, -1)
         intensity = torch.diagonal(data_flattened, dim1=-2, dim2=-1).unflatten(-1, self.shape)
         if not torch.allclose(intensity.imag, torch.zeros_like(intensity.imag), atol=1e-7):
-            raise ValueError(
+            msg = (
                 "Spatial coherence diagonal values are expected to be real, but significant imaginary "
                 "components were found.\n"
                 f"Max absolute real part: {intensity.real.abs().max().item():.4e}\n"
-                f"Max absolute imaginary part: {intensity.imag.abs().max().item():.4e}\n",
+                f"Max absolute imaginary part: {intensity.imag.abs().max().item():.4e}\n"
+            )
+            raise ValueError(
+                msg,
             )
 
         return intensity.real
@@ -289,11 +315,13 @@ class SpatialCoherence(Field):
 
     def inner(self, other: Field) -> Tensor:
         """SpatialCoherence does not support the inner product."""
-        raise TypeError("inner() is not applicable for SpatialCoherence.")
+        msg = "inner() is not applicable for SpatialCoherence."
+        raise TypeError(msg)
 
     def outer(self, other: Field) -> Tensor:
         """SpatialCoherence does not support the outer product."""
-        raise TypeError("outer() is not applicable for SpatialCoherence.")
+        msg = "outer() is not applicable for SpatialCoherence."
+        raise TypeError(msg)
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """Visualizes the the time-averaged intensity (diagonal of the spatial coherence matrix).

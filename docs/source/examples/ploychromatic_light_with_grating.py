@@ -1,5 +1,4 @@
-"""
-Polychromatic Light with Grating
+"""Polychromatic Light with Grating.
 ====================================
 
 Simulates the propagation of red, green, and blue light through a blazed grating.
@@ -38,10 +37,11 @@ torchoptics.set_default_spacing(10e-6)
 # as red, green, and blue channels.
 
 
-def plot_rgb_intensities(fields, title):
+def plot_rgb_intensities(fields, title) -> None:
     """Plots the RGB intensities of three fields as an RGB image."""
     if not isinstance(fields, list) or len(fields) != 3:
-        raise ValueError("`fields` must be a list of 3 Fields (R, G, B).")
+        msg = "`fields` must be a list of 3 Fields (R, G, B)."
+        raise ValueError(msg)
 
     rgb_intensities = torch.stack([field.intensity() for field in fields], dim=-1).cpu().numpy()
 

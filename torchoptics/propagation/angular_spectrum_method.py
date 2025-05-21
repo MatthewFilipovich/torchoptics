@@ -9,20 +9,22 @@ from torch import Tensor
 from torch.fft import fft2, fftshift, ifft2, ifftshift
 from torch.nn.functional import pad
 
-from ..functional import fftfreq_grad
-from ..planar_grid import PlanarGrid
-from ..type_defs import Vector2
-from ..utils import copy, initialize_tensor
+from torchoptics.functional import fftfreq_grad
+from torchoptics.utils import copy, initialize_tensor
 
 if TYPE_CHECKING:
-    from ..fields import Field
+    from torchoptics.fields import Field
+    from torchoptics.planar_grid import PlanarGrid
+    from torchoptics.type_defs import Vector2
 
 
 def asm_propagation(
-    field: Field, propagation_plane: PlanarGrid, propagation_method: str, asm_pad_factor: Vector2
+    field: Field,
+    propagation_plane: PlanarGrid,
+    propagation_method: str,
+    asm_pad_factor: Vector2,
 ) -> Field:
-    """
-    Propagates the field to a plane using the angular spectrum method (ASM).
+    """Propagates the field to a plane using the angular spectrum method (ASM).
 
     Args:
         field (Field): Input field.
@@ -30,13 +32,21 @@ def asm_propagation(
 
     Returns:
         Field: Output field after propagation.
+
     """
     asm_pad_factor = initialize_tensor(
-        "asm_pad_factor", asm_pad_factor, is_vector2=True, is_integer=True, is_non_negative=True
+        "asm_pad_factor",
+        asm_pad_factor,
+        is_vector2=True,
+        is_integer=True,
+        is_non_negative=True,
     )
     propagation_distance = propagation_plane.z - field.z
     transfer_function = calculate_transfer_function(
-        field, propagation_distance, asm_pad_factor, propagation_method
+        field,
+        propagation_distance,
+        asm_pad_factor,
+        propagation_method,
     )
     propagated_data = apply_transfer_function(transfer_function, field, asm_pad_factor)
     propagated_field = copy(field, data=propagated_data, z=propagation_plane.z)
@@ -45,7 +55,10 @@ def asm_propagation(
 
 
 def calculate_transfer_function(
-    field: Field, propagation_distance: Tensor, asm_pad_factor: Tensor, propagation_method: str
+    field: Field,
+    propagation_distance: Tensor,
+    asm_pad_factor: Tensor,
+    propagation_method: str,
 ) -> Tensor:
     """Calculate the transfer function for ASM propagation."""
     padded_input_shape = torch.tensor(field.shape) * (2 * asm_pad_factor + 1)
@@ -57,7 +70,7 @@ def calculate_transfer_function(
 
     if propagation_method in {"ASM_FRESNEL", "AUTO_FRESNEL"}:
         return torch.exp(1j * k * propagation_distance) * torch.exp(
-            -1j * field.wavelength * propagation_distance * (kx**2 + ky**2) / (4 * torch.pi)
+            -1j * field.wavelength * propagation_distance * (kx**2 + ky**2) / (4 * torch.pi),
         )
     return torch.exp(1j * kz * propagation_distance)  # ASM using RS equation
 
@@ -68,8 +81,7 @@ def apply_transfer_function(transfer_function: Tensor, field: Field, asm_pad_fac
     data = pad(field.data, (pad_y, pad_y, pad_x, pad_x), mode="constant", value=0)
     data = fftshift(fft2(data))
     data = data * transfer_function
-    data = ifft2(ifftshift(data))
-    return data
+    return ifft2(ifftshift(data))
 
 
 def validate_bounds(propagated_field: Field, target_plane: PlanarGrid, asm_pad_factor: Vector2) -> None:
@@ -86,8 +98,11 @@ def validate_bounds(propagated_field: Field, target_plane: PlanarGrid, asm_pad_f
         formatted_propagated_bounds = [f"{val:.2e}" for val in propagated_field_bounds]
         formatted_target_offset = [f"{val:.2e}" for val in target_plane.offset]
 
-        raise ValueError(
+        msg = (
             f"Propagation plane bounds {formatted_target_bounds} are outside padded field bounds "
             f"{formatted_propagated_bounds}.\nIncrease asm_pad_factor ({asm_pad_factor}) "
             f"or adjust propagation plane offset ({formatted_target_offset})."
+        )
+        raise ValueError(
+            msg,
         )

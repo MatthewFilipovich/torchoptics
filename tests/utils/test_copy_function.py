@@ -3,9 +3,9 @@ import pytest
 from torchoptics.utils import copy
 
 
-def test_copy_function_with_property():
+def test_copy_function_with_property() -> None:
     class SampleClass:
-        def __init__(self, a, b, c):
+        def __init__(self, a, b, c) -> None:
             self.a = a
             self.b = b
             self._c = c
@@ -21,9 +21,9 @@ def test_copy_function_with_property():
     assert copied_obj.c == 3
 
 
-def test_copy_function_with_updates():
+def test_copy_function_with_updates() -> None:
     class SampleClass:
-        def __init__(self, a, b, c):
+        def __init__(self, a, b, c) -> None:
             self.a = a
             self.b = b
             self._c = c
@@ -39,9 +39,9 @@ def test_copy_function_with_updates():
     assert copied_obj.c == 5
 
 
-def test_copy_function_missing_attributes():
+def test_copy_function_missing_attributes() -> None:
     class IncompleteClass:
-        def __init__(self, a, b):
+        def __init__(self, a, b) -> None:
             self.a = a
             self.b_ = b
 

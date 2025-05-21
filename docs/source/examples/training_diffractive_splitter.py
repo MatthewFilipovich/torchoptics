@@ -1,5 +1,4 @@
-"""
-Training Diffractive Splitter
+"""Training Diffractive Splitter.
 ==============================
 
 Trains a diffractive optical system to function as a diffractive splitter.
@@ -87,7 +86,7 @@ for iteration in range(200):
 
     losses.append(loss.item())
     if iteration % 10 == 0:
-        print(f"Iteration {iteration}, Loss {loss.item()}")
+        pass
 
 # %%
 # Loss Curve

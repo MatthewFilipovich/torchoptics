@@ -5,32 +5,32 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Scalar, Vector2
+from torchoptics.type_defs import Scalar, Vector2
+
 from .elements import PolarizedModulationElement
 
 
 class Waveplate(PolarizedModulationElement):
-    r"""
-    Waveplate element.
+    r"""Waveplate element.
 
     The waveplate is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \cos^2(\theta) + e^{i \phi} \sin^2(\theta) & (1 - e^{i \phi}) \cos(\theta) \sin(\theta) & 0 \\
             (1 - e^{i \phi}) \cos(\theta) \sin(\theta) & \sin^2(\theta) + e^{i \phi} \cos^2(\theta) & 0 \\
             0 & 0 & 1
         \end{bmatrix}
 
-    where 
-        - :math:`\theta` is the fast axis angle, and 
+    where
+        - :math:`\theta` is the fast axis angle, and
         - :math:`\phi` is the phase delay between the fast and slow axes.
 
     .. note::
-        A quarter waveplate (QWP) is obtained by setting :math:`\phi = \pi/2`. 
+        A quarter waveplate (QWP) is obtained by setting :math:`\phi = \pi/2`.
 
-        A half waveplate (HWP) is obtained by setting :math:`\phi = \pi`. 
+        A half waveplate (HWP) is obtained by setting :math:`\phi = \pi`.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -40,6 +40,7 @@ class Waveplate(PolarizedModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     phi: Tensor
@@ -69,20 +70,19 @@ class Waveplate(PolarizedModulationElement):
 
 
 class QuarterWaveplate(PolarizedModulationElement):
-    r"""
-    Quarter Waveplate element.
+    r"""Quarter Waveplate element.
 
     The quarter waveplate is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \cos^2(\theta) + i \sin^2(\theta) & (1 - i) \cos(\theta) \sin(\theta) & 0 \\
             (1 - i) \cos(\theta) \sin(\theta) & \sin^2(\theta) + i \cos^2(\theta) & 0 \\
             0 & 0 & 1
         \end{bmatrix}
 
-    where 
+    where
         - :math:`\theta` is the fast axis angle.
 
     Args:
@@ -92,6 +92,7 @@ class QuarterWaveplate(PolarizedModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     theta: Tensor
@@ -118,20 +119,19 @@ class QuarterWaveplate(PolarizedModulationElement):
 
 
 class HalfWaveplate(PolarizedModulationElement):
-    r"""
-    Half Waveplate element.
+    r"""Half Waveplate element.
 
     The half waveplate is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \cos^2(\theta) - \sin^2(\theta) & 2 \cos(\theta) \sin(\theta) & 0 \\
             2 \cos(\theta) \sin(\theta) & \sin^2(\theta) - \cos^2(\theta) & 0 \\
             0 & 0 & 1
         \end{bmatrix}
 
-    where 
+    where
         - :math:`\theta` is the fast axis angle.
 
     Args:
@@ -141,6 +141,7 @@ class HalfWaveplate(PolarizedModulationElement):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     theta: Tensor

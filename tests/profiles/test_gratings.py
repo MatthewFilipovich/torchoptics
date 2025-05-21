@@ -17,7 +17,7 @@ def make_grating_args() -> GratingArgs:
     return GratingArgs(shape=(100, 100), spacing=(0.1, 0.1), offset=(0.0, 0.0), theta=0.0)
 
 
-def test_blazed_grating():
+def test_blazed_grating() -> None:
     args = make_grating_args()
     period = 10.0
     height = 2.0
@@ -27,7 +27,7 @@ def test_blazed_grating():
     assert profile.dtype == torch.double
 
 
-def test_sinusoidal_grating():
+def test_sinusoidal_grating() -> None:
     args = make_grating_args()
     period = 10.0
     height = 1.0
@@ -39,7 +39,7 @@ def test_sinusoidal_grating():
     assert profile.dtype == torch.double
 
 
-def test_binary_grating():
+def test_binary_grating() -> None:
     args = make_grating_args()
     period = 10.0
     profile = gratings.binary_grating(period=period, **args)

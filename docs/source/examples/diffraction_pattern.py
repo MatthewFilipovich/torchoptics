@@ -1,5 +1,4 @@
-"""
-Diffraction Pattern
+"""Diffraction Pattern.
 ===================
 
 Computes the diffraction pattern from an array of circular apertures.
@@ -47,7 +46,7 @@ torchoptics.set_default_wavelength(700e-9)
 input_field = Field(
     circle(circle_shape, circle_radius, offset=(-circle_separation, 0))
     + circle(circle_shape, circle_radius, offset=(0, 0))
-    + circle(circle_shape, circle_radius, offset=(circle_separation, 0))
+    + circle(circle_shape, circle_radius, offset=(circle_separation, 0)),
 ).to(device)
 
 input_field.visualize(title="Input Aperture Field")

@@ -4,7 +4,7 @@ from torchoptics import Field
 from torchoptics.elements import LeftCircularPolarizer, LinearPolarizer, RightCircularPolarizer
 
 
-def test_linear_polarizer():
+def test_linear_polarizer() -> None:
     shape = (32, 32)
     theta = torch.tensor(torch.pi / 4)
     spacing = 1
@@ -29,7 +29,7 @@ def test_linear_polarizer():
     assert isinstance(output_field, Field)
 
 
-def test_left_circular_polarizer():
+def test_left_circular_polarizer() -> None:
     shape = (32, 32)
     spacing = 1
     polarizer = LeftCircularPolarizer(shape, spacing=spacing)
@@ -47,7 +47,7 @@ def test_left_circular_polarizer():
     assert isinstance(output_field, Field)
 
 
-def test_right_circular_polarizer():
+def test_right_circular_polarizer() -> None:
     shape = (32, 32)
     spacing = 1
     polarizer = RightCircularPolarizer(shape, spacing=spacing)

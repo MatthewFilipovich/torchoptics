@@ -1,6 +1,7 @@
 """This module defines type aliases for the torchoptics package."""
 
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
 from torch import Tensor
 from typing_extensions import TypeAlias

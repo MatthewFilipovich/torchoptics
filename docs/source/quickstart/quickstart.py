@@ -1,5 +1,4 @@
-"""
-Quickstart
+"""Quickstart.
 ==========
 
 Welcome to the TorchOptics quickstart! This guide walks you through the main concepts of optical
@@ -56,7 +55,6 @@ field = Field(triangle_profile)
 
 # Visualize the field distribution
 field.visualize(title="Initial Field at z=0 m")
-print(field)
 
 # %%
 # Free-Space Propagation
@@ -88,8 +86,6 @@ d_i = 0.4  # Lens-to-image distance (40 cm)
 lens_z = d_o  # Position of the lens along the z-axis
 image_z = d_o + d_i  # Position of the image plane along the z-axis
 
-print(f"Lens Position: {lens_z} m")
-print(f"Image Plane Position: {image_z} m")
 
 # %%
 # Initialize the Lens
@@ -100,7 +96,6 @@ print(f"Image Plane Position: {image_z} m")
 
 lens = Lens(shape, focal_length, lens_z)
 lens.visualize(title="Lens Profile")
-print(lens)
 
 
 # %%
@@ -139,7 +134,6 @@ field_image_plane.visualize(title="Field at Image Plane")
 # Let's create a system containg the single lens:
 
 system = System(lens)
-print(system)
 
 # %%
 # Measure at Image Plane

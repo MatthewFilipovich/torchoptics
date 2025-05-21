@@ -4,7 +4,7 @@ from torchoptics import Field, SpatialCoherence
 from torchoptics.profiles import gaussian, gaussian_schell_model
 
 
-def test_gaussian_schell_model_shape():
+def test_gaussian_schell_model_shape() -> None:
     shape = (10, 15)
     waist_radius = 50e-6
     coherence_width = torch.inf
@@ -19,7 +19,7 @@ def test_gaussian_schell_model_shape():
     assert coherence_data.dtype == torch.double
 
 
-def test_gaussian_schell_model_identical_with_gaussian():
+def test_gaussian_schell_model_identical_with_gaussian() -> None:
     shape = (10, 15)
     waist_radius = 50e-6
     coherence_width = torch.inf
@@ -41,13 +41,14 @@ def test_gaussian_schell_model_identical_with_gaussian():
     spatial_coherence = SpatialCoherence(coherence_data, spacing=spacing, wavelength=wavelength)
     assert torch.allclose(field.intensity(), spatial_coherence.intensity())
     assert torch.allclose(
-        field.propagate_to_z(0.2).intensity(), spatial_coherence.propagate_to_z(0.2).intensity()
+        field.propagate_to_z(0.2).intensity(),
+        spatial_coherence.propagate_to_z(0.2).intensity(),
     )
     assert coherence_data.dtype == torch.double
     assert gaussian_data.dtype == torch.cdouble
 
 
-def test_gaussian_schell_model_incoherent():
+def test_gaussian_schell_model_incoherent() -> None:
     shape = (10, 15)
     waist_radius = 50e-6
     spacing = 10e-6

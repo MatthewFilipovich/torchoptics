@@ -7,12 +7,12 @@ from torch.nn import Parameter
 from torchoptics import OpticsModule
 
 
-def test_initialization():
+def test_initialization() -> None:
     module = OpticsModule()
     assert isinstance(module, OpticsModule)
 
 
-def test_register_property_as_parameter():
+def test_register_property_as_parameter() -> None:
     module = OpticsModule()
     value = torch.tensor([1.0, 2.0, 3.0])
     module.register_optics_property("prop1", Parameter(value))
@@ -24,7 +24,7 @@ def test_register_property_as_parameter():
     assert module.prop1 is not value
 
 
-def test_register_property_as_buffer():
+def test_register_property_as_buffer() -> None:
     module = OpticsModule()
     value = torch.tensor([1.0, 2.0, 3.0])
     module.register_optics_property("prop1", value)
@@ -34,7 +34,7 @@ def test_register_property_as_buffer():
     assert "prop1" in dict(module.named_buffers())
 
 
-def test_set_property():
+def test_set_property() -> None:
     module = OpticsModule()
     initial_value = torch.tensor([1.0, 2.0, 3.0])
     module.register_optics_property("prop1", initial_value)
@@ -43,7 +43,7 @@ def test_set_property():
     assert torch.equal(module.prop1, new_value)
 
 
-def test_property_shape_validation():
+def test_property_shape_validation() -> None:
     module = OpticsModule()
     initial_value = torch.tensor([1.0, 2.0, 3.0])
     module.register_optics_property("prop1", initial_value)
@@ -52,14 +52,14 @@ def test_property_shape_validation():
         module.set_optics_property("prop1", new_value)
 
 
-def test_complex_property_registration():
+def test_complex_property_registration() -> None:
     module = OpticsModule()
     value = torch.tensor([1.0 + 1.0j, 2.0 + 2.0j, 3.0 + 3.0j])
     module.register_optics_property("prop1", value, is_complex=True)
     assert module.prop1.is_complex()
 
 
-def test_is_positive():
+def test_is_positive() -> None:
     module = OpticsModule()
     value = torch.tensor([1.0, 2.0, 3.0])
     module.register_optics_property("prop1", value, is_positive=True)
@@ -68,14 +68,14 @@ def test_is_positive():
         module.set_optics_property("prop1", invalid_value)
 
 
-def test_register_property_before_init():
+def test_register_property_before_init() -> None:
     module = OpticsModule()
     module._initialized = False
     with pytest.raises(AttributeError):
         module.register_optics_property("prop1", torch.tensor([1.0]))
 
 
-def test_register_property_from_sequence():
+def test_register_property_from_sequence() -> None:
     module = OpticsModule()
     value = [1.0, 2.0]
     module.register_optics_property("prop1", value, is_vector2=True)
@@ -87,7 +87,7 @@ def test_register_property_from_sequence():
     assert "prop1" in dict(module.named_buffers())
 
 
-def test_register_property_with_none_shape():
+def test_register_property_with_none_shape() -> None:
     module = OpticsModule()
     value = torch.tensor([1.0, 2.0, 3.0])
     module.register_optics_property("prop1", value)
@@ -97,7 +97,7 @@ def test_register_property_with_none_shape():
     assert module.prop1.shape == (3,)
 
 
-def test_register_trainable_property_with_none_shape():
+def test_register_trainable_property_with_none_shape() -> None:
     module = OpticsModule()
     value = torch.tensor([1.0, 2.0, 3.0])
     module.register_optics_property("prop1", Parameter(value))
@@ -107,7 +107,7 @@ def test_register_trainable_property_with_none_shape():
     assert module.prop1.shape == (3,)
 
 
-def test_set_property_via_setattr():
+def test_set_property_via_setattr() -> None:
     module = OpticsModule()
     initial_value = [1.0, 2.0]
     module.register_optics_property("prop1", initial_value, is_vector2=True)
@@ -117,7 +117,7 @@ def test_set_property_via_setattr():
     assert torch.equal(module.prop1, expected_tensor)
 
 
-def test_set_property_via_setattr_tensor():
+def test_set_property_via_setattr_tensor() -> None:
     module = OpticsModule()
     initial_value = [1.0, 2.0, 3.0]
     module.register_optics_property("prop1", initial_value)
@@ -126,7 +126,7 @@ def test_set_property_via_setattr_tensor():
     assert torch.equal(module.prop1, new_value)
 
 
-def test_set_trainable_property_via_setattr():
+def test_set_trainable_property_via_setattr() -> None:
     module = OpticsModule()
     initial_value = torch.tensor([1.0, 2.0, 3.0])
     module.register_optics_property("prop1", Parameter(initial_value))
@@ -137,6 +137,6 @@ def test_set_trainable_property_via_setattr():
     assert torch.equal(module.prop1, expected_tensor)
 
 
-def test_raise_errors():
+def test_raise_errors() -> None:
     with pytest.raises(AttributeError):
         OpticsModule().set_optics_property("unregistered_prop", 1.0)

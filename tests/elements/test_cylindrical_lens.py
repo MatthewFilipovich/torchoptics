@@ -4,7 +4,7 @@ from torchoptics import Field
 from torchoptics.elements import CylindricalLens
 
 
-def test_cylindrical_lens():
+def test_cylindrical_lens() -> None:
     shape = (64, 64)
     focal_length = 50.0
     wavelength = 500e-9

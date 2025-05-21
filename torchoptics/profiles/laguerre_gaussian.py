@@ -7,8 +7,9 @@ from typing import Callable, Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Int, Scalar, Vector2
-from ..utils import initialize_tensor
+from torchoptics.type_defs import Int, Scalar, Vector2
+from torchoptics.utils import initialize_tensor
+
 from .hermite_gaussian import calculate_beam_properties
 
 
@@ -22,8 +23,7 @@ def laguerre_gaussian(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a Laguerre-Gaussian profile.
+    r"""Generates a Laguerre-Gaussian profile.
 
     The Laguerre-Gaussian profile is defined by the following equation:
 
@@ -32,12 +32,12 @@ def laguerre_gaussian(
         \psi_{pl}(r, \phi, z) &= \frac{w_0}{w(z)} \left( \frac{\sqrt{2} r}{w(z)} \right)^{|l|} L_p^{|l|}
         \left(\frac{2 r^2}{w(z)^2} \right) \\
         & \quad \times \exp\left(-\frac{r^2}{w(z)^2}\right) \\
-        & \quad \times \exp\left(i\left[kz + \frac{kr^2}{2R(z)} - (2p+|l|+1)\arctan\left(\frac{z}{z_R}\right) 
+        & \quad \times \exp\left(i\left[kz + \frac{kr^2}{2R(z)} - (2p+|l|+1)\arctan\left(\frac{z}{z_R}\right)
         + l\phi \right]\right)
         \end{align*}
 
     where the parameters are defined as follows:
-    
+
     - :math:`w_0`: The beam waist radius, representing the minimum beam size at the focal point.
     - :math:`w(z)`: The beam radius at a given propagation distance :math:`z`:
 
@@ -79,19 +79,27 @@ def laguerre_gaussian(
 
     Returns:
         Tensor: The generated Laguerre-Gaussian profile.
+
     """
     p = initialize_tensor("p", p, is_scalar=True, is_integer=True, is_non_negative=True)
     l = initialize_tensor("l", l, is_scalar=True, is_integer=True)
     waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)
 
     x, y, phase_shift, wz, waist_ratio = calculate_beam_properties(
-        (p, l), waist_radius, shape, wavelength, waist_z, spacing, offset, False
+        (p, l),
+        waist_radius,
+        shape,
+        wavelength,
+        waist_z,
+        spacing,
+        offset,
+        False,
     )
 
     r = torch.sqrt(x**2 + y**2) * 2.0**0.5 / wz
     phi = torch.atan2(y, x)
     normalization_constant = torch.sqrt(
-        2 * math.factorial(p) / (torch.pi * math.factorial(p + abs(l))) / waist_radius**2
+        2 * math.factorial(p) / (torch.pi * math.factorial(p + abs(l))) / waist_radius**2,
     )
 
     return (

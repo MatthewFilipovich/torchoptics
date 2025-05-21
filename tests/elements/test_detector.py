@@ -6,7 +6,7 @@ from torchoptics import Field
 from torchoptics.elements import LinearDetector
 
 
-def test_linear_detector():
+def test_linear_detector() -> None:
     shape = (100, 100)
     spacing = 1
     field = Field(torch.ones(*shape), wavelength=700e-9, spacing=spacing)

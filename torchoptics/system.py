@@ -38,13 +38,15 @@ class System(Module):
 
     Args:
         *elements (Element): Optical elements in the system.
+
     """
 
     def __init__(self, *elements: Element) -> None:
         super().__init__()
         for i, element in enumerate(elements):
             if not isinstance(element, Element):
-                raise TypeError(f"Expected element {i} to be an Element, but got {type(element).__name__}.")
+                msg = f"Expected element {i} to be an Element, but got {type(element).__name__}."
+                raise TypeError(msg)
             self.add_module(str(i), element)
         self._elements = tuple(elements)
 
@@ -71,8 +73,7 @@ class System(Module):
         return self._elements
 
     def forward(self, field: Field, **prop_kwargs) -> Field:
-        """
-        Propagates the field through the system.
+        """Propagates the field through the system.
 
         Args:
             field (Field): Input field.
@@ -83,7 +84,9 @@ class System(Module):
 
 
         Returns:
-            Field: Output field after propagating through the system."""
+            Field: Output field after propagating through the system.
+
+        """
         return self._forward(field, None, **prop_kwargs)
 
     def measure(
@@ -95,8 +98,7 @@ class System(Module):
         offset: Optional[Vector2] = None,
         **prop_kwargs,
     ) -> Field:
-        """
-        Propagates the field through the system to a plane defined by the input parameters.
+        """Propagates the field through the system to a plane defined by the input parameters.
 
         Args:
             field (Field): Input field.
@@ -113,13 +115,13 @@ class System(Module):
 
         Returns:
             Field: Output field after propagating to the plane.
+
         """
         last_element = IdentityElement(shape, z, spacing, offset).to(field.data.device)
         return self._forward(field, last_element, **prop_kwargs)
 
     def measure_at_z(self, field: Field, z: Scalar, **prop_kwargs) -> Field:
-        """
-        Propagates the field through the system to a plane at a specific z position.
+        """Propagates the field through the system to a plane at a specific z position.
 
         The plane has the same ``shape``, ``spacing``, and ``offset`` as the input field.
 
@@ -134,12 +136,12 @@ class System(Module):
 
         Returns:
             Field: Output field after propagating to the plane.
+
         """
         return self.measure(field, field.shape, z, field.spacing, field.offset, **prop_kwargs)
 
     def measure_at_plane(self, field: Field, plane: PlanarGrid, **prop_kwargs) -> Field:
-        """
-        Propagates the field through the system to a plane defined by a :class:`PlanarGrid` object.
+        """Propagates the field through the system to a plane defined by a :class:`PlanarGrid` object.
 
         Args:
             field (Field): Input field.
@@ -152,6 +154,7 @@ class System(Module):
 
         Returns:
             Field: Output field after propagating to the plane.
+
         """
         return self.measure(field, plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
 
@@ -160,8 +163,7 @@ class System(Module):
         return tuple(sorted(self.elements, key=lambda element: element.z.item()))
 
     def elements_in_field_path(self, field: Field, last_element: Optional[Element]) -> tuple[Element, ...]:
-        """
-        Returns the elements along the field path.
+        """Returns the elements along the field path.
 
         Args:
             field (Field): Input field.
@@ -169,16 +171,19 @@ class System(Module):
 
         Returns:
             tuple[Element]: Elements along the field path.
+
         """
         elements_in_path = [element for element in self.sorted_elements() if field.z <= element.z]
 
         if last_element:
             if not isinstance(last_element, Element):
+                msg = f"Expected last_element to be an Element, but got {type(last_element).__name__}."
                 raise TypeError(
-                    f"Expected last_element to be an Element, but got {type(last_element).__name__}."
+                    msg,
                 )
             if last_element.z < field.z:
-                raise ValueError(f"Field z ({field.z}) is greater than last element z ({last_element.z}).")
+                msg = f"Field z ({field.z}) is greater than last element z ({last_element.z})."
+                raise ValueError(msg)
 
             elements_in_path = [element for element in elements_in_path if element.z <= last_element.z]
 
@@ -199,9 +204,12 @@ class System(Module):
             field = element(field)
 
             if not isinstance(field, Field) and i < len(elements) - 1:
-                raise TypeError(
+                msg = (
                     f"Expected all elements in the field path, except for the last, to return a Field. "
                     f"Element at index {i} ({type(element).__name__}) returned {type(field).__name__}."
+                )
+                raise TypeError(
+                    msg,
                 )
 
         return field

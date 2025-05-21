@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import torch
 from torch import Tensor
@@ -10,14 +10,15 @@ from torch import Tensor
 from .config import spacing_or_default
 from .functional import meshgrid2d
 from .optics_module import OpticsModule
-from .type_defs import Scalar, Vector2
 from .utils import initialize_shape
 from .visualization import visualize_tensor
 
+if TYPE_CHECKING:
+    from .type_defs import Scalar, Vector2
+
 
 class PlanarGrid(OpticsModule):
-    """
-    Base class for TorchOptics classes with 2D planar grid geometries.
+    """Base class for TorchOptics classes with 2D planar grid geometries.
 
     This class defines objects with planar geometries perpendicular to the z-axis. It includes methods
     for calculating various properties of the planar grid.
@@ -28,6 +29,7 @@ class PlanarGrid(OpticsModule):
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     z: Tensor
@@ -38,14 +40,17 @@ class PlanarGrid(OpticsModule):
         self,
         shape: Vector2,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         super().__init__()
         self._shape = initialize_shape(shape)
         self.register_optics_property("z", z, is_scalar=True)
         self.register_optics_property(
-            "spacing", spacing_or_default(spacing), is_vector2=True, is_positive=True
+            "spacing",
+            spacing_or_default(spacing),
+            is_vector2=True,
+            is_positive=True,
         )
         self.register_optics_property("offset", (0, 0) if offset is None else offset, is_vector2=True)
 
@@ -75,25 +80,25 @@ class PlanarGrid(OpticsModule):
         return self.spacing[0] * self.spacing[1]
 
     def length(self, use_grid_points=False) -> Tensor:
-        """
-        Returns the length of the plane along the planar dimensions.
+        """Returns the length of the plane along the planar dimensions.
 
         Args:
             use_grid_points (bool): If `True`, returns the length between the first and last grid points along
                 the planar dimensions. Otherwise, returns the length between the edges of the first and last
                 grid cells. Default: `False`.
+
         """
         shape_tensor = torch.tensor(self.shape, dtype=self.spacing.dtype, device=self.spacing.device)
         return self.spacing * (shape_tensor - 1) if use_grid_points else self.spacing * shape_tensor
 
     def bounds(self, use_grid_points=False) -> Tensor:
-        """
-        Returns the position of the plane boundaries along the planar dimensions.
+        """Returns the position of the plane boundaries along the planar dimensions.
 
         Args:
             use_grid_points (bool): If `True`, returns the position of the first and last grid points along
                 the planar dimensions. Otherwise, returns the position of the edges of the first and last
                 grid cells. Default: `False`.
+
         """
         half_length = self.length(use_grid_points) / 2
         bounds = (
@@ -109,11 +114,11 @@ class PlanarGrid(OpticsModule):
         return meshgrid2d(self.bounds(use_grid_points=True), self.shape)
 
     def is_same_geometry(self, other: PlanarGrid) -> bool:
-        """
-        Checks if the geometry is the same as another :class:`PlanarGrid` instance.
+        """Checks if the geometry is the same as another :class:`PlanarGrid` instance.
 
         Args:
             other (PlanarGrid): Another instance of PlanarGrid to compare with.
+
         """
         return (
             self.shape == other.shape
@@ -134,4 +139,4 @@ class PlanarGrid(OpticsModule):
         if show_bounds:
             bounds = self.bounds().detach().cpu()
             kwargs.update({"extent": [bounds[2], bounds[3], bounds[1], bounds[0]]})
-        return visualize_tensor(data[index + (slice(None), slice(None))], **kwargs)
+        return visualize_tensor(data[(*index, slice(None), slice(None))], **kwargs)

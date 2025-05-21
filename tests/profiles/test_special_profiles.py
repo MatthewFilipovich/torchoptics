@@ -5,10 +5,10 @@ from torchoptics.profiles import special
 
 
 def make_special_args():
-    return dict(shape=(100, 100), spacing=(0.1, 0.1), offset=(0.0, 0.0))
+    return {"shape": (100, 100), "spacing": (0.1, 0.1), "offset": (0.0, 0.0)}
 
 
-def test_airy():
+def test_airy() -> None:
     args = make_special_args()
     scale = 10.0
     profile = special.airy(scale=scale, **args)
@@ -17,7 +17,7 @@ def test_airy():
     assert profile.dtype == torch.double
 
 
-def test_sinc():
+def test_sinc() -> None:
     args = make_special_args()
     scale = (10.0, 20.0)
     profile = special.sinc(scale=scale, **args)
@@ -26,7 +26,7 @@ def test_sinc():
     assert profile.dtype == torch.double
 
 
-def test_siemens_star():
+def test_siemens_star() -> None:
     args = make_special_args()
     num_spokes = 8
     radius = 20.0

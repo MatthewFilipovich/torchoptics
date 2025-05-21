@@ -1,5 +1,4 @@
-"""
-Polarized Field
+"""Polarized Field.
 ===============
 
 Simulates the propagation of polarized light through different polarizers.
@@ -93,8 +92,3 @@ power_after_90 = polarizer_90(field).power().sum()
 power_after_45_90 = polarizer_90(polarizer_45(field)).power().sum()
 
 # Print results
-print(f"Initial Power: {initial_power:.2f}")
-print(f"Power after 0° polarizer: {power_after_0:.2f}")
-print(f"Power after 45° polarizer: {power_after_45:.2f}")
-print(f"Power after 90° polarizer: {power_after_90:.2f}")
-print(f"Power after sequential 45° and 90° polarizers: {power_after_45_90:.2f}")

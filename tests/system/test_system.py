@@ -32,7 +32,7 @@ def make_system_setup():
     )
 
 
-def test_propagation():
+def test_propagation() -> None:
     (
         _,
         _,
@@ -56,7 +56,7 @@ def test_propagation():
     assert torch.allclose(propagated_field.data, measured_field.data)
 
 
-def test_elements_along_field_path():
+def test_elements_along_field_path() -> None:
     (
         shape,
         spacing,
@@ -90,7 +90,7 @@ def test_elements_along_field_path():
         System(PlanarGrid(shape, z=0, spacing=spacing))  # type: ignore
 
 
-def test_dunder_methods():
+def test_dunder_methods() -> None:
     (
         shape,
         _,
@@ -113,7 +113,7 @@ def test_dunder_methods():
     assert len(system) == 3
 
 
-def test_measure_at_plane():
+def test_measure_at_plane() -> None:
     shape, spacing, _, propagation_distance, _, _, _, _, _, input_field, _ = make_system_setup()
     system = System()
     offset = (13e-4, -5e-4)
@@ -123,7 +123,7 @@ def test_measure_at_plane():
     assert torch.allclose(measure_plane.data, measure.data)
 
 
-def test_identity_element():
+def test_identity_element() -> None:
     shape, spacing, _, propagation_distance, _, _, _, _, _, input_field, _ = make_system_setup()
     system = System(IdentityElement(shape, z=propagation_distance, spacing=spacing))
     output_element = Detector(shape, z=2 * propagation_distance, spacing=spacing)
@@ -132,7 +132,7 @@ def test_identity_element():
     assert elements_in_path[0] is output_element
 
 
-def test_last_element():
+def test_last_element() -> None:
     shape, spacing, _, propagation_distance, _, _, _, _, _, input_field, _ = make_system_setup()
     system = System()
     plane = PlanarGrid(shape, z=2 * propagation_distance, spacing=spacing)

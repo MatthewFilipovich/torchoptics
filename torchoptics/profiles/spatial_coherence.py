@@ -5,9 +5,10 @@ from typing import Callable, Optional
 import torch
 from torch import Tensor
 
-from ..functional import outer2d
-from ..type_defs import Scalar, Vector2
-from ..utils import initialize_tensor
+from torchoptics.functional import outer2d
+from torchoptics.type_defs import Scalar, Vector2
+from torchoptics.utils import initialize_tensor
+
 from ._profile_meshgrid import profile_meshgrid
 
 
@@ -18,8 +19,7 @@ def schell_model(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a spatial coherence function profile based on the Schell-model.
+    r"""Generates a spatial coherence function profile based on the Schell-model.
 
     The Schell model describes partially coherent light as a combination of an intensity distribution
     and a spatial coherence function. The mutual coherence function :math:`\Gamma(x_1, y_1, x_2, y_2)`
@@ -47,6 +47,7 @@ def schell_model(
     Returns:
         torch.Tensor: A 4D tensor representing the mutual coherence function
         :math:`\Gamma(x_1, y_1, x_2, y_2)`.
+
     """
     x, y = profile_meshgrid(shape, spacing, offset)
     intensity = intensity_func(x, y)
@@ -66,8 +67,7 @@ def gaussian_schell_model(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a spatial coherence function profile based on the Gaussian Schell-model.
+    r"""Generates a spatial coherence function profile based on the Gaussian Schell-model.
 
     The Gaussian Schell-model assumes both the intensity and coherence functions have Gaussian profiles.
     The mutual coherence function :math:`\Gamma(x_1, y_1, x_2, y_2)` is defined as:
@@ -94,6 +94,7 @@ def gaussian_schell_model(
     Returns:
         torch.Tensor: A 4D tensor representing the mutual coherence function
         :math:`\Gamma(x_1, x_2, y_1, y_2)`.
+
     """
 
     def coherence_func(dx, dy):

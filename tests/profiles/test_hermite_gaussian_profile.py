@@ -10,7 +10,7 @@ def make_hermite_gaussian_profiles():
     offset = (0.0, 0.0)
     waist_radius = 40.0
     z = 1
-    profiles = [
+    return [
         hermite_gaussian(
             shape=shape,
             m=m,
@@ -25,10 +25,9 @@ def make_hermite_gaussian_profiles():
         for n in range(3)
         if m + n < 3
     ]
-    return profiles
 
 
-def test_hermite_gaussian_orthogonality():
+def test_hermite_gaussian_orthogonality() -> None:
     profiles = make_hermite_gaussian_profiles()
     for i in range(len(profiles)):
         for j in range(i + 1, len(profiles)):
@@ -36,20 +35,20 @@ def test_hermite_gaussian_orthogonality():
             assert abs(inner_product) < 1e-7
 
 
-def test_hermite_gaussian_dtype():
+def test_hermite_gaussian_dtype() -> None:
     profiles = make_hermite_gaussian_profiles()
     for profile in profiles:
         assert profile.dtype == torch.cdouble
 
 
-def test_hermite_gaussian_normalization():
+def test_hermite_gaussian_normalization() -> None:
     profiles = make_hermite_gaussian_profiles()
     for profile in profiles:
         inner_product = torch.sum(profile.conj() * profile).abs().item()
         assert abs(inner_product - 1.0) < 1e-7
 
 
-def test_hermite_gaussian_equivalence():
+def test_hermite_gaussian_equivalence() -> None:
     shape = (300, 300)
     wavelength = 1
     spacing = 1

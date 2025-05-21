@@ -4,7 +4,7 @@ import torchoptics
 from torchoptics.functional import plane_sample
 
 
-def test_plane_sample():
+def test_plane_sample() -> None:
     data = torch.arange(12).reshape(3, 4).double()
     data_plane = torchoptics.PlanarGrid((3, 4), 0, 1, None)
     interpolate_plane0 = torchoptics.PlanarGrid((3, 2), 0, 1, None)
@@ -19,7 +19,8 @@ def test_plane_sample():
     interpolated_plane3 = torchoptics.PlanarGrid((2, 6), 0, (1, 1), None)
     sampled_plane3 = plane_sample(data, data_plane, interpolated_plane3, "bilinear")
     assert torch.allclose(
-        sampled_plane3, torch.tensor([[0, 2, 3, 4, 5, 0], [0, 6, 7, 8, 9, 0]], dtype=torch.double)
+        sampled_plane3,
+        torch.tensor([[0, 2, 3, 4, 5, 0], [0, 6, 7, 8, 9, 0]], dtype=torch.double),
     )
     interpolated_plane4 = torchoptics.PlanarGrid((2, 4), 0, (0.5, 1), None)
     sampled_plane4 = plane_sample(data, data_plane, interpolated_plane4, "bilinear")

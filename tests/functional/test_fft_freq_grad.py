@@ -3,7 +3,7 @@ import torch
 from torchoptics.functional import fftfreq_grad
 
 
-def test_fftfreq_grad_values():
+def test_fftfreq_grad_values() -> None:
     for n in [0, 1, 2, 3, 8, 16, 31, 32]:
         for d_value in [1e-9, 1e-3, 1e-1, 1e1, 1e7]:
             d = torch.tensor(d_value)
@@ -12,7 +12,7 @@ def test_fftfreq_grad_values():
             assert torch.allclose(actual, expected)
 
 
-def test_fftfreq_grad_dtype_device():
+def test_fftfreq_grad_dtype_device() -> None:
     n = 16
     d_value = 0.17
     dtype = torch.double

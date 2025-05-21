@@ -3,7 +3,7 @@ import torch
 from torchoptics.functional import meshgrid2d
 
 
-def test_meshgrid2d():
+def test_meshgrid2d() -> None:
     bounds = torch.tensor([0.0, 1.0, 0.0, 1.0])
     shape = (2, 2)
     expected_x = torch.tensor([[0.0, 0.0], [1.0, 1.0]])

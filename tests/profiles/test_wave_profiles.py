@@ -3,7 +3,7 @@ import torch
 from torchoptics.profiles import plane_wave_phase, spherical_wave_phase
 
 
-def test_plane_wave_shape_and_dtype():
+def test_plane_wave_shape_and_dtype() -> None:
     shape = (100, 100)
     spacing = (0.1, 0.1)
     offset = (0.0, 0.0)
@@ -24,7 +24,7 @@ def test_plane_wave_shape_and_dtype():
     assert wave.dtype == torch.double
 
 
-def test_spherical_wave_shape_and_dtype():
+def test_spherical_wave_shape_and_dtype() -> None:
     shape = (100, 100)
     spacing = (0.1, 0.1)
     offset = (0.0, 0.0)

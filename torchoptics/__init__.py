@@ -1,9 +1,6 @@
 """TorchOptics: Differentiable wave optics simulations with PyTorch."""
 
-import torchoptics.elements as elements
-import torchoptics.functional as functional
-import torchoptics.profiles as profiles
-import torchoptics.propagation as propagation
+from torchoptics import elements, functional, profiles, propagation
 from torchoptics.config import (
     get_default_spacing,
     get_default_wavelength,
@@ -23,17 +20,17 @@ __all__ = [
     "PlanarGrid",
     "SpatialCoherence",
     "System",
-    # Configuration utilities
-    "get_default_spacing",
-    "get_default_wavelength",
-    "set_default_spacing",
-    "set_default_wavelength",
     # Visualization tools
     "animate_tensor",
-    "visualize_tensor",
     # Submodules
     "elements",
     "functional",
+    # Configuration utilities
+    "get_default_spacing",
+    "get_default_wavelength",
     "profiles",
     "propagation",
+    "set_default_spacing",
+    "set_default_wavelength",
+    "visualize_tensor",
 ]

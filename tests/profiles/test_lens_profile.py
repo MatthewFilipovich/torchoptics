@@ -3,7 +3,7 @@ import torch
 from torchoptics.profiles import lens_phase
 
 
-def test_lens_profile_shape_and_dtype():
+def test_lens_profile_shape_and_dtype() -> None:
     shape = (100, 100)
     focal_length = 50.0
     wavelength = 0.5

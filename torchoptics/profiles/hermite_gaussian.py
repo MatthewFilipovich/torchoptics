@@ -6,9 +6,10 @@ from typing import Callable, Optional
 import torch
 from torch import Tensor
 
-from ..config import wavelength_or_default
-from ..type_defs import Int, Scalar, Vector2
-from ..utils import initialize_tensor
+from torchoptics.config import wavelength_or_default
+from torchoptics.type_defs import Int, Scalar, Vector2
+from torchoptics.utils import initialize_tensor
+
 from ._profile_meshgrid import profile_meshgrid
 
 
@@ -22,17 +23,16 @@ def hermite_gaussian(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a Hermite-Gaussian profile.
+    r"""Generates a Hermite-Gaussian profile.
 
     The Hermite-Gaussian profile is defined by the following equation:
 
     .. math::
         \begin{align*}
-        \psi_{mn}(x, y, z) &= \frac{w_0}{w(z)} H_m\left(\sqrt{2}\frac{x}{w(z)}\right) 
+        \psi_{mn}(x, y, z) &= \frac{w_0}{w(z)} H_m\left(\sqrt{2}\frac{x}{w(z)}\right)
         H_n\left(\sqrt{2}\frac{y}{w(z)}\right) \\
         & \quad \times \exp\left(-\frac{x^2 + y^2}{w(z)^2}\right) \\
-        & \quad \times \exp\left(i\left[kz + \frac{k(x^2 + y^2)}{2R(z)} 
+        & \quad \times \exp\left(i\left[kz + \frac{k(x^2 + y^2)}{2R(z)}
         - (m+n+1)\arctan\left(\frac{z}{z_R}\right)\right]\right),
         \end{align*}
 
@@ -64,7 +64,7 @@ def hermite_gaussian(
         k = \frac{2\pi}{\lambda}
 
     - :math:`H_m` and :math:`H_n`: The Hermite polynomials of order :math:`m` and :math:`n`.
-    
+
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         m (int): The mode number in the first planar dimension.
@@ -79,19 +79,27 @@ def hermite_gaussian(
 
     Returns:
         Tensor: The generated Hermite-Gaussian profile.
+
     """
     m = initialize_tensor("m", m, is_scalar=True, is_integer=True, is_non_negative=True)
     n = initialize_tensor("n", n, is_scalar=True, is_integer=True, is_non_negative=True)
     waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)
 
     x, y, phase_shift, wz, waist_ratio = calculate_beam_properties(
-        (m, n), waist_radius, shape, wavelength, waist_z, spacing, offset, True
+        (m, n),
+        waist_radius,
+        shape,
+        wavelength,
+        waist_z,
+        spacing,
+        offset,
+        True,
     )
 
     u_x = 2.0**0.5 * x / wz
     u_y = 2.0**0.5 * y / wz
     normalization_constant = torch.sqrt(
-        2.0 ** (1 - m - n) / (math.factorial(m) * math.factorial(n) * torch.pi * waist_radius**2)
+        2.0 ** (1 - m - n) / (math.factorial(m) * math.factorial(n) * torch.pi * waist_radius**2),
     )
 
     return (
@@ -112,8 +120,7 @@ def gaussian(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    r"""
-    Generates a Gaussian profile.
+    r"""Generates a Gaussian profile.
 
     The Gaussian profile is defined by the following equation:
 

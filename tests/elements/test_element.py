@@ -5,7 +5,7 @@ from torchoptics import Field
 from torchoptics.elements import Element
 
 
-def test_element():
+def test_element() -> None:
     shape = (32, 32)
     z = 0
     spacing = 1
@@ -17,7 +17,7 @@ def test_element():
         element.validate_field(field)
 
 
-def test_visualize_raises_error():
+def test_visualize_raises_error() -> None:
     shape = (32, 32)
     z = 0
     spacing = 1

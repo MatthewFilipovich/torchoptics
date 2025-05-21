@@ -10,7 +10,7 @@ def make_laguerre_gaussian_profiles():
     offset = (0.0, 0.0)
     waist_radius = 40.0
     z = 1
-    profiles = [
+    return [
         laguerre_gaussian(
             shape=shape,
             p=p,
@@ -25,10 +25,9 @@ def make_laguerre_gaussian_profiles():
         for l in range(-2, 3)  # noqa: E741
         if p + abs(l) < 3
     ]
-    return profiles
 
 
-def test_laguerre_gaussian_orthogonality():
+def test_laguerre_gaussian_orthogonality() -> None:
     profiles = make_laguerre_gaussian_profiles()
     for i in range(len(profiles)):
         for j in range(i + 1, len(profiles)):
@@ -36,20 +35,20 @@ def test_laguerre_gaussian_orthogonality():
             assert abs(inner_product) < 1e-7
 
 
-def test_laguerre_gaussian_dtype():
+def test_laguerre_gaussian_dtype() -> None:
     profiles = make_laguerre_gaussian_profiles()
     for profile in profiles:
         assert profile.dtype == torch.cdouble
 
 
-def test_laguerre_gaussian_normalization():
+def test_laguerre_gaussian_normalization() -> None:
     profiles = make_laguerre_gaussian_profiles()
     for profile in profiles:
         inner_product = torch.sum(profile.conj() * profile).abs().item()
         assert abs(inner_product - 1.0) < 1e-7
 
 
-def test_laguerre_gaussian_equivalence():
+def test_laguerre_gaussian_equivalence() -> None:
     shape = (300, 300)
     wavelength = 1
     spacing = 1

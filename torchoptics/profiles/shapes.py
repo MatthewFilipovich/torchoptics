@@ -5,8 +5,9 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Scalar, Vector2
-from ..utils import initialize_tensor
+from torchoptics.type_defs import Scalar, Vector2
+from torchoptics.utils import initialize_tensor
+
 from ._profile_meshgrid import profile_meshgrid
 
 
@@ -17,8 +18,7 @@ def checkerboard(
     spacing: Optional[Vector2] = None,
     offset: Optional[Vector2] = None,
 ) -> Tensor:
-    """
-    Generates a checkerboard pattern.
+    """Generates a checkerboard pattern.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -30,6 +30,7 @@ def checkerboard(
 
     Returns:
         Tensor: The generated checkerboard pattern with internal padding.
+
     """
     tile_length = initialize_tensor("tile_length", tile_length, is_vector2=True, is_positive=True)
     num_tiles = initialize_tensor("num_tiles", num_tiles, is_vector2=True, is_integer=True, is_positive=True)
@@ -46,10 +47,12 @@ def checkerboard(
 
 
 def circle(
-    shape: Vector2, radius: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2,
+    radius: Scalar,
+    spacing: Optional[Vector2] = None,
+    offset: Optional[Vector2] = None,
 ) -> Tensor:
-    """
-    Generates a circular profile.
+    """Generates a circular profile.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -60,6 +63,7 @@ def circle(
 
     Returns:
         Tensor: The generated circular profile.
+
     """
     radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
     x, y = profile_meshgrid(shape, spacing, offset)
@@ -68,10 +72,12 @@ def circle(
 
 
 def rectangle(
-    shape: Vector2, side: Vector2, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2,
+    side: Vector2,
+    spacing: Optional[Vector2] = None,
+    offset: Optional[Vector2] = None,
 ) -> Tensor:
-    """
-    Generates a rectangle profile.
+    """Generates a rectangle profile.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -82,6 +88,7 @@ def rectangle(
 
     Returns:
         Tensor: The generated rectangle profile.
+
     """
     side = initialize_tensor("side", side, is_vector2=True, is_positive=True)
     x, y = profile_meshgrid(shape, spacing, offset)
@@ -89,10 +96,12 @@ def rectangle(
 
 
 def square(
-    shape: Vector2, side: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2,
+    side: Scalar,
+    spacing: Optional[Vector2] = None,
+    offset: Optional[Vector2] = None,
 ) -> Tensor:
-    """
-    Generates a square profile.
+    """Generates a square profile.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -103,6 +112,7 @@ def square(
 
     Returns:
         Tensor: The generated square profile.
+
     """
     return rectangle(shape, (side, side), spacing, offset)
 
@@ -115,8 +125,7 @@ def triangle(
     offset: Optional[Vector2] = None,
     theta: Scalar = 0,
 ) -> Tensor:
-    """
-    Generates a triangular profile.
+    """Generates a triangular profile.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -129,6 +138,7 @@ def triangle(
 
     Returns:
         Tensor: The generated triangular profile.
+
     """
     base = initialize_tensor("base", base, is_scalar=True, is_positive=True)
     height = initialize_tensor("height", height, is_scalar=True, is_positive=True)

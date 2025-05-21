@@ -88,6 +88,6 @@ def skip_modules(app, what, name, obj, skip, options):
     return skip
 
 
-def setup(app):
+def setup(app) -> None:
     app.connect("autoapi-skip-member", skip_modules)
     app.add_css_file("hide_links.css")  # Custom CSS to hide jupyter links

@@ -1,5 +1,4 @@
-"""
-Custom Profiles
+"""Custom Profiles.
 ===============
 
 Demonstrates how to create and combine custom optical profiles using TorchOptics.
