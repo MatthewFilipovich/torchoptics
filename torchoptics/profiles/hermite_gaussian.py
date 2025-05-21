@@ -7,7 +7,6 @@ import torch
 from torch import Tensor
 
 from ..config import wavelength_or_default
-from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 from ._profile_meshgrid import profile_meshgrid
@@ -205,7 +204,7 @@ def get_wavelength(wavelength, waist_z):
 def calculate_coordinates(shape, waist_z, spacing, offset):
     """Calculate the coordinates of the beam."""
     x, y = profile_meshgrid(shape, spacing, offset)
-    z = PlanarGrid(shape, waist_z).z  # Validate z value
+    z = initialize_tensor("waist_z", waist_z, is_scalar=True)
     return x, y, z
 
 
