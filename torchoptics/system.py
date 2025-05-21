@@ -1,6 +1,6 @@
 """This module defines the System class."""
 
-from typing import Optional
+from typing import Iterator, Optional, Union, overload
 
 from torch.nn import Module
 
@@ -12,40 +12,29 @@ from .type_defs import Scalar, Vector2
 
 class System(Module):
     """
-    System of optical elements similar to the :class:`torch.nn.Sequential` module.
+    Optical system of elements similar to :class:`torch.nn.Sequential`.
 
-    The system is defined by a sequence of optical elements which are sorted by their ``z`` position.
-    The :meth:`forward()` method accepts a :class:`Field` object as input. The field is
-    propagated to the first element in the system which processes it using its ``forward()`` method.
-    The field is then propagated to the next element in the system and so on, finally returning the
-    field after it has been processed by the last element in the system.
+    The system consists of a sequence of optical elements, ordered by their ``z`` positions.
+    When a :class:`~torchoptics.Field` is passed to :meth:`forward`, it is propagated through the system:
+    each element applies its own transformation via :meth:`~torchoptics.elements.Element.forward`.
+    The output from the final element is returned.
+
+    Field measurements at arbitrary planes can be performed using :meth:`measure`, :meth:`measure_at_z`, or
+    :meth:`measure_at_plane`.
+
+    Indexing with ``system[i]`` returns the i-th optical element. Slicing, e.g. ``system[i:j]``,
+    returns a new :class:`System` containing the selected elements.
 
     Example:
-        Initialize a 4f optical system with two lenses::
+        Create a 4f system consisting of two lenses::
 
-            import torch
-            import torchoptics
-            from torchoptics import Field, System
-            from torchoptics.elements import Lens
-
-            # Set simulation properties
-            shape = 1000  # Number of grid points in each dimension
-            spacing = 10e-6  # Spacing between grid points (m)
-            wavelength = 700e-9  # Field wavelength (m)
-            focal_length = 200e-3  # Lens focal length (m)
-
-            # Determine device
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-
-            # Configure torchoptics default properties
-            torchoptics.set_default_spacing(spacing)
-            torchoptics.set_default_wavelength(wavelength)
-
-            # Define 4f optical system with two lenses
             system = System(
                 Lens(shape, focal_length, z=1 * focal_length),
                 Lens(shape, focal_length, z=3 * focal_length),
             ).to(device)
+
+            # Measure the field at the 4f plane
+            output_field = system.measure_at_z(input_field, z=4 * focal_length)
 
     Args:
         *elements (Element): Optical elements in the system.
@@ -59,13 +48,21 @@ class System(Module):
             self.add_module(str(i), element)
         self._elements = tuple(elements)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Element]:
         return iter(self.elements)
 
-    def __getitem__(self, index) -> Element:
+    @overload
+    def __getitem__(self, index: int) -> Element: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> "System": ...
+
+    def __getitem__(self, index: Union[int, slice]) -> Union[Element, "System"]:
+        if isinstance(index, slice):
+            return self.__class__(*self.elements[index])
         return self.elements[index]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.elements)
 
     @property

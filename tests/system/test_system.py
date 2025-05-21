@@ -138,3 +138,33 @@ def test_last_element():
     plane = PlanarGrid(shape, z=2 * propagation_distance, spacing=spacing)
     with pytest.raises(TypeError):
         system.elements_in_field_path(input_field, plane)  # type: ignore
+
+
+def test_slicing():
+    (
+        shape,
+        _,
+        _,
+        propagation_distance,
+        modulator1_spacing,
+        modulator1_offset,
+        modulator2_spacing,
+        modulator2_offset,
+        _,
+        _,
+        mod_profile,
+    ) = make_system_setup()
+    modulator1 = Modulator(mod_profile, propagation_distance, modulator1_spacing, modulator1_offset)
+    modulator2 = Modulator(mod_profile, 2 * propagation_distance, modulator2_spacing, modulator2_offset)
+    detector = Detector(shape, z=2 * propagation_distance, spacing=modulator1_spacing)
+    system = System(modulator1, modulator2, detector)
+
+    assert system[0] is modulator1
+    assert system[1] is modulator2
+    assert system[2] is detector
+
+    system_slice = system[:2]
+    assert isinstance(system_slice, System)
+    assert len(system_slice) == 2
+    assert system_slice[0] is modulator1
+    assert system_slice[1] is modulator2
