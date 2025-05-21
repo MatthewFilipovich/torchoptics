@@ -1,8 +1,17 @@
 """
-Phase Only Modulators
-=====================
+Shaping Fields Using Phase-Only Modulators
+============================================
 
-Simulates holography using phase-only modulators.
+Demonstrates how to shape an optical field using a phase-only modulation pattern.
+
+We follow the method described in:
+
+    Eliot Bolduc, Nicolas Bent, Enrico Santamato, Ebrahim Karimi, and Robert W. Boyd,
+    “Exact solution to simultaneous intensity and phase encryption with a single phase-only hologram,”
+    Opt. Lett. 38, 3546-3549 (2013), https://doi.org/10.1364/OL.38.003546
+
+In this example, we generate a Hermite-Gaussian beam profile using a phase-only modulator, a circular
+aperture, and two lenses.
 """
 
 # %%
@@ -11,7 +20,7 @@ import torch
 import torchoptics
 from torchoptics import Field, System
 from torchoptics.elements import AmplitudeModulator, Lens, PhaseModulator
-from torchoptics.profiles import blazed_grating, circle, hermite_gaussian
+from torchoptics.profiles import circle, hermite_gaussian
 from torchoptics.visualization import visualize_tensor
 
 shape = 1000  # Grid size (number of points per dimension)
@@ -29,70 +38,93 @@ torchoptics.set_default_spacing(spacing)
 torchoptics.set_default_wavelength(wavelength)
 
 # %%
-# Create the Desired Output Field using a Hermite-Gaussian Profile
+# Target Field: Hermite-Gaussian Beam
+# -----------------------------------
+# Define the desired output field using a Hermite-Gaussian profile.
 
 desired_field = hermite_gaussian(shape, 5, 5, waist_radius).to(device)
-visualize_tensor(desired_field, title="Desired Field")
-
+visualize_tensor(desired_field, title="Desired Output Field")
 
 # %%
-# Compute a Phase-Only Hologram to Reproduce the Desired Output Field
+# Compute Phase-Only Hologram
+# -------------------------------
+#
+# Generate a phase-only modulation pattern that reproduces the desired field
+# after propagation through a lens.
+#
+# The hologram phase is computed as:
+#
+# :math:`\Psi(m, n) = \mathcal{M}(m, n) \mathrm{mod}(\mathcal{F}(m, n) + 2 \pi m / \Lambda, 2 \pi)`
+#
+# where :math:`\Lambda` is the period of the blazed grating,
+#
+# :math:`\mathcal{M} = 1 + \frac{1}{\pi} \mathrm{sinc}^{-1}(\mathcal{A})`, and
+#
+# :math:`\mathcal{F} = \Phi - \pi \mathcal{M}`.
+#
+# :math:`\mathcal{A}` is the amplitude of the desired field and :math:`\Phi` is its phase.
 
 
 def create_phase_hologram(desired_field, grating_period):
-    # Exact solution to simultaneous intensity and phase encoding with a single phase-only hologram.
-    # https://doi.org/10.1364/OL.38.003546
-
-    def inverse_sinc(x):
-        z = 1 - x
-        return torch.sqrt((12 * z) / (1 - (0.20409 * z) + torch.sqrt(1 - (0.792 * z) - (0.0318 * z * z))))
+    def inverse_sinc(y):
+        # Approximate inverse of sinc(πx) for x ∈ [−π, 0], adapted from:
+        # https://math.stackexchange.com/a/3345578
+        z = 1 - y
+        return -torch.sqrt(12 * z / (1 - 0.20409 * z + torch.sqrt(1 - 0.792 * z - 0.0318 * z**2)))
 
     angle = torch.angle(desired_field)
     amplitude = torch.abs(desired_field)
     amplitude /= torch.max(amplitude)  # Normalize amplitude to [0, 1]
 
-    grating = blazed_grating(desired_field.shape, grating_period, height=2 * torch.pi)
-    phi = (angle + grating) % (2 * torch.pi)
+    M = 1 + 1 / torch.pi * inverse_sinc(amplitude)
+    F = angle - torch.pi * M
+    m = torch.arange(desired_field.shape[0]) * spacing
+    return M * ((F + 2 * torch.pi * m / grating_period) % (2 * torch.pi))
 
-    scaling = 1 - 1 / torch.pi * inverse_sinc(amplitude)
-    hologram = scaling * ((phi - torch.pi * scaling) % (2 * torch.pi))
-
-    return hologram
-
-
-hologram_phase = create_phase_hologram(desired_field, 40e-6)
-phase_modulator = PhaseModulator(hologram_phase).to(device)
-phase_modulator.visualize(title="Phase Modulator Hologram")
 
 # %%
-# Construct the Optical System with a Phase Modulator and Lens
+# Generate and visualize the phase-only hologram
+hologram_phase = create_phase_hologram(desired_field, grating_period=40e-6)
+phase_modulator = PhaseModulator(hologram_phase).to(device)
+phase_modulator.visualize(title="Phase-Only Hologram")
 
+# %%
+# 2f Beam Shaping System
+# ----------------------
+# Construct a 2f system: phase modulator → lens → focal plane (2f).
 
 system = System(phase_modulator, Lens(shape, focal_length, z=focal_length)).to(device)
-print(system)
-# %%
-# Measure the Field at the Focal Plane (2f) After Propagation Through the System
 
+# Input is a uniform plane wave
 input_field = Field(torch.ones(shape, shape)).to(device)
+
+# Measure the output field at z = 2f
 output_field = system.measure_at_z(input_field, z=2 * focal_length)
-output_field.visualize(title="2f", vmax=1)
+output_field.visualize(title="Output Field at 2f", vmax=1)
 
 # %%
-# Insert a Circular Amplitude Aperture at the Focal Plane to Modify the Output
+# Circular Aperture at 2f Plane
+# -----------------------------
+# Insert a circular amplitude mask at the focal plane (2f) to spatially filter the output.
 
-circular_aperture = AmplitudeModulator(circle(shape, 1e-3, offset=(-3.5e-3, 0)), z=2 * focal_length).to(
+circular_aperture = AmplitudeModulator(circle(shape, radius=1e-3, offset=(0, 3.5e-3)), z=2 * focal_length).to(
     device
 )
+
 circular_aperture.visualize(title="Circular Aperture at 2f")
 
 # %%
-updated_system = System(
+# 4f System: Modulator → Lens → Aperture → Lens
+# ---------------------------------------------
+# Extend the system to include an aperture and a second lens.
+# Measure the field at the output plane (4f).
+
+extended_system = System(
     phase_modulator,
     Lens(shape, focal_length, z=focal_length),
     circular_aperture,
     Lens(shape, focal_length, z=3 * focal_length),
 ).to(device)
-print(system)
 
-output_field = updated_system.measure_at_z(input_field, z=4 * focal_length)
-output_field.visualize(title="Output Field (4f)")
+output_field = extended_system.measure_at_z(input_field, z=4 * focal_length)
+output_field.visualize(title="Final Output Field at 4f")
