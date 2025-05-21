@@ -6,7 +6,7 @@ from scipy.special import fresnel
 
 from torchoptics import Field, PlanarGrid
 from torchoptics.functional import outer2d
-from torchoptics.propagation import VALID_PROPAGATION_METHODS
+from torchoptics.propagation import VALID_PADDING_MODES, VALID_PROPAGATION_METHODS
 
 # Helper for gaussian_2d
 
@@ -239,12 +239,28 @@ def test_field_interpolation_modes():
     wavelength = 500e-9
     data = torch.ones(shape, dtype=torch.cdouble)
     field = Field(data, wavelength, spacing=spacing)
+    field_diff_spacing = Field(data, wavelength, spacing=spacing / 3.0)
     for mode in ["nearest", "bilinear", "bicubic"]:
         field.propagate_to_z(1, interpolation_mode=mode)
     with pytest.raises(ValueError):
-        field.propagate_to_z(1, interpolation_mode="invalid_mode")
+        field.propagate_to_plane(field_diff_spacing, interpolation_mode="invalid_mode")
     with pytest.raises(TypeError):
-        field.propagate_to_z(1, interpolation_mode=None)
+        field.propagate_to_plane(field_diff_spacing, interpolation_mode=None)
+
+
+def test_field_padding_modes():
+    shape = (100, 100)
+    spacing = 1e-6
+    wavelength = 500e-9
+    data = torch.ones(shape, dtype=torch.cdouble)
+    field = Field(data, wavelength, spacing=spacing)
+    field_diff_spacing = Field(data, wavelength, spacing=spacing / 3.0)
+    for mode in VALID_PADDING_MODES:
+        field.propagate_to_z(1, padding_mode=mode)
+    with pytest.raises(ValueError):
+        field.propagate_to_plane(field_diff_spacing, padding_mode="invalid_mode")
+    with pytest.raises(TypeError):
+        field.propagate_to_plane(field_diff_spacing, padding_mode=None)
 
 
 def test_field_propagate_methods():

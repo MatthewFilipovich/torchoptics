@@ -77,6 +77,7 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
         propagation_method: str = "AUTO",
         asm_pad_factor: Vector2 = 2,
         interpolation_mode: str = "nearest",
+        padding_mode: str = "zeros",
     ) -> Field:
         """
         Propagates the field through free-space to a plane defined by the input parameters.
@@ -97,7 +98,15 @@ class Field(PlanarGrid):  # pylint: disable=abstract-method
             Field: Output field after propagating to the plane.
         """
         return propagator(
-            self, shape, z, spacing, offset, propagation_method, asm_pad_factor, interpolation_mode
+            self,
+            shape,
+            z,
+            spacing,
+            offset,
+            propagation_method,
+            asm_pad_factor,
+            interpolation_mode,
+            padding_mode,
         )
 
     def propagate_to_z(self, z: Scalar, **prop_kwargs) -> Field:

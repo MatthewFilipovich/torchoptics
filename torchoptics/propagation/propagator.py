@@ -25,6 +25,7 @@ __all__ = [
 
 VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_FRESNEL", "ASM", "ASM_FRESNEL", "DIM", "DIM_FRESNEL"}
 VALID_INTERPOLATION_MODES = {"none", "bilinear", "bicubic", "nearest"}
+VALID_PADDING_MODES = {"zeros", "border", "reflection"}
 
 
 def propagator(
@@ -36,6 +37,7 @@ def propagator(
     propagation_method: str,
     asm_pad_factor: Vector2,
     interpolation_mode: str,
+    padding_mode: str,
 ) -> Field:
     """
     Propagates the field through free-space to a plane defined by the input parameters.
@@ -55,12 +57,12 @@ def propagator(
     Returns:
         Field: Output field after propagating to the plane.
     """
-    validate_propagation_method(propagation_method)
-    validate_interpolation_mode(interpolation_mode)
 
     output_plane = PlanarGrid(shape, z, spacing, offset).to(field.data.device)
 
     if output_plane.z != field.z:  # Propagate to output plane z
+        validate_propagation_method(propagation_method)
+
         propagation_plane = get_propagation_plane(field, output_plane)
         if is_asm(field, propagation_plane, propagation_method):
             field = asm_propagation(field, propagation_plane, propagation_method, asm_pad_factor)
@@ -68,7 +70,10 @@ def propagator(
             field = dim_propagation(field, propagation_plane, propagation_method)
 
     if not output_plane.is_same_geometry(field):  # Interpolate to output plane geometry
-        transformed_data = plane_sample(field.data, field, output_plane, interpolation_mode)
+        validate_interpolation_mode(interpolation_mode)
+        validate_padding_mode(padding_mode)
+
+        transformed_data = plane_sample(field.data, field, output_plane, interpolation_mode, padding_mode)
         field = copy(field, data=transformed_data, spacing=output_plane.spacing, offset=output_plane.offset)
 
     return field
@@ -176,3 +181,11 @@ def validate_interpolation_mode(value: str) -> None:
         raise ValueError(
             f"Expected interpolation_mode to be one of {VALID_INTERPOLATION_MODES}, but got {value}."
         )
+
+
+def validate_padding_mode(value: str) -> None:
+    """Validate the padding mode."""
+    if not isinstance(value, str):
+        raise TypeError(f"Expected padding to be a string, but got {type(value).__name__}.")
+    if value.lower() not in VALID_PADDING_MODES:
+        raise ValueError(f"Expected interpolation_mode to be one of {VALID_PADDING_MODES}, but got {value}.")

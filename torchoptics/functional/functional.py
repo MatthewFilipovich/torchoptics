@@ -193,6 +193,7 @@ def plane_sample(
     data_plane: PlanarGrid,
     interpolated_plane: PlanarGrid,
     interpolation_mode: str,
+    padding_mode: str,
 ) -> Tensor:
     """
     Interpolates data from a 2D plane onto a new plane.
@@ -201,7 +202,8 @@ def plane_sample(
         data (torch.Tensor): The input data to interpolate.
         data_plane (PlanarGrid): The plane containing the input data.
         interpolated_plane (PlanarGrid): The plane to interpolate the data to.
-        interpolation_mode (str, optional): The interpolation mode.
+        interpolation_mode (str): The interpolation mode.
+        padding_mode (str): The padding mode used for grid_sample.
 
     Returns:
         torch.Tensor: The interpolated data.
@@ -219,11 +221,17 @@ def plane_sample(
     grid = torch.stack((grid_y, grid_x), dim=-1).expand(data_reshape.shape[0], -1, -1, -1)
 
     if torch.is_complex(data):
-        real_sample = grid_sample(data_reshape.real, grid, interpolation_mode, align_corners=False)
-        imag_sample = grid_sample(data_reshape.imag, grid, interpolation_mode, align_corners=False)
+        real_sample = grid_sample(
+            data_reshape.real, grid, interpolation_mode, padding_mode, align_corners=False
+        )
+        imag_sample = grid_sample(
+            data_reshape.imag, grid, interpolation_mode, padding_mode, align_corners=False
+        )
         interpolated_data = torch.complex(real_sample, imag_sample)
     else:
-        interpolated_data = grid_sample(data_reshape, grid, interpolation_mode, align_corners=False)
+        interpolated_data = grid_sample(
+            data_reshape, grid, interpolation_mode, padding_mode, align_corners=False
+        )
 
     # Adjust the output shape to match the original data shape with interpolated plane dimensions.
     final_shape = data.shape[:-2] + interpolated_data.shape[-2:]
