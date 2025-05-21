@@ -5,9 +5,9 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
+from ._profile_meshgrid import profile_meshgrid
 
 
 def checkerboard(
@@ -33,7 +33,7 @@ def checkerboard(
     """
     tile_length = initialize_tensor("tile_length", tile_length, is_vector2=True, is_positive=True)
     num_tiles = initialize_tensor("num_tiles", num_tiles, is_vector2=True, is_integer=True, is_positive=True)
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
 
     x_tile = (x + (tile_length[0] / 2 if num_tiles[0] % 2 == 1 else 0)) // tile_length[0]
     y_tile = (y + (tile_length[1] / 2 if num_tiles[1] % 2 == 1 else 0)) // tile_length[1]
@@ -62,7 +62,7 @@ def circle(
         Tensor: The generated circular profile.
     """
     radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     r = torch.sqrt(x**2 + y**2)
     return (r <= radius).double()
 
@@ -84,7 +84,7 @@ def rectangle(
         Tensor: The generated rectangle profile.
     """
     side = initialize_tensor("side", side, is_vector2=True, is_positive=True)
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     return ((x.abs() <= side[0] / 2) & (y.abs() <= side[1] / 2)).double()
 
 
@@ -133,7 +133,7 @@ def triangle(
     base = initialize_tensor("base", base, is_scalar=True, is_positive=True)
     height = initialize_tensor("height", height, is_scalar=True, is_positive=True)
     theta = initialize_tensor("theta", theta, is_scalar=True)
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
 
     theta -= torch.pi / 2
     x_rot = x * torch.cos(theta) - y * torch.sin(theta)
