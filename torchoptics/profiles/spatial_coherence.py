@@ -6,9 +6,9 @@ import torch
 from torch import Tensor
 
 from ..functional import outer2d
-from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
+from ._profile_meshgrid import profile_meshgrid
 
 
 def schell_model(
@@ -48,7 +48,7 @@ def schell_model(
         torch.Tensor: A 4D tensor representing the mutual coherence function
         :math:`\Gamma(x_1, y_1, x_2, y_2)`.
     """
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     intensity = intensity_func(x, y)
 
     # Compute pairwise differences for coherence function

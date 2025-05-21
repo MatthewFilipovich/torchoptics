@@ -3,8 +3,6 @@
 from ..fields import Field
 from .elements import Element
 
-__all__ = ["IdentityElement"]
-
 
 class IdentityElement(Element):
     """

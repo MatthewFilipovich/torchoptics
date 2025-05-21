@@ -10,8 +10,6 @@ from ..type_defs import Scalar, Vector2
 from ..utils import validate_tensor_ndim
 from .elements import ModulationElement, PolychromaticModulationElement
 
-__all__ = ["Modulator", "PhaseModulator", "AmplitudeModulator", "PolychromaticPhaseModulator"]
-
 
 class Modulator(ModulationElement):
     """
@@ -103,7 +101,7 @@ class AmplitudeModulator(ModulationElement):
         self.register_optics_property("amplitude", amplitude)
 
     def modulation_profile(self) -> Tensor:
-        return self.amplitude.cdouble()  # type: ignore
+        return self.amplitude.to(torch.cdouble)
 
 
 class PolychromaticPhaseModulator(PolychromaticModulationElement):

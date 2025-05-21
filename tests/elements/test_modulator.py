@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
 import pytest
 import torch
+from matplotlib.figure import Figure
 
 import torchoptics
 from torchoptics import Field
@@ -21,7 +21,7 @@ def test_phase_modulator_initialization_and_profile():
     phase_profile = torch.rand((10, 12))
     z = 1.5
     phase_modulator = PhaseModulator(phase_profile, z)
-    expected_profile = torch.exp(1j * phase_profile).cdouble()
+    expected_profile = torch.exp(1j * phase_profile).to(torch.cdouble)
     assert torch.allclose(phase_modulator.modulation_profile(), expected_profile)
     field = Field(torch.ones(3, 10, 12), wavelength=700e-9, z=z, spacing=1)
     assert isinstance(phase_modulator(field), Field)
@@ -31,7 +31,7 @@ def test_amplitude_modulator_initialization_and_profile():
     amplitude_profile = torch.rand((10, 12))
     z = 1.5
     amplitude_modulator = AmplitudeModulator(amplitude_profile, z)
-    expected_profile = amplitude_profile.cdouble()
+    expected_profile = amplitude_profile.to(torch.cdouble)
     assert torch.allclose(amplitude_modulator.modulation_profile(), expected_profile)
     field = Field(torch.ones(3, 10, 12), wavelength=700e-9, z=z, spacing=1)
     assert isinstance(amplitude_modulator(field), Field)
@@ -60,18 +60,18 @@ def test_amplitude_modulation_profile_consistency():
     amplitude_profile = torch.rand((10, 12))
     z = 1.5
     amplitude_modulator = AmplitudeModulator(amplitude_profile, z)
-    modulator = Modulator(amplitude_profile.cdouble(), z)
+    modulator = Modulator(amplitude_profile.to(torch.cdouble), z)
     assert torch.allclose(modulator.modulation_profile(), amplitude_modulator.modulation_profile())
 
 
 def test_error_on_invalid_tensor_input():
     z = 1.5
     with pytest.raises(TypeError):
-        Modulator("not a tensor", z)
+        Modulator("not a tensor", z)  # type: ignore
     with pytest.raises(TypeError):
-        PhaseModulator("not a tensor", z)
+        PhaseModulator("not a tensor", z)  # type: ignore
     with pytest.raises(TypeError):
-        AmplitudeModulator("not a tensor", z)
+        AmplitudeModulator("not a tensor", z)  # type: ignore
 
 
 def test_error_on_incorrect_dimensions():
@@ -90,7 +90,7 @@ def test_visualization():
     z = 1.5
     modulator = Modulator(complex_tensor, z)
     fig = modulator.visualize(show=False, return_fig=True)
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)
 
 
 def test_polychromatic_visualization():
@@ -98,4 +98,4 @@ def test_polychromatic_visualization():
     z = 1.5
     polychromatic_modulator = PolychromaticPhaseModulator(optical_path_length, z)
     fig = polychromatic_modulator.visualize(700e-9, show=False, return_fig=True)
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)

@@ -27,12 +27,10 @@ To prepare your environment for development and testing:
    pre-commit install
    ```
 
-Pre-commit hooks will automatically run:
+Pre-commit hooks will automatically run the following tools:
 
-- **Black** — code formatting
-- **pylint** — linting
-- **isort** — import sorting
-- **mypy** — type checking
+- **ruff** — for code formatting and linting
+- **pyright** — for static type checking
 
 ## Submitting a pull request
 

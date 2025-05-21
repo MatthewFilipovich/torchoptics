@@ -1,10 +1,20 @@
+from typing import TypedDict
+
 import torch
 
 from torchoptics.profiles import gratings
+from torchoptics.type_defs import Scalar
 
 
-def make_grating_args():
-    return dict(shape=(100, 100), spacing=(0.1, 0.1), offset=(0.0, 0.0), theta=0.0)
+class GratingArgs(TypedDict):
+    shape: tuple[int, int]
+    spacing: tuple[float, float]
+    offset: tuple[float, float]
+    theta: Scalar
+
+
+def make_grating_args() -> GratingArgs:
+    return GratingArgs(shape=(100, 100), spacing=(0.1, 0.1), offset=(0.0, 0.0), theta=0.0)
 
 
 def test_blazed_grating():

@@ -9,10 +9,8 @@ from ..fields import Field
 from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar
 
-__all__ = ["Element", "ModulationElement", "PolarizedModulationElement"]
 
-
-class Element(PlanarGrid):  # pylint: disable=abstract-method
+class Element(PlanarGrid):
     """
     Base class for optical elements.
 
@@ -42,6 +40,10 @@ class Element(PlanarGrid):  # pylint: disable=abstract-method
                 f"\nField geometry:   {field.geometry_str()}"
                 f"\nElement geometry: {self.geometry_str()}"
             )
+
+    def visualize(self, **kwargs) -> Any:
+        """Visualize the Element."""
+        raise NotImplementedError(f"Visualization is not implemented for {self.__class__.__name__}.")
 
 
 class ModulationElement(Element, ABC):

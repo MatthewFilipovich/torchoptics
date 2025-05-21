@@ -1,3 +1,4 @@
+# type: ignore
 import pytest
 import torch
 from torch import Tensor
@@ -20,7 +21,7 @@ def test_register_property_as_parameter():
     assert module.prop1.requires_grad
     assert "prop1" in dict(module.named_parameters())
     assert torch.equal(module.prop1, value)
-    assert not (module.prop1 is value)
+    assert module.prop1 is not value
 
 
 def test_register_property_as_buffer():

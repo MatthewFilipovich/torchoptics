@@ -7,11 +7,9 @@ import torch
 from torch import Tensor
 
 from ..config import wavelength_or_default
-from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
-
-__all__ = ["hermite_gaussian", "gaussian"]
+from ._profile_meshgrid import profile_meshgrid
 
 
 def hermite_gaussian(
@@ -82,8 +80,6 @@ def hermite_gaussian(
     Returns:
         Tensor: The generated Hermite-Gaussian profile.
     """
-    # pylint: disable=too-many-locals
-
     m = initialize_tensor("m", m, is_scalar=True, is_integer=True, is_non_negative=True)
     n = initialize_tensor("n", n, is_scalar=True, is_integer=True, is_non_negative=True)
     waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)
@@ -207,9 +203,8 @@ def get_wavelength(wavelength, waist_z):
 
 def calculate_coordinates(shape, waist_z, spacing, offset):
     """Calculate the coordinates of the beam."""
-    planar_grid = PlanarGrid(shape, waist_z, spacing, offset)
-    x, y = planar_grid.meshgrid()
-    z = planar_grid.z
+    x, y = profile_meshgrid(shape, spacing, offset)
+    z = initialize_tensor("waist_z", waist_z, is_scalar=True)
     return x, y, z
 
 

@@ -5,11 +5,9 @@ from typing import Optional
 import torch
 
 from ..config import wavelength_or_default
-from ..planar_grid import PlanarGrid
 from ..type_defs import Scalar, Vector2
 from ..utils import initialize_tensor
-
-__all__ = ["plane_wave_phase", "spherical_wave_phase"]
+from ._profile_meshgrid import profile_meshgrid
 
 
 def plane_wave_phase(
@@ -52,8 +50,7 @@ def plane_wave_phase(
     phi = initialize_tensor("phi", phi, is_scalar=True)
     z = initialize_tensor("z", z, is_scalar=True)
 
-    planar_grid = PlanarGrid(shape, spacing=spacing, offset=offset)
-    x, y = planar_grid.meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
 
     k0 = 2 * torch.pi / wavelength
     kx = k0 * torch.sin(theta) * torch.cos(phi)
@@ -97,7 +94,7 @@ def spherical_wave_phase(
     wavelength = wavelength_or_default(wavelength)
     z = initialize_tensor("z", z, is_scalar=True)
 
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     r = torch.sqrt(x**2 + y**2 + z**2)
 
     k = 2 * torch.pi / wavelength

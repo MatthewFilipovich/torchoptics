@@ -1,8 +1,7 @@
 from unittest.mock import patch
 
-import matplotlib
-import pytest
 import torch
+from matplotlib.figure import Figure
 
 import torchoptics
 from torchoptics import PlanarGrid
@@ -109,7 +108,7 @@ def test_visualize():
     with patch("matplotlib.pyplot.show") as mock_show:
         visual = plane._visualize(tensor, show=True, return_fig=True, show_bounds=True)
         mock_show.assert_called_once()
-        assert isinstance(visual, matplotlib.pyplot.Figure)
+        assert isinstance(visual, Figure)
 
 
 def test_repr():

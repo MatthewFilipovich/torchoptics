@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
 import pytest
 import torch
+from matplotlib.figure import Figure
 
 from torchoptics import Field, SpatialCoherence
 from torchoptics.elements import Modulator
@@ -94,7 +94,7 @@ def test_spatial_coherence_normalization_coherent():
 def test_spatial_coherence_visualization():
     _, spatial_coherence, *_ = make_spatial_coherence_fixture()
     fig = spatial_coherence.visualize(return_fig=True, show=False)
-    assert isinstance(fig, plt.Figure)
+    assert isinstance(fig, Figure)
 
 
 def test_spatial_coherence_raise_error():

@@ -95,7 +95,7 @@ print(f"Image Plane Position: {image_z} m")
 # Initialize the Lens
 # ^^^^^^^^^^^^^^^^^^^
 #
-# A lens can be simulated in TorchOptics using the :class:`~torchoptics.elements.Lens` class, which modulates 
+# A lens can be simulated in TorchOptics using the :class:`~torchoptics.elements.Lens` class, which modulates
 # the field with a quadratic phase factor and applies a circular aperture:
 
 lens = Lens(shape, focal_length, lens_z)
@@ -131,7 +131,7 @@ field_image_plane.visualize(title="Field at Image Plane")
 # System Class
 # -------------
 #
-# The :class:`~torchoptics.System` class simplifies simulations by representing an optical system as an 
+# The :class:`~torchoptics.System` class simplifies simulations by representing an optical system as an
 # ordered sequence of :class:`~torchoptics.elements.Element` objects, similar to
 # :class:`torch.nn.Sequential` for neural networks. It can compute the evolution of an input field through the
 # system and return the field at any specified position.

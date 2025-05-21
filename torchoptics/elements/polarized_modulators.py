@@ -9,8 +9,6 @@ from ..type_defs import Scalar, Vector2
 from ..utils import validate_tensor_ndim
 from .elements import PolarizedModulationElement
 
-__all__ = ["PolarizedModulator", "PolarizedPhaseModulator", "PolarizedAmplitudeModulator"]
-
 
 class PolarizedModulator(PolarizedModulationElement):
     """
@@ -102,7 +100,7 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         self.register_optics_property("amplitude", amplitude)
 
     def polarized_modulation_profile(self) -> Tensor:
-        return self.amplitude.cdouble()  # type: ignore
+        return self.amplitude.to(torch.cdouble)
 
 
 def _validate_tensor(tensor, name):

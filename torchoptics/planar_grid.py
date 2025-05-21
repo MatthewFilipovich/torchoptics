@@ -14,10 +14,8 @@ from .type_defs import Scalar, Vector2
 from .utils import initialize_shape
 from .visualization import visualize_tensor
 
-__all__ = ["PlanarGrid"]
 
-
-class PlanarGrid(OpticsModule):  # pylint: disable=abstract-method
+class PlanarGrid(OpticsModule):
     """
     Base class for TorchOptics classes with 2D planar grid geometries.
 
@@ -134,5 +132,6 @@ class PlanarGrid(OpticsModule):  # pylint: disable=abstract-method
     def _visualize(self, data: Tensor, index: tuple = (), show_bounds: bool = False, **kwargs) -> Any:
         """Visualizes the data tensor."""
         if show_bounds:
-            kwargs.update({"extent": torch.cat((self.bounds()[2:], self.bounds()[:2])).cpu().detach()})
+            bounds = self.bounds().detach().cpu()
+            kwargs.update({"extent": [bounds[2], bounds[3], bounds[1], bounds[0]]})
         return visualize_tensor(data[index + (slice(None), slice(None))], **kwargs)

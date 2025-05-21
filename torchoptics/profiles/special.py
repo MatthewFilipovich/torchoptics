@@ -6,11 +6,9 @@ import torch
 from torch import Tensor
 from torch.special import bessel_j1  # Bessel function of the first kind
 
-from ..planar_grid import PlanarGrid
 from ..type_defs import Int, Scalar, Vector2
 from ..utils import initialize_tensor
-
-__all__ = ["airy", "siemens_star", "sinc"]
+from ._profile_meshgrid import profile_meshgrid
 
 
 def airy(
@@ -41,10 +39,10 @@ def airy(
         Tensor: The generated Airy profile.
     """
     scale = initialize_tensor("scale", scale, is_scalar=True, is_positive=True)
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     r = torch.sqrt(x**2 + y**2)
     scaled_r = r / scale
-    airy_pattern = (2 * bessel_j1(scaled_r) / (scaled_r)) ** 2  # pylint: disable=not-callable
+    airy_pattern = (2 * bessel_j1(scaled_r) / (scaled_r)) ** 2
     airy_pattern[r == 0] = 1.0  # Handle the value at r = 0
     return airy_pattern
 
@@ -78,7 +76,7 @@ def siemens_star(
     if (num_spokes % 2).item() != 0:
         raise ValueError("num_spokes must be an even integer.")
 
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     r = torch.sqrt(x**2 + y**2)
     theta = torch.atan2(y, x)
 
@@ -117,6 +115,6 @@ def sinc(
         Tensor: The generated sinc profile.
     """
     scale = initialize_tensor("scale", scale, is_vector2=True, is_positive=True)
-    x, y = PlanarGrid(shape, spacing=spacing, offset=offset).meshgrid()
+    x, y = profile_meshgrid(shape, spacing, offset)
     sinc_pattern = torch.sinc(x / scale[0]) * torch.sinc(y / scale[1]) / (scale[0] * scale[1]) ** 0.5
     return sinc_pattern

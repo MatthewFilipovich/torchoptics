@@ -12,6 +12,7 @@ Simulates 4f optical systems with two lenses using low-pass and high-pass filter
 # sphinx_gallery_end_ignore
 
 import torch
+
 import torchoptics
 from torchoptics import Field, System
 from torchoptics.elements import Lens, Modulator
