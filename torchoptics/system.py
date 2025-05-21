@@ -62,7 +62,8 @@ class System(Module):
     def __iter__(self):
         return iter(self.elements)
 
-    def __getitem__(self, index) -> Element:
+    def __getitem__(self, index):
+        # TODO: Return system when index is a slice
         return self.elements[index]
 
     def __len__(self):
