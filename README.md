@@ -107,9 +107,19 @@ We welcome contributions! See our [Contributing Guide](https://github.com/Matthe
 
 ## Citing TorchOptics
 
-If you use TorchOptics in your research, please cite our paper:
+If you use TorchOptics in your research, please cite our [paper](https://arxiv.org/abs/2411.18591):
 
-> M.J. Filipovich and A.I. Lvovsky, _TorchOptics: An open-source Python library for differentiable Fourier optics simulations_, arXiv preprint [arXiv:2411.18591](https://arxiv.org/abs/2411.18591) (2024).
+```bibtex
+@misc{filipovich2024torchoptics,
+      title={TorchOptics: An open-source Python library for differentiable Fourier optics simulations},
+      author={Matthew J. Filipovich and A. I. Lvovsky},
+      year={2024},
+      eprint={2411.18591},
+      archivePrefix={arXiv},
+      primaryClass={physics.optics},
+      url={https://arxiv.org/abs/2411.18591},
+}
+```
 
 ## License
 
