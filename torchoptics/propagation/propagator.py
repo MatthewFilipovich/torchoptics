@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ..fields import Field
 
 
-VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_FRESNEL", "ASM", "ASM_FRESNEL", "DIM", "DIM_FRESNEL"}
+VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_RS", "ASM", "ASM_RS", "DIM", "DIM_RS"}
 VALID_INTERPOLATION_MODES = {"none", "bilinear", "bicubic", "nearest"}
 
 
