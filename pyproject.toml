@@ -47,6 +47,13 @@ dev = [
   "ruff",
   "scipy"
 ]
+docs = [
+  "sphinx-autoapi",
+  "pydata-sphinx-theme",
+  "sphinx-copybutton",
+  "sphinx-gallery",
+  "sphinx-design",
+] 
 
 [project.urls]
 Homepage = "https://github.com/MatthewFilipovich/torchoptics"
