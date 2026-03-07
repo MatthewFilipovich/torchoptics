@@ -9,11 +9,6 @@ from torch import Tensor
 from .type_defs import Vector2
 
 
-def get_default_complex_dtype() -> torch.dtype:
-    """Returns the complex dtype corresponding to the default float dtype."""
-    return torch.complex128 if torch.get_default_dtype() == torch.float64 else torch.complex64
-
-
 def initialize_tensor(
     name: str,
     value: Any,
@@ -49,9 +44,9 @@ def initialize_tensor(
     if is_integer:
         dtype = torch.int64
     elif is_complex:
-        dtype = get_default_complex_dtype()
+        dtype = torch.complex128 if torch.get_default_dtype() == torch.float64 else torch.complex64
     else:
-        dtype = torch.get_default_dtype()
+        dtype = torch.float64 if torch.get_default_dtype() == torch.float64 else torch.float32
     tensor = value.clone().to(dtype) if isinstance(value, Tensor) else torch.tensor(value, dtype=dtype)
 
     if is_scalar:

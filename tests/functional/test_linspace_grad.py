@@ -14,7 +14,7 @@ def test_output_values():
 
 
 def test_edge_cases():
-    for start_val, end_val, steps in [(1, 1, 0), (1, 3, 0), (12, 12, 1), (12, 14, 1)]:
+    for start_val, end_val, steps in [(1.0, 1.0, 0), (1.0, 3.0, 0), (12.0, 12.0, 1), (12.0, 14.0, 1)]:
         start = torch.tensor(start_val, requires_grad=True)
         end = torch.tensor(end_val, requires_grad=True)
         expected = torch.linspace(start_val, end_val, steps)
@@ -23,7 +23,7 @@ def test_edge_cases():
 
 
 def test_differentiability():
-    start = torch.tensor(-3, requires_grad=True)
+    start = torch.tensor(-3.0, requires_grad=True)
     end = torch.tensor(1.0, requires_grad=True)
     steps = 10
     linspace_tensor = linspace_grad(start, end, steps)

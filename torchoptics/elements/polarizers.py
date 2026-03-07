@@ -6,7 +6,6 @@ import torch
 from torch import Tensor
 
 from ..type_defs import Scalar, Vector2
-from ..utils import get_default_complex_dtype
 from .elements import PolarizedModulationElement
 
 
@@ -49,9 +48,7 @@ class LinearPolarizer(PolarizedModulationElement):
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
-        tensor = torch.zeros(
-            3, 3, *self.shape, dtype=get_default_complex_dtype(), device=next(self.buffers()).device
-        )
+        tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = torch.cos(self.theta) ** 2
         tensor[0, 1] = torch.cos(self.theta) * torch.sin(self.theta)
         tensor[1, 0] = torch.cos(self.theta) * torch.sin(self.theta)
@@ -83,9 +80,7 @@ class LeftCircularPolarizer(PolarizedModulationElement):
     """
 
     def polarized_modulation_profile(self) -> Tensor:
-        tensor = torch.zeros(
-            3, 3, *self.shape, dtype=get_default_complex_dtype(), device=next(self.buffers()).device
-        )
+        tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = 0.5
         tensor[0, 1] = -0.5j  # type: ignore
         tensor[1, 0] = 0.5j  # type: ignore
@@ -117,9 +112,7 @@ class RightCircularPolarizer(PolarizedModulationElement):
     """
 
     def polarized_modulation_profile(self) -> Tensor:
-        tensor = torch.zeros(
-            3, 3, *self.shape, dtype=get_default_complex_dtype(), device=next(self.buffers()).device
-        )
+        tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = 0.5
         tensor[0, 1] = 0.5j  # type: ignore
         tensor[1, 0] = -0.5j  # type: ignore
