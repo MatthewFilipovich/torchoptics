@@ -1,8 +1,0 @@
--r requirements.txt
-
-coverage
-pre-commit
-pyright
-pytest
-ruff
-scipy
