@@ -17,7 +17,7 @@ def test_linear_polarizer():
                 [torch.cos(theta) ** 2, torch.cos(theta) * torch.sin(theta)],
                 [torch.cos(theta) * torch.sin(theta), torch.sin(theta) ** 2],
             ],
-            dtype=torch.cdouble,
+            dtype=torch.cfloat,
         )
         .unsqueeze(-1)
         .unsqueeze(-1)
@@ -36,7 +36,7 @@ def test_left_circular_polarizer():
     assert polarizer.shape == shape
     polarization_modulation_profile = polarizer.polarized_modulation_profile()
     expected_matrix = (
-        torch.tensor([[0.5, -0.5j], [0.5j, 0.5]], dtype=torch.cdouble)
+        torch.tensor([[0.5, -0.5j], [0.5j, 0.5]], dtype=torch.cfloat)
         .unsqueeze(-1)
         .unsqueeze(-1)
         .expand(2, 2, *shape)

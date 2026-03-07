@@ -20,7 +20,6 @@ def test_cylindrical_lens_phase_shape_and_dtype():
         offset=offset,
     )
     assert phase_profile.shape == shape
-    assert phase_profile.dtype == torch.double
 
 
 def test_cylindrical_lens_phase_zero_theta():

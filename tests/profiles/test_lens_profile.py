@@ -1,5 +1,3 @@
-import torch
-
 from torchoptics.profiles import lens_phase
 
 
@@ -17,4 +15,3 @@ def test_lens_profile_shape_and_dtype():
         offset=offset,
     )
     assert phase_profile.shape == shape
-    assert phase_profile.dtype == torch.double

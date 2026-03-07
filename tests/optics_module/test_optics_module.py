@@ -81,7 +81,7 @@ def test_register_property_from_sequence():
     module.register_optics_property("prop1", value, is_vector2=True)
     assert hasattr(module, "prop1")
     assert isinstance(module.prop1, Tensor)
-    expected_tensor = torch.tensor([1.0, 2.0], dtype=torch.double)
+    expected_tensor = torch.tensor([1.0, 2.0])
     assert torch.equal(module.prop1, expected_tensor)
     assert not module.prop1.requires_grad
     assert "prop1" in dict(module.named_buffers())
@@ -113,7 +113,7 @@ def test_set_property_via_setattr():
     module.register_optics_property("prop1", initial_value, is_vector2=True)
     new_value = [4.0, 5.0]
     module.prop1 = new_value
-    expected_tensor = torch.tensor(new_value, dtype=torch.double)
+    expected_tensor = torch.tensor(new_value)
     assert torch.equal(module.prop1, expected_tensor)
 
 
@@ -133,7 +133,7 @@ def test_set_trainable_property_via_setattr():
     new_value = [4.0, 5.0, 6.0]
     with torch.no_grad():
         module.prop1 = new_value
-    expected_tensor = torch.tensor(new_value, dtype=torch.double)
+    expected_tensor = torch.tensor(new_value)
     assert torch.equal(module.prop1, expected_tensor)
 
 

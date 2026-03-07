@@ -34,8 +34,8 @@ def plane_wave_phase(
 
     Args:
         shape (Vector2): Number of grid points along planar dimensions.
-        theta (float): Polar angle from the z-axis, in radians.
-        phi (float): Azimuthal angle in the x-y plane, in radians.
+        theta (Scalar): Polar angle from the z-axis, in radians.
+        phi (Scalar): Azimuthal angle in the x-y plane, in radians.
         z (Scalar): Axial location at which to evaluate the phase. Default: 0.
         wavelength (Optional[Scalar]): Wavelength of the wave. If None, uses global default.
         spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if

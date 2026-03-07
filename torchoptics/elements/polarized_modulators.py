@@ -100,7 +100,7 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         self.register_optics_property("amplitude", amplitude)
 
     def polarized_modulation_profile(self) -> Tensor:
-        return self.amplitude.to(torch.cdouble)
+        return self.amplitude + 0j
 
 
 def _validate_tensor(tensor, name):
