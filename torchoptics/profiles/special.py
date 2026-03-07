@@ -80,7 +80,9 @@ def siemens_star(
     r = torch.sqrt(x**2 + y**2)
     theta = torch.atan2(y, x)
 
-    pattern = (torch.cos((num_spokes / 2) * theta) > 0).double()  # Binary angular pattern
+    pattern = (torch.cos((num_spokes / 2) * theta) > 0).to(
+        torch.get_default_dtype()
+    )  # Binary angular pattern
     pattern[r > radius] = 0.0  # Apply the circular mask (outside the radius is set to 0)
     pattern[r == 0] = 1.0  # Set the center to 1.0
 

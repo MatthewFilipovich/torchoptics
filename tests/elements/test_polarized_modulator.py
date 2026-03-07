@@ -8,7 +8,7 @@ from torchoptics.elements import PolarizedAmplitudeModulator, PolarizedModulator
 
 
 def test_polarized_modulator_initialization():
-    polarized_modulation_profile = torch.rand((3, 3, 10, 12), dtype=torch.cdouble)
+    polarized_modulation_profile = torch.rand((3, 3, 10, 12), dtype=torch.cfloat)
     z = 1.5
     polarized_field = Field(torch.ones(4, 3, 10, 12), wavelength=700e-9, z=z, spacing=1)
     torchoptics.set_default_spacing(1)
@@ -21,7 +21,7 @@ def test_polarized_phase_modulator_initialization_and_profile():
     phase_profile = torch.rand((3, 3, 10, 12))
     z = 1.5
     phase_modulator = PolarizedPhaseModulator(phase_profile, z)
-    expected_profile = torch.exp(1j * phase_profile).to(dtype=torch.cdouble)
+    expected_profile = torch.exp(1j * phase_profile).to(dtype=torch.cfloat)
     assert torch.allclose(phase_modulator.polarized_modulation_profile(), expected_profile)
     polarized_field = Field(torch.ones(4, 3, 10, 12), wavelength=700e-9, z=z, spacing=1)
     assert isinstance(phase_modulator(polarized_field), Field)
@@ -31,7 +31,7 @@ def test_polarized_amplitude_modulator_initialization_and_profile():
     amplitude_profile = torch.rand((3, 3, 10, 12))
     z = 1.5
     amplitude_modulator = PolarizedAmplitudeModulator(amplitude_profile, z)
-    expected_profile = amplitude_profile.to(torch.cdouble)
+    expected_profile = amplitude_profile.to(torch.cfloat)
     assert torch.allclose(amplitude_modulator.polarized_modulation_profile(), expected_profile)
     polarized_field = Field(torch.ones(4, 3, 10, 12), wavelength=700e-9, z=z, spacing=1)
     assert isinstance(amplitude_modulator(polarized_field), Field)
@@ -51,7 +51,7 @@ def test_amplitude_modulation_profile_consistency():
     amplitude_profile = torch.rand((3, 3, 10, 12))
     z = 1.5
     amplitude_modulator = PolarizedAmplitudeModulator(amplitude_profile, z)
-    modulator = PolarizedModulator(amplitude_profile.to(torch.cdouble), z)
+    modulator = PolarizedModulator(amplitude_profile.to(torch.cfloat), z)
     assert torch.allclose(
         modulator.polarized_modulation_profile(), amplitude_modulator.polarized_modulation_profile()
     )
@@ -76,7 +76,7 @@ def test_error_on_incorrect_dimensions():
 
 
 def test_visualization():
-    polarized_modulation_profile = torch.rand((3, 3, 10, 12), dtype=torch.cdouble)
+    polarized_modulation_profile = torch.rand((3, 3, 10, 12), dtype=torch.cfloat)
     z = 1.5
     modulator = PolarizedModulator(polarized_modulation_profile, z)
     fig = modulator.visualize(0, 0, show=False, return_fig=True)

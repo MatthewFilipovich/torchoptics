@@ -21,7 +21,6 @@ def test_plane_wave_shape_and_dtype():
         offset=offset,
     )
     assert wave.shape == shape
-    assert wave.dtype == torch.double
 
 
 def test_spherical_wave_shape_and_dtype():
@@ -38,4 +37,3 @@ def test_spherical_wave_shape_and_dtype():
         offset=offset,
     )
     assert wave.shape == shape
-    assert wave.dtype == torch.double

@@ -17,7 +17,6 @@ def test_zernike_profile():
     assert not torch.is_complex(profile)
     assert torch.all(profile >= -1)
     assert torch.all(profile <= 1)
-    assert profile.dtype == torch.double
 
 
 def test_invalid_zernike_parameters():

@@ -7,7 +7,7 @@ from torch import Tensor
 
 from ..fields import Field
 from ..type_defs import Scalar, Vector2
-from ..utils import copy
+from ..utils import copy, get_default_complex_dtype
 from .elements import Element
 
 
@@ -69,7 +69,7 @@ class BeamSplitter(Element):
     @property
     def transfer_matrix(self) -> Tensor:
         """Return the transfer matrix of the beam splitter."""
-        transfer_matrix = torch.zeros(2, 2, dtype=torch.cdouble, device=self.theta.device)
+        transfer_matrix = torch.zeros(2, 2, dtype=get_default_complex_dtype(), device=self.theta.device)
         transfer_matrix[0, 0] = torch.sin(self.theta) * torch.exp(1j * self.phi_r)
         transfer_matrix[0, 1] = torch.cos(self.theta) * torch.exp(-1j * self.phi_t)
         transfer_matrix[1, 0] = torch.cos(self.theta) * torch.exp(1j * self.phi_t)

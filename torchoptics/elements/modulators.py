@@ -7,7 +7,7 @@ from torch import Tensor
 
 from ..config import wavelength_or_default
 from ..type_defs import Scalar, Vector2
-from ..utils import validate_tensor_ndim
+from ..utils import get_default_complex_dtype, validate_tensor_ndim
 from .elements import ModulationElement, PolychromaticModulationElement
 
 
@@ -101,7 +101,7 @@ class AmplitudeModulator(ModulationElement):
         self.register_optics_property("amplitude", amplitude)
 
     def modulation_profile(self) -> Tensor:
-        return self.amplitude.to(torch.cdouble)
+        return self.amplitude.to(get_default_complex_dtype())
 
 
 class PolychromaticPhaseModulator(PolychromaticModulationElement):
