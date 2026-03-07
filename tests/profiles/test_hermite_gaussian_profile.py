@@ -39,7 +39,7 @@ def test_hermite_gaussian_orthogonality():
 def test_hermite_gaussian_dtype():
     profiles = make_hermite_gaussian_profiles()
     for profile in profiles:
-        assert profile.dtype == torch.cdouble
+        assert torch.is_complex(profile)
 
 
 def test_hermite_gaussian_normalization():

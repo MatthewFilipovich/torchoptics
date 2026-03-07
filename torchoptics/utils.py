@@ -41,7 +41,12 @@ def initialize_tensor(
     if is_integer and value_dtype not in (torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8):
         raise ValueError(f"Expected {name} to contain integer values, but found non-integer values.")
 
-    dtype = torch.int if is_integer else torch.cdouble if is_complex else torch.double
+    if is_integer:
+        dtype = torch.int64
+    elif is_complex:
+        dtype = torch.complex128 if torch.get_default_dtype() == torch.float64 else torch.complex64
+    else:
+        dtype = torch.float64 if torch.get_default_dtype() == torch.float64 else torch.float32
     tensor = value.clone().to(dtype) if isinstance(value, Tensor) else torch.tensor(value, dtype=dtype)
 
     if is_scalar:

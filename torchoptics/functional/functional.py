@@ -48,9 +48,6 @@ def conv2d_fft(input: Tensor, weight: Tensor) -> Tensor:
     Unlike the :func:`torch.nn.functional.conv2d` function, which performs cross-correlation,
     :func:`conv2d_fft` performs a convolution operation where the kernel is flipped.
 
-    .. note::
-        It is recommended to use :attr:`torch.float64` dtype for the input and weight tensors.
-
     Args:
         input (torch.Tensor): Input tensor to be convolved of shape :math:`(..., iH, iW)`.
         weight (torch.Tensor): Filters of shape :math:`(..., kH, kW)`.

@@ -18,7 +18,7 @@ def test_linear_detector():
     output = detector(field)
     assert isinstance(output, torch.Tensor)
     assert output.shape == (2,)
-    assert torch.allclose(output, torch.tensor([3000.0, 1200.0], dtype=torch.double))
+    assert torch.allclose(output, torch.tensor([3000.0, 1200.0]))
     fig = detector.visualize(0, show=False, return_fig=True)
     assert isinstance(fig, Figure)
 
