@@ -200,7 +200,7 @@ def create_image_subplot(
     """Create an image subplot with colorbar, axis labels, and optional title.
 
     Args:
-        ax (Any): Matplotlib axis to draw on.
+        ax (Axes): Matplotlib axis to draw on.
         tensor (Tensor): 2D tensor to visualize.
         xlabel (str | None): Label for x-axis.
         ylabel (str | None): Label for y-axis.
@@ -211,7 +211,7 @@ def create_image_subplot(
             `cmap`, `vmin`, `vmax`, `interpolation`, etc.
 
     Returns:
-        Any: The image object returned by `imshow`.
+        AxesImage: The image object returned by `imshow`.
 
     """
     imshow_kwargs.setdefault("cmap", "inferno")
