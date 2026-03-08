@@ -1,4 +1,4 @@
-"""This module defines the polarizer elements."""
+"""Polarizer element definitions."""
 
 import torch
 from torch import Tensor
@@ -8,13 +8,12 @@ from .elements import PolarizedModulationElement
 
 
 class LinearPolarizer(PolarizedModulationElement):
-    r"""
-    Linear polarizer element.
+    r"""Linear polarizer element.
 
     The linear polarizer is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \cos^2(\theta) & \cos(\theta) \sin(\theta) & 0 \\
             \cos(\theta) \sin(\theta) & \sin^2(\theta) & 0 \\
@@ -30,6 +29,7 @@ class LinearPolarizer(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     theta: Tensor
@@ -56,13 +56,12 @@ class LinearPolarizer(PolarizedModulationElement):
 
 
 class LeftCircularPolarizer(PolarizedModulationElement):
-    r"""
-    Left circular polarizer element.
+    r"""Left circular polarizer element.
 
     The left circular polarizer is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \frac{1}{2} & -\frac{i}{2} & 0 \\
             \frac{1}{2} & \frac{1}{2} & 0 \\
@@ -75,21 +74,21 @@ class LeftCircularPolarizer(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     def polarized_modulation_profile(self) -> Tensor:
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = 0.5
-        tensor[0, 1] = -0.5j  # type: ignore
-        tensor[1, 0] = 0.5j  # type: ignore
+        tensor[0, 1] = -0.5j  # type: ignore[assignment]
+        tensor[1, 0] = 0.5j  # type: ignore[assignment]
         tensor[1, 1] = 0.5
         tensor[2, 2] = 1
         return tensor
 
 
 class RightCircularPolarizer(PolarizedModulationElement):
-    r"""
-    Right circular polarizer element.
+    r"""Right circular polarizer element.
 
     The right circular polarizer is described by the following polarization matrix:
 
@@ -100,20 +99,21 @@ class RightCircularPolarizer(PolarizedModulationElement):
             \frac{-i}{2} & \frac{1}{2} & 0 \\
             0 & 0 & 1
         \end{bmatrix}
-    
+
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     def polarized_modulation_profile(self) -> Tensor:
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = 0.5
-        tensor[0, 1] = 0.5j  # type: ignore
-        tensor[1, 0] = -0.5j  # type: ignore
+        tensor[0, 1] = 0.5j  # type: ignore[assignment]
+        tensor[1, 0] = -0.5j  # type: ignore[assignment]
         tensor[1, 1] = 0.5
         tensor[2, 2] = 1
         return tensor

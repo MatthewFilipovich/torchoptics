@@ -1,4 +1,4 @@
-"""This module defines functions for field propagation using the direct integration method (DIM)."""
+"""Field propagation using the direct integration method (DIM)."""
 
 from __future__ import annotations
 
@@ -8,15 +8,14 @@ import torch
 from torch import Tensor
 
 from ..functional import conv2d_fft, meshgrid2d
-from ..planar_grid import PlanarGrid
 
 if TYPE_CHECKING:
     from ..fields import Field
+    from ..planar_grid import PlanarGrid
 
 
 def dim_propagation(field: Field, propagation_plane: PlanarGrid, propagation_method: str) -> Field:
-    """
-    Propagates the field to a plane using the direct integration method (DIM).
+    """Propagate the field to a plane using the direct integration method (DIM).
 
     Args:
         field (Field): Input field.
@@ -24,6 +23,7 @@ def dim_propagation(field: Field, propagation_plane: PlanarGrid, propagation_met
 
     Returns:
         Field: Output field after propagation.
+
     """
     x, y = calculate_meshgrid(field, propagation_plane)
     impulse_response = calculate_impulse_response(field, propagation_plane, x, y, propagation_method)
@@ -49,12 +49,16 @@ def calculate_grid_bounds(field: Field, propagation_plane: PlanarGrid) -> Tensor
             propagation_plane_bounds[1] - field_bounds[0],
             propagation_plane_bounds[2] - field_bounds[3],
             propagation_plane_bounds[3] - field_bounds[2],
-        ]
+        ],
     )
 
 
 def calculate_impulse_response(
-    field: Field, propagation_plane: PlanarGrid, x: Tensor, y: Tensor, propagation_method: str
+    field: Field,
+    propagation_plane: PlanarGrid,
+    x: Tensor,
+    y: Tensor,
+    propagation_method: str,
 ) -> Tensor:
     """Calculate the impulse response for DIM propagation."""
     propagation_distance = propagation_plane.z - field.z

@@ -1,4 +1,4 @@
-"""This module defines functions to generate quadratic phase lens profiles."""
+"""Quadratic phase lens profile generation functions."""
 
 from math import cos, sin
 
@@ -17,8 +17,7 @@ def lens_phase(
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
 ):
-    r"""
-    Generates a quadratic phase lens profile, which can be used to represent a thin lens.
+    r"""Generate a quadratic phase lens profile, which can be used to represent a thin lens.
 
     The quadratic phase profile is defined by the following equation:
 
@@ -32,6 +31,7 @@ def lens_phase(
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
+
     """
     wavelength = wavelength_or_default(wavelength)
     focal_length = initialize_tensor("focal_length", focal_length, is_scalar=True)
@@ -50,8 +50,7 @@ def cylindrical_lens_phase(
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
 ):
-    r"""
-    Generates a cylindrical lens profile with a quadratic phase in a specified direction.
+    r"""Generate a cylindrical lens profile with a quadratic phase in a specified direction.
 
     The quadratic phase profile is:
 
@@ -68,6 +67,7 @@ def cylindrical_lens_phase(
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
+
     """
     wavelength = wavelength_or_default(wavelength)
     focal_length = initialize_tensor("focal_length", focal_length, is_scalar=True)

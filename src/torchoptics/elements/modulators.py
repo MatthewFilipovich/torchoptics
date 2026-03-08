@@ -1,4 +1,4 @@
-"""This module defines the modulator elements."""
+"""Modulator element definitions."""
 
 import torch
 from torch import Tensor
@@ -10,8 +10,7 @@ from .elements import ModulationElement, PolychromaticModulationElement
 
 
 class Modulator(ModulationElement):
-    """
-    Modulator element.
+    """Modulator element.
 
     The modulator is described by a complex modulation profile.
 
@@ -21,6 +20,7 @@ class Modulator(ModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     modulation: Tensor
@@ -41,8 +41,7 @@ class Modulator(ModulationElement):
 
 
 class PhaseModulator(ModulationElement):
-    """
-    Phase-only modulator element.
+    """Phase-only modulator element.
 
     The phase modulator is described by a phase profile.
 
@@ -52,6 +51,7 @@ class PhaseModulator(ModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     phase: Tensor
@@ -72,8 +72,7 @@ class PhaseModulator(ModulationElement):
 
 
 class AmplitudeModulator(ModulationElement):
-    """
-    Amplitude-only modulator element.
+    """Amplitude-only modulator element.
 
     The amplitude modulator is described by an amplitude profile.
 
@@ -83,6 +82,7 @@ class AmplitudeModulator(ModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     amplitude: Tensor
@@ -103,8 +103,7 @@ class AmplitudeModulator(ModulationElement):
 
 
 class PolychromaticPhaseModulator(PolychromaticModulationElement):
-    r"""
-    Phase-only modulator element that modulates the optical field based on the optical path length (OPL).
+    r"""Phase-only modulator element that modulates the optical field based on the optical path length (OPL).
 
     The modulation is applied according to:
 
@@ -124,6 +123,7 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     optical_path_length: Tensor

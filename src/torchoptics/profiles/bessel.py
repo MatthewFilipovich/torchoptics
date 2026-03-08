@@ -1,4 +1,4 @@
-"""This module defines a function to generate the bessel beam profile."""
+"""Bessel beam profile generation."""
 
 import torch
 from torch import Tensor
@@ -16,8 +16,7 @@ def bessel(
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
 ) -> Tensor:
-    r"""
-    Generates a zeroth-order Bessel beam.
+    r"""Generate a zeroth-order Bessel beam.
 
     The zeroth-order Bessel beam is defined by the following equation:
 

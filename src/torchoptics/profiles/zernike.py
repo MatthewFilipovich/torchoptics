@@ -1,4 +1,4 @@
-"""This module defines functions to generate Zernike polynomial profiles."""
+"""Zernike polynomial profile generation functions."""
 
 import math
 
@@ -18,8 +18,7 @@ def zernike(
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
 ) -> Tensor:
-    r"""
-    Generates a Zernike polynomial profile over a 2D grid.
+    r"""Generate a Zernike polynomial profile over a 2D grid.
 
     `Zernike polynomials <https://en.wikipedia.org/wiki/Zernike_polynomials>`_ are a set of orthogonal
     polynomials defined on the unit disk, commonly used in optics for wavefront analysis and aberration
@@ -53,16 +52,18 @@ def zernike(
 
     Returns:
         Tensor: The generated Zernike polynomial profile.
-    """
 
+    """
     n = initialize_tensor("n", n, is_scalar=True, is_integer=True, is_non_negative=True)
     m = initialize_tensor("m", m, is_scalar=True, is_integer=True)
     radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
 
     if m.abs() > n:
-        raise ValueError("Azimuthal index m must satisfy |m| <= n.")
+        msg = "Azimuthal index m must satisfy |m| <= n."
+        raise ValueError(msg)
     if (n - m.abs()) % 2 != 0:
-        raise ValueError("The difference n - |m| must be even for a valid Zernike polynomial.")
+        msg = "The difference n - |m| must be even for a valid Zernike polynomial."
+        raise ValueError(msg)
 
     x, y = profile_meshgrid(shape, spacing, offset)
 
@@ -74,13 +75,11 @@ def zernike(
 
     # Apply the unit disk mask
     mask = rho <= 1.0
-    zernike_profile = radial_poly * angular_component * mask
-
-    return zernike_profile
+    return radial_poly * angular_component * mask
 
 
 def zernike_radial(n: Tensor, m: Tensor, rho: Tensor) -> Tensor:
-    """Computes the radial component of the Zernike polynomial."""
+    """Compute the radial component of the Zernike polynomial."""
     radial = torch.zeros_like(rho)
     for k in range((n - m.abs()) // 2 + 1):
         coeff = (-1) ** k * math.comb(n - k, k) * math.comb(n - 2 * k, (n - m.abs()) // 2 - k)

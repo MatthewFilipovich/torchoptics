@@ -1,4 +1,4 @@
-"""This module defines the beam splitter element."""
+"""Beam splitter element."""
 
 import torch
 from torch import Tensor
@@ -9,10 +9,9 @@ from .elements import Element
 
 
 class BeamSplitter(Element):
-    r"""
-    Beam splitter element.
+    r"""Beam splitter element.
 
-    The beam splitter is described by the following `transfer matrix 
+    The beam splitter is described by the following `transfer matrix
     <https://en.wikipedia.org/wiki/Beam_splitter>`_:
 
     .. math::
@@ -23,15 +22,15 @@ class BeamSplitter(Element):
         \end{bmatrix}
 
     .. note::
-        A 50:50 beam splitter is obtained by setting :math:`\theta = \pi/4`. 
-        
-        The dielectric 50:50 beam splitter has :math:`\phi_T = \phi_R = \phi_0 = 0`, while the symmetric 
-        beam splitter of Loudon (also 50:50) has :math:`\phi_T = 0`, :math:`\phi_R = -\pi/2`, and 
-        :math:`\phi_0 = \pi/2`. 
+        A 50:50 beam splitter is obtained by setting :math:`\theta = \pi/4`.
+
+        The dielectric 50:50 beam splitter has :math:`\phi_T = \phi_R = \phi_0 = 0`, while the symmetric
+        beam splitter of Loudon (also 50:50) has :math:`\phi_T = 0`, :math:`\phi_R = -\pi/2`, and
+        :math:`\phi_0 = \pi/2`.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
-        z (Scalar): Position along the z-axis. Default: `0`. 
+        z (Scalar): Position along the z-axis. Default: `0`.
         theta (Scalar): Angle relating the transmitted and reflected beams.
         phi_0 (Scalar): Global phase shift.
         phi_r (Scalar): Reflection phase shift.
@@ -39,6 +38,7 @@ class BeamSplitter(Element):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     theta: Tensor
@@ -74,8 +74,7 @@ class BeamSplitter(Element):
         return transfer_matrix
 
     def forward(self, field: Field, other: Field | None = None) -> tuple[Field, Field]:
-        """
-        Applies the beam splitter to the input fields.
+        """Apply the beam splitter to the input fields.
 
         Args:
             field (Field): The field to split.
@@ -83,6 +82,7 @@ class BeamSplitter(Element):
 
         Returns:
             tuple[Field, Field]: The split fields.
+
         """
         self.validate_field(field)
         output_data0 = field.data * self.transfer_matrix[0, 0]
@@ -96,21 +96,20 @@ class BeamSplitter(Element):
 
 
 class PolarizingBeamSplitter(Element):
-    """
-    Polarizing beam splitter element.
+    """Polarizing beam splitter element.
 
     The polarizing beam splitter splits the input field into two orthogonal polarizations.
     """
 
     def forward(self, field: Field) -> tuple[Field, Field]:
-        """
-        Applies the beam splitter to the input field.
+        """Apply the beam splitter to the input field.
 
         Args:
             field (Field): The field to split.
 
         Returns:
             tuple[Field, Field]: The split fields.
+
         """
         self.validate_field(field)
         return field.polarized_split()[:2]

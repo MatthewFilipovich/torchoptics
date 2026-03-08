@@ -1,8 +1,8 @@
-"""This module defines the Field and SpatialCoherence classes."""
+"""Field and SpatialCoherence classes."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import torch
 from torch import Tensor
@@ -11,8 +11,10 @@ from .config import wavelength_or_default
 from .functional import calculate_centroid, calculate_std, get_coherence_evolution, inner2d, outer2d
 from .planar_grid import PlanarGrid
 from .propagation import propagator
-from .types import Scalar, Vector2
 from .utils import validate_tensor_min_ndim
+
+if TYPE_CHECKING:
+    from .types import Scalar, Vector2
 
 
 class Field(PlanarGrid):
@@ -46,23 +48,26 @@ class Field(PlanarGrid):
         super().__init__(data.shape[-2:], z, spacing, offset)
         self.register_optics_property("data", data, is_complex=True)
         self.register_optics_property(
-            "wavelength", wavelength_or_default(wavelength), is_scalar=True, is_positive=True
+            "wavelength",
+            wavelength_or_default(wavelength),
+            is_scalar=True,
+            is_positive=True,
         )
 
     def intensity(self) -> Tensor:
-        """Returns the intensity of the field."""
+        """Return the intensity of the field."""
         return self.data.abs().square()
 
     def power(self) -> Tensor:
-        """Returns the total power of the field calculated by integrating the intensity over the plane."""
+        """Return the total power of the field calculated by integrating the intensity over the plane."""
         return self.intensity().sum(dim=(-1, -2)) * self.cell_area()
 
     def centroid(self) -> Tensor:
-        """Returns the centroid of the intensity."""
+        """Return the centroid of the intensity."""
         return calculate_centroid(self.intensity(), self.meshgrid())
 
     def std(self) -> Tensor:
-        """Returns the standard deviation of the intensity."""
+        """Return the standard deviation of the intensity."""
         return calculate_std(self.intensity(), self.meshgrid())
 
     def propagate(
@@ -76,7 +81,7 @@ class Field(PlanarGrid):
         asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
-        """Propagates the field through free-space to a plane defined by the input parameters.
+        """Propagate the field through free-space to a plane defined by the input parameters.
 
         Args:
             shape (Vector2): Number of grid points along the planar dimensions.
@@ -103,7 +108,7 @@ class Field(PlanarGrid):
         asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
-        """Propagates the field through free-space to a plane at a specific z position.
+        """Propagate the field through free-space to a plane at a specific z position.
 
         The plane has the same ``shape``, ``spacing``, and ``offset`` as the input field.
 
@@ -136,7 +141,7 @@ class Field(PlanarGrid):
         asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
-        """Propagates the field through free-space to a plane defined by a :class:`PlanarGrid` object.
+        """Propagate the field through free-space to a plane defined by a :class:`PlanarGrid` object.
 
         Args:
             plane (PlanarGrid): Plane grid.
@@ -162,7 +167,7 @@ class Field(PlanarGrid):
         )
 
     def modulate(self, modulation_profile: Tensor) -> Field:
-        """Modulates the field by a modulation profile.
+        """Modulate the field by a modulation profile.
 
         Args:
             modulation_profile (Tensor): The modulation profile.
@@ -175,7 +180,7 @@ class Field(PlanarGrid):
         return self.copy(data=modulated_data)
 
     def polarized_modulate(self, polarized_modulation_profile: Tensor) -> Field:
-        """Modulates the field by a polarized modulation profile.
+        """Modulate the field by a polarized modulation profile.
 
         Args:
             polarized_modulation_profile (Tensor): The polarized modulation profile.
@@ -186,12 +191,12 @@ class Field(PlanarGrid):
         """
         self._validate_polarization_dim()
         modulated_data = (self.data.unsqueeze(self.POLARIZATION_DIM - 1) * polarized_modulation_profile).sum(
-            self.POLARIZATION_DIM
+            self.POLARIZATION_DIM,
         )
         return self.copy(data=modulated_data)
 
     def polarized_split(self) -> tuple[Field, Field, Field]:
-        """Splits the field into three polarized fields.
+        """Split the field into three polarized fields.
 
         Returns:
             tuple[Field, Field, Field]: The split fields.
@@ -206,7 +211,7 @@ class Field(PlanarGrid):
         return f0, f1, f2
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
-        """Normalizes the field to a specified power.
+        """Normalize the field to a specified power.
 
         Args:
             normalized_power (Scalar): The normalized power. Default: `1.0`.
@@ -221,7 +226,7 @@ class Field(PlanarGrid):
         return self.copy(data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
-        """Returns the inner product of the field (last two data dimensions) with another field.
+        """Return the inner product of the field (last two data dimensions) with another field.
 
         Args:
             other (Field): The other field.
@@ -233,12 +238,12 @@ class Field(PlanarGrid):
         if not self.is_same_geometry(other):
             raise ValueError(
                 "Fields must have the same geometry, but got geometries:"
-                f"\n{self.geometry_str()}\n{other.geometry_str()}"
+                f"\n{self.geometry_str()}\n{other.geometry_str()}",
             )
         return inner2d(self.data, other.data) * self.cell_area()
 
     def outer(self, other: Field) -> Tensor:
-        """Returns the outer product of the field (last two data dimensions) with another field.
+        """Return the outer product of the field (last two data dimensions) with another field.
 
         Args:
             other (Field): The other field.
@@ -250,25 +255,26 @@ class Field(PlanarGrid):
         if not self.is_same_geometry(other):
             raise ValueError(
                 "Fields must have the same geometry, but got geometries:"
-                f"\n{self.geometry_str()}\n{other.geometry_str()}"
+                f"\n{self.geometry_str()}\n{other.geometry_str()}",
             )
         return outer2d(self.data, other.data) * self.cell_area()
 
     def copy(self, **kwargs) -> Field:
-        """Creates a copy of the field with optionally updated properties.
+        """Create a copy of the field with optionally updated properties.
 
         Args:
             **kwargs: Properties to update in the copy.
 
         Returns:
             Field: A new field with updated properties.
+
         """
         attrs = {k: getattr(self, k) for k in ("data", "wavelength", "z", "spacing", "offset")}
         attrs.update(kwargs)
         return type(self)(**attrs)
 
     def visualize(self, *index: int, **kwargs) -> Any:
-        """Visualizes the field.
+        """Visualize the field.
 
         Args:
             *index (int): Index of the data tensor to visualize.
@@ -303,8 +309,8 @@ class SpatialCoherence(Field):
 
     DATA_MIN_NDIM = 4
     POLARIZATION_DIM = -5
-    propagate = get_coherence_evolution(Field.propagate)  # type: ignore
-    modulate = get_coherence_evolution(Field.modulate)  # type: ignore
+    propagate = get_coherence_evolution(Field.propagate)  # type: ignore[assignment]
+    modulate = get_coherence_evolution(Field.modulate)  # type: ignore[assignment]
 
     def intensity(self) -> Tensor:
         if self.data.shape[-1] != self.data.shape[-3] or self.data.shape[-2] != self.data.shape[-4]:
@@ -332,14 +338,16 @@ class SpatialCoherence(Field):
 
     def inner(self, other: Field) -> Tensor:
         """SpatialCoherence does not support the inner product."""
-        raise TypeError("inner() is not applicable for SpatialCoherence.")
+        msg = "inner() is not applicable for SpatialCoherence."
+        raise TypeError(msg)
 
     def outer(self, other: Field) -> Tensor:
         """SpatialCoherence does not support the outer product."""
-        raise TypeError("outer() is not applicable for SpatialCoherence.")
+        msg = "outer() is not applicable for SpatialCoherence."
+        raise TypeError(msg)
 
     def visualize(self, *index: int, **kwargs) -> Any:
-        """Visualizes the the time-averaged intensity (diagonal of the spatial coherence matrix).
+        """Visualize the the time-averaged intensity (diagonal of the spatial coherence matrix).
 
         Args:
             *index (int): Index of the data tensor to visualize.

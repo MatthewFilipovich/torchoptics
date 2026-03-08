@@ -1,4 +1,4 @@
-"""This module defines the polarized modulator elements."""
+"""Polarized modulator element definitions."""
 
 import torch
 from torch import Tensor
@@ -9,8 +9,7 @@ from .elements import PolarizedModulationElement
 
 
 class PolarizedModulator(PolarizedModulationElement):
-    """
-    Polarized modulator element.
+    """Polarized modulator element.
 
     The polarized modulator is described by a complex polarized modulation profile.
 
@@ -20,6 +19,7 @@ class PolarizedModulator(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     polarized_modulation: Tensor
@@ -40,8 +40,7 @@ class PolarizedModulator(PolarizedModulationElement):
 
 
 class PolarizedPhaseModulator(PolarizedModulationElement):
-    """
-    Polarized phase-only modulator element.
+    """Polarized phase-only modulator element.
 
     The polarized phase modulator is described by a polarized phase profile.
 
@@ -51,6 +50,7 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     phase: Tensor
@@ -71,8 +71,7 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
 
 
 class PolarizedAmplitudeModulator(PolarizedModulationElement):
-    """
-    Polarized amplitude-only modulator element.
+    """Polarized amplitude-only modulator element.
 
     The polarized amplitude modulator is described by an amplitude profile.
 
@@ -82,6 +81,7 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     amplitude: Tensor
@@ -105,5 +105,5 @@ def _validate_tensor(tensor, name):
     validate_tensor_ndim(tensor, name, 4)
     if tensor.shape[:2] != (3, 3):
         raise ValueError(
-            f"Expected first two dimensions of {name} to have shape (3, 3), but got {tensor.shape[:2]}"
+            f"Expected first two dimensions of {name} to have shape (3, 3), but got {tensor.shape[:2]}",
         )
