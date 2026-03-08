@@ -1,7 +1,6 @@
 """Detector elements."""
 
-from typing import Any
-
+from matplotlib.figure import Figure
 from torch import Tensor
 from torch.nn.functional import linear
 
@@ -88,6 +87,7 @@ class LinearDetector(Element):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the LinearDetector."""
         validate_tensor_ndim(weight, "weight", 3)
         super().__init__(weight.shape[1:], z, spacing, offset)
         self.register_optics_property("weight", weight)
@@ -106,7 +106,7 @@ class LinearDetector(Element):
         intensity_flat, weight_flat = field.intensity().flatten(-2), self.weight.flatten(-2)
         return linear(intensity_flat, weight_flat) * self.cell_area()
 
-    def visualize(self, *index: int, **kwargs) -> Any:
+    def visualize(self, *index: int, **kwargs) -> Figure | None:
         """Visualize the detector output or the weight matrix.
 
         Args:

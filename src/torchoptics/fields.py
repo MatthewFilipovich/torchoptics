@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import torch
+from matplotlib.figure import Figure
 from torch import Tensor
 
 from .config import wavelength_or_default
@@ -44,6 +45,7 @@ class Field(PlanarGrid):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the Field."""
         validate_tensor_min_ndim(data, "data", self.DATA_MIN_NDIM)
         super().__init__(data.shape[-2:], z, spacing, offset)
         self.register_optics_property("data", data, is_complex=True)
@@ -155,7 +157,8 @@ class Field(PlanarGrid):
 
         """
         if not isinstance(plane, PlanarGrid):
-            raise TypeError(f"Expected plane to be a PlanarGrid, but got {type(plane).__name__}.")
+            msg = f"Expected plane to be a PlanarGrid, but got {type(plane).__name__}."
+            raise TypeError(msg)
         return self.propagate(
             plane.shape,
             plane.z,
@@ -236,10 +239,11 @@ class Field(PlanarGrid):
 
         """
         if not self.is_same_geometry(other):
-            raise ValueError(
+            msg = (
                 "Fields must have the same geometry, but got geometries:"
-                f"\n{self.geometry_str()}\n{other.geometry_str()}",
+                f"\n{self.geometry_str()}\n{other.geometry_str()}"
             )
+            raise ValueError(msg)
         return inner2d(self.data, other.data) * self.cell_area()
 
     def outer(self, other: Field) -> Tensor:
@@ -253,10 +257,11 @@ class Field(PlanarGrid):
 
         """
         if not self.is_same_geometry(other):
-            raise ValueError(
+            msg = (
                 "Fields must have the same geometry, but got geometries:"
-                f"\n{self.geometry_str()}\n{other.geometry_str()}",
+                f"\n{self.geometry_str()}\n{other.geometry_str()}"
             )
+            raise ValueError(msg)
         return outer2d(self.data, other.data) * self.cell_area()
 
     def copy(self, **kwargs) -> Field:
@@ -273,7 +278,7 @@ class Field(PlanarGrid):
         attrs.update(kwargs)
         return type(self)(**attrs)
 
-    def visualize(self, *index: int, **kwargs) -> Any:
+    def visualize(self, *index: int, **kwargs) -> Figure | None:
         """Visualize the field.
 
         Args:
@@ -287,10 +292,11 @@ class Field(PlanarGrid):
 
     def _validate_polarization_dim(self) -> None:
         if self.data.ndim < abs(self.POLARIZATION_DIM) or self.data.shape[self.POLARIZATION_DIM] != 3:
-            raise ValueError(
+            msg = (
                 f"Expected data tensor to have polarization dimension of size 3 at "
-                f"dim={self.POLARIZATION_DIM}, but data has shape {self.data.shape}.",
+                f"dim={self.POLARIZATION_DIM}, but data has shape {self.data.shape}."
             )
+            raise ValueError(msg)
 
 
 class SpatialCoherence(Field):
@@ -313,25 +319,29 @@ class SpatialCoherence(Field):
     modulate = get_coherence_evolution(Field.modulate)  # type: ignore[assignment]
 
     def intensity(self) -> Tensor:
+        """Return the intensity of the spatial coherence."""
         if self.data.shape[-1] != self.data.shape[-3] or self.data.shape[-2] != self.data.shape[-4]:
             shape_str = ", ".join(str(dim) for dim in self.data.shape)
-            raise ValueError(f"Expected data tensor to have shape (..., H, W, H, W), but got ({shape_str}).")
+            msg = f"Expected data tensor to have shape (..., H, W, H, W), but got ({shape_str})."
+            raise ValueError(msg)
 
         data_flattened = self.data.flatten(-4, -3).flatten(-2, -1)
         intensity = torch.diagonal(data_flattened, dim1=-2, dim2=-1).unflatten(-1, self.shape)
         max_real = intensity.real.abs().max()
         atol = max(max_real.item() * 1e-5, 1e-7)
         if not torch.allclose(intensity.imag, torch.zeros_like(intensity.imag), atol=atol):
-            raise ValueError(
+            msg = (
                 "Spatial coherence diagonal values are expected to be real, but significant imaginary "
                 "components were found.\n"
                 f"Max absolute real part: {intensity.real.abs().max().item():.4e}\n"
-                f"Max absolute imaginary part: {intensity.imag.abs().max().item():.4e}\n",
+                f"Max absolute imaginary part: {intensity.imag.abs().max().item():.4e}\n"
             )
+            raise ValueError(msg)
 
         return intensity.real
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
+        """Normalize the spatial coherence to a given power."""
         ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None, None, None]), 0)
         normalized_data = self.data * ratio
         return self.copy(data=normalized_data)
@@ -346,7 +356,7 @@ class SpatialCoherence(Field):
         msg = "outer() is not applicable for SpatialCoherence."
         raise TypeError(msg)
 
-    def visualize(self, *index: int, **kwargs) -> Any:
+    def visualize(self, *index: int, **kwargs) -> Figure | None:
         """Visualize the the time-averaged intensity (diagonal of the spatial coherence matrix).
 
         Args:

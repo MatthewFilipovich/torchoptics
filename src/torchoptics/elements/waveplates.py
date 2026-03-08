@@ -52,11 +52,13 @@ class Waveplate(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the Waveplate."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("phi", phi, is_scalar=True)
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = torch.cos(self.theta) ** 2 + torch.exp(1j * self.phi) * torch.sin(self.theta) ** 2
         tensor[0, 1] = (1 - torch.exp(1j * self.phi)) * torch.cos(self.theta) * torch.sin(self.theta)
@@ -102,10 +104,12 @@ class QuarterWaveplate(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the QuarterWaveplate."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = torch.cos(self.theta) ** 2 + 1j * torch.sin(self.theta) ** 2
         tensor[0, 1] = (1 - 1j) * torch.cos(self.theta) * torch.sin(self.theta)
@@ -151,10 +155,12 @@ class HalfWaveplate(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the HalfWaveplate."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = torch.cos(self.theta) ** 2 - torch.sin(self.theta) ** 2
         tensor[0, 1] = 2 * torch.cos(self.theta) * torch.sin(self.theta)

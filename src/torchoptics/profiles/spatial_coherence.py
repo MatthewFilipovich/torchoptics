@@ -96,12 +96,12 @@ def gaussian_schell_model(
 
     """
 
-    def coherence_func(dx, dy):
+    def coherence_func(dx: Tensor, dy: Tensor) -> Tensor:
         if coherence_width == 0:  # Return 1 only at (x, y) = (0, 0), and 0 elsewhere
             return (dx == 0) * (dy == 0)
         return torch.exp(-(dx**2 + dy**2) / (2 * coherence_width**2))
 
-    def intensity_func(x, y):
+    def intensity_func(x: Tensor, y: Tensor) -> Tensor:
         return 2 / (torch.pi * waist_radius**2) * torch.exp(-(2 * (x**2 + y**2)) / waist_radius**2)
 
     # Use the general Schell model to compute the coherence profile

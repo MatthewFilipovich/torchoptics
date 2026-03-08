@@ -34,6 +34,7 @@ class OpticsModule(Module):
     _initialized = False
 
     def __init__(self) -> None:
+        """Initialize the OpticsModule."""
         super().__init__()
         self._optics_property_configs: dict[str, dict] = {}
         self._initialized = True
@@ -60,13 +61,8 @@ class OpticsModule(Module):
         Args:
             name (str): Name of the optics property.
             value (Any): Initial value of the property.
-            is_scalar (bool): Whether the property tensor is a scalar. Default: `False`.
-            is_vector2 (bool): Whether the property tensor is a 2D vector. Default: `False`.
-            is_complex (bool): Whether the property tensor is complex. Default: `False`.
-            is_positive (bool): Whether to validate that the property tensor contains only positive
-                values. Default: `False`.
-            is_non_negative (bool): Whether to validate that the property tensor contains only
-                non-negative. Default: `False`.
+            **kwargs: Additional keyword arguments for tensor initialization
+                (e.g., is_scalar, is_vector2, is_complex, is_positive, is_non_negative).
 
         """
         if not self._initialized:
@@ -96,10 +92,12 @@ class OpticsModule(Module):
             updated_tensor = initialize_tensor(name, value, **self._optics_property_configs[name])
             attr_tensor = getattr(self, name)
             if updated_tensor.shape != attr_tensor.shape:
-                raise ValueError(
+                msg = (
                     f"Cannot set {name} with shape {updated_tensor.shape}. "
-                    f"Expected shape: {attr_tensor.shape}.",
+                    f"Expected shape: {attr_tensor.shape}."
                 )
+                raise ValueError(msg)
             attr_tensor.copy_(updated_tensor)
         else:
-            raise AttributeError(f"Cannot set unknown optics property: {name}.")
+            msg = f"Cannot set unknown optics property: {name}."
+            raise AttributeError(msg)

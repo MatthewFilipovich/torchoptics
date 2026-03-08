@@ -1,8 +1,8 @@
 """Base classes for the optical elements."""
 
 from abc import ABC, abstractmethod
-from typing import Any
 
+from matplotlib.figure import Figure
 from torch import Tensor
 
 from ..fields import Field
@@ -32,18 +32,21 @@ class Element(PlanarGrid):
 
         """
         if not isinstance(field, Field):
-            raise TypeError(f"Expected field to be a Field, but got {type(field).__name__}.")
+            msg = f"Expected field to be a Field, but got {type(field).__name__}."
+            raise TypeError(msg)
 
         if not self.is_same_geometry(field):
-            raise ValueError(
+            msg = (
                 f"Expected field to have same geometry as element:"
                 f"\nField geometry:   {field.geometry_str()}"
-                f"\nElement geometry: {self.geometry_str()}",
+                f"\nElement geometry: {self.geometry_str()}"
             )
+            raise ValueError(msg)
 
-    def visualize(self, **kwargs) -> Any:
+    def visualize(self, **kwargs) -> Figure | None:
         """Visualize the Element."""
-        raise NotImplementedError(f"Visualization is not implemented for {self.__class__.__name__}.")
+        msg = f"Visualization is not implemented for {self.__class__.__name__}."
+        raise NotImplementedError(msg)
 
 
 class ModulationElement(Element, ABC):
@@ -73,7 +76,7 @@ class ModulationElement(Element, ABC):
         self.validate_field(field)
         return field.modulate(self.modulation_profile())
 
-    def visualize(self, **kwargs) -> Any:
+    def visualize(self, **kwargs) -> Figure | None:
         """Visualize the modulation profile.
 
         Args:
@@ -115,10 +118,11 @@ class PolychromaticModulationElement(Element):
         self.validate_field(field)
         return field.modulate(self.modulation_profile(field.wavelength))
 
-    def visualize(self, wavelength: Scalar | None = None, **kwargs) -> Any:
+    def visualize(self, wavelength: Scalar | None = None, **kwargs) -> Figure | None:
         """Visualize the modulation profile.
 
         Args:
+            wavelength (Scalar | None): Wavelength for the modulation profile.
             **kwargs: Additional keyword arguments for visualization.
 
         """
@@ -157,7 +161,7 @@ class PolarizedModulationElement(Element):
         self.validate_field(field)
         return field.polarized_modulate(self.polarized_modulation_profile())
 
-    def visualize(self, *index: int, **kwargs) -> Any:
+    def visualize(self, *index: int, **kwargs) -> Figure | None:
         """Visualize the polarized modulation profile.
 
         Args:

@@ -3,6 +3,7 @@
 from math import cos, sin
 
 import torch
+from torch import Tensor
 
 from ..config import wavelength_or_default
 from ..types import Scalar, Vector2
@@ -16,7 +17,7 @@ def lens_phase(
     wavelength: Scalar | None = None,
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
-):
+) -> Tensor:
     r"""Generate a quadratic phase lens profile, which can be used to represent a thin lens.
 
     The quadratic phase profile is defined by the following equation:
@@ -49,7 +50,7 @@ def cylindrical_lens_phase(
     wavelength: Scalar | None = None,
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
-):
+) -> Tensor:
     r"""Generate a cylindrical lens profile with a quadratic phase in a specified direction.
 
     The quadratic phase profile is:

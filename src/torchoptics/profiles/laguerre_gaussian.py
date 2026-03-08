@@ -1,6 +1,5 @@
 """Laguerre-Gaussian profile generation."""
 
-# ruff: noqa: E741
 import math
 from collections.abc import Callable
 
@@ -15,7 +14,7 @@ from .hermite_gaussian import calculate_beam_properties
 def laguerre_gaussian(
     shape: Vector2,
     p: Int,
-    l: Int,
+    l: Int,  # noqa: E741
     waist_radius: Scalar,
     wavelength: Scalar | None = None,
     waist_z: Scalar = 0,
@@ -81,7 +80,7 @@ def laguerre_gaussian(
 
     """
     p = initialize_tensor("p", p, is_scalar=True, is_integer=True, is_non_negative=True)
-    l = initialize_tensor("l", l, is_scalar=True, is_integer=True)
+    l = initialize_tensor("l", l, is_scalar=True, is_integer=True)  # noqa: E741
     waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)
 
     x, y, phase_shift, wz, waist_ratio = calculate_beam_properties(
@@ -112,10 +111,10 @@ def laguerre_gaussian(
     )
 
 
-def laguerre_poly(p: Int, l: Int) -> Callable[[torch.Tensor], torch.Tensor]:
+def laguerre_poly(p: Int, l: Int) -> Callable[[torch.Tensor], torch.Tensor]:  # noqa: E741
     """Compute the generalized Laguerre polynomial L_p^l(x)."""
 
-    def poly(x):
+    def poly(x: Tensor) -> Tensor:
         if p == 0:
             return torch.ones_like(x)
         if p == 1:

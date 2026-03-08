@@ -29,6 +29,8 @@ def asm_propagation(
     Args:
         field (Field): Input field.
         propagation_plane (PlanarGrid): Plane to which the field is propagated.
+        propagation_method (str): Propagation method to use.
+        asm_pad (Vector2 | None): Padding size for ASM propagation.
 
     Returns:
         Field: Output field after propagation.
@@ -92,8 +94,9 @@ def validate_bounds(propagated_field: Field, target_plane: PlanarGrid, asm_pad: 
         formatted_propagated_bounds = [f"{val:.2e}" for val in propagated_field_bounds]
         formatted_target_offset = [f"{val:.2e}" for val in target_plane.offset]
 
-        raise ValueError(
+        msg = (
             f"Propagation plane bounds {formatted_target_bounds} are outside padded field bounds "
             f"{formatted_propagated_bounds}.\nIncrease asm_pad ({asm_pad}) "
-            f"or adjust propagation plane offset ({formatted_target_offset}).",
+            f"or adjust propagation plane offset ({formatted_target_offset})."
         )
+        raise ValueError(msg)

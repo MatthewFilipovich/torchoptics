@@ -1,7 +1,7 @@
 """Hermite-Gaussian and Gaussian profile generation functions."""
 
 import math
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 
 import torch
 from torch import Tensor
@@ -189,7 +189,16 @@ def hermite_poly(n: Int) -> Callable[[Tensor], Tensor]:
     return poly
 
 
-def calculate_beam_properties(mode_nums, waist_radius, shape, wavelength, waist_z, spacing, offset, is_hg):
+def calculate_beam_properties(
+    mode_nums: Sequence[Int],
+    waist_radius: Tensor,
+    shape: Vector2,
+    wavelength: Scalar | None,
+    waist_z: Scalar,
+    spacing: Vector2 | None,
+    offset: Vector2 | None,
+    is_hg: bool,
+) -> tuple[Tensor, Tensor, Tensor, Tensor, Tensor]:
     """Calculate the properties of the beam."""
     wavelength = get_wavelength(wavelength, waist_z)
     x, y, z = calculate_coordinates(shape, waist_z, spacing, offset)
@@ -200,31 +209,43 @@ def calculate_beam_properties(mode_nums, waist_radius, shape, wavelength, waist_
     return x, y, phase_shift, wz, waist_ratio
 
 
-def get_wavelength(wavelength, waist_z):
+def get_wavelength(wavelength: Scalar | None, waist_z: Scalar) -> Scalar | None:
     """Get the wavelength of the beam."""
     if waist_z == 0:  # Wavelength does not matter at the waist (can be None)
         return wavelength
     return wavelength_or_default(wavelength)
 
 
-def calculate_coordinates(shape, waist_z, spacing, offset):
+def calculate_coordinates(
+    shape: Vector2, waist_z: Scalar, spacing: Vector2 | None, offset: Vector2 | None
+) -> tuple[Tensor, Tensor, Tensor]:
     """Calculate the coordinates of the beam."""
     x, y = profile_meshgrid(shape, spacing, offset)
     z = initialize_tensor("waist_z", waist_z, is_scalar=True)
     return x, y, z
 
 
-def calculate_z_div_rayleigh_range(z, waist_radius, wavelength):
+def calculate_z_div_rayleigh_range(z: Tensor, waist_radius: Tensor, wavelength: Scalar | None) -> Tensor:
     """Calculate z divided by the Rayleigh range."""
     if z == 0:
-        return 0
+        return torch.tensor(0, dtype=waist_radius.dtype)
+    assert wavelength is not None
     return z / (torch.pi * waist_radius**2 / wavelength)
 
 
-def calculate_phase_shift(mode_nums, wavelength, x, y, z, z_div_rayleigh_range, is_hg):
+def calculate_phase_shift(
+    mode_nums: Sequence[Int],
+    wavelength: Scalar | None,
+    x: Tensor,
+    y: Tensor,
+    z: Tensor,
+    z_div_rayleigh_range: Tensor,
+    is_hg: bool,
+) -> Tensor:
     """Calculate the phase shift of the beam."""
     if z == 0:
         return torch.tensor(0, dtype=torch.get_default_dtype())
+    assert wavelength is not None
     radius_of_curvature = z * (1 + z_div_rayleigh_range ** (-2))
     wave_number = 2.0 * torch.pi / wavelength
     radial_distance = torch.sqrt(x**2 + y**2)
@@ -237,11 +258,11 @@ def calculate_phase_shift(mode_nums, wavelength, x, y, z, z_div_rayleigh_range, 
     return phase_shift
 
 
-def calculate_wz(waist_radius, z_div_rayleigh_range):
+def calculate_wz(waist_radius: Tensor, z_div_rayleigh_range: Tensor) -> Tensor:
     """Calculate the beam waist radius."""
     return waist_radius * (1 + z_div_rayleigh_range**2) ** 0.5
 
 
-def calculate_waist_ratio(z_div_rayleigh_range):
+def calculate_waist_ratio(z_div_rayleigh_range: Tensor) -> Tensor:
     """Calculate the ratio of the beam waist radius to the beam waist radius at the waist."""
     return 1 / (1 + z_div_rayleigh_range**2) ** 0.5

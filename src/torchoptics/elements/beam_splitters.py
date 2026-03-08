@@ -57,6 +57,7 @@ class BeamSplitter(Element):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the BeamSplitter."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)
         self.register_optics_property("phi_0", phi_0, is_scalar=True)

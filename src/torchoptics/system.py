@@ -47,14 +47,17 @@ class System(Module):
     """
 
     def __init__(self, *elements: Element) -> None:
+        """Initialize the System."""
         super().__init__()
         for i, element in enumerate(elements):
             if not isinstance(element, Element):
-                raise TypeError(f"Expected element {i} to be an Element, but got {type(element).__name__}.")
+                msg = f"Expected element {i} to be an Element, but got {type(element).__name__}."
+                raise TypeError(msg)
             self.add_module(str(i), element)
         self._elements = tuple(elements)
 
     def __iter__(self) -> Iterator[Element]:
+        """Iterate over the elements."""
         return iter(self.elements)
 
     @overload
@@ -64,11 +67,13 @@ class System(Module):
     def __getitem__(self, index: slice) -> System: ...
 
     def __getitem__(self, index: int | slice) -> Element | System:
+        """Get an element or slice of elements."""
         if isinstance(index, slice):
             return self.__class__(*self.elements[index])
         return self.elements[index]
 
     def __len__(self) -> int:
+        """Return the number of elements."""
         return len(self.elements)
 
     @property
@@ -233,11 +238,11 @@ class System(Module):
 
         if last_element:
             if not isinstance(last_element, Element):
-                raise TypeError(
-                    f"Expected last_element to be an Element, but got {type(last_element).__name__}.",
-                )
+                msg = f"Expected last_element to be an Element, but got {type(last_element).__name__}."
+                raise TypeError(msg)
             if last_element.z < field.z:
-                raise ValueError(f"Field z ({field.z}) is greater than last element z ({last_element.z}).")
+                msg = f"Field z ({field.z}) is greater than last element z ({last_element.z})."
+                raise ValueError(msg)
 
             elements_in_path = [element for element in elements_in_path if element.z <= last_element.z]
 
@@ -271,9 +276,10 @@ class System(Module):
             field = element(field)
 
             if not isinstance(field, Field) and i < len(elements) - 1:
-                raise TypeError(
+                msg = (
                     f"Expected all elements in the field path, except for the last, to return a Field. "
-                    f"Element at index {i} ({type(element).__name__}) returned {type(field).__name__}.",
+                    f"Element at index {i} ({type(element).__name__}) returned {type(field).__name__}."
                 )
+                raise TypeError(msg)
 
         return field

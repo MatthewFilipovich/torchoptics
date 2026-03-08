@@ -42,10 +42,12 @@ class LinearPolarizer(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the LinearPolarizer."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = torch.cos(self.theta) ** 2
         tensor[0, 1] = torch.cos(self.theta) * torch.sin(self.theta)
@@ -78,6 +80,7 @@ class LeftCircularPolarizer(PolarizedModulationElement):
     """
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = 0.5
         tensor[0, 1] = -0.5j  # type: ignore[assignment]
@@ -110,6 +113,7 @@ class RightCircularPolarizer(PolarizedModulationElement):
     """
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = 0.5
         tensor[0, 1] = 0.5j  # type: ignore[assignment]

@@ -41,7 +41,8 @@ def initialize_tensor(
 
     value_dtype = torch.as_tensor(value).dtype
     if is_integer and value_dtype not in (torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8):
-        raise ValueError(f"Expected {name} to contain integer values, but found non-integer values.")
+        msg = f"Expected {name} to contain integer values, but found non-integer values."
+        raise ValueError(msg)
 
     if is_integer:
         dtype = torch.int64
@@ -53,22 +54,24 @@ def initialize_tensor(
 
     if is_scalar:
         if tensor.numel() != 1:
-            raise ValueError(f"Expected {name} to be a scalar, but got a tensor with shape {tensor.shape}.")
+            msg = f"Expected {name} to be a scalar, but got a tensor with shape {tensor.shape}."
+            raise ValueError(msg)
         tensor = tensor.squeeze()
 
     if is_vector2:
         if tensor.numel() == 1:  # Convert scalar to 2D vector
             tensor = torch.full((2,), tensor.item())
         if tensor.numel() != 2:
-            raise ValueError(
-                f"Expected {name} to be a 2D vector, but got a tensor with shape {tensor.shape}.",
-            )
+            msg = f"Expected {name} to be a 2D vector, but got a tensor with shape {tensor.shape}."
+            raise ValueError(msg)
         tensor = tensor.squeeze()
 
     if is_positive and not torch.all(tensor > 0):
-        raise ValueError(f"Expected {name} to contain positive values, but found non-positive values.")
+        msg = f"Expected {name} to contain positive values, but found non-positive values."
+        raise ValueError(msg)
     if is_non_negative and not torch.all(tensor >= 0):
-        raise ValueError(f"Expected {name} to contain non-negative values, but found negative values.")
+        msg = f"Expected {name} to contain non-negative values, but found negative values."
+        raise ValueError(msg)
 
     return tensor
 
@@ -90,14 +93,15 @@ def validate_tensor_ndim(tensor: Tensor, name: str, ndim: int) -> None:
     Args:
         tensor (Tensor): The PyTorch tensor to validate.
         name (str): The name of the tensor, used for error messages.
-        shape (tuple): The expected shape of the tensor. Use `-1` as a wildcard
-                       to allow any size in that dimension.
+        ndim (int): The expected number of dimensions.
 
     """
     if not isinstance(tensor, Tensor):
-        raise TypeError(f"Expected '{name}' to be a Tensor, but got {type(tensor).__name__}")
+        msg = f"Expected '{name}' to be a Tensor, but got {type(tensor).__name__}"
+        raise TypeError(msg)
     if tensor.ndim != ndim:
-        raise ValueError(f"Expected '{name}' to be a {ndim}D tensor, but got {tensor.ndim}D")
+        msg = f"Expected '{name}' to be a {ndim}D tensor, but got {tensor.ndim}D"
+        raise ValueError(msg)
 
 
 def validate_tensor_min_ndim(tensor: Tensor, name: str, min_ndim: int) -> None:
@@ -114,7 +118,9 @@ def validate_tensor_min_ndim(tensor: Tensor, name: str, min_ndim: int) -> None:
 
     """
     if not isinstance(tensor, Tensor):
-        raise TypeError(f"Expected '{name}' to be a Tensor, but got {type(tensor).__name__}.")
+        msg = f"Expected '{name}' to be a Tensor, but got {type(tensor).__name__}."
+        raise TypeError(msg)
 
     if tensor.ndim < min_ndim:
-        raise ValueError(f"Expected '{name}' to have at least {min_ndim} dimensions, but got {tensor.ndim}.")
+        msg = f"Expected '{name}' to have at least {min_ndim} dimensions, but got {tensor.ndim}."
+        raise ValueError(msg)

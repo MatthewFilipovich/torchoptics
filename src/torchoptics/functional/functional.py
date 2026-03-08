@@ -10,14 +10,15 @@ from torch.fft import fft2, fftfreq, ifft2
 from torch.nn.functional import grid_sample
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
 
     from torchoptics.types import Int
 
+    from ..fields import Field
     from ..planar_grid import PlanarGrid
 
 
-def _calculate_centroid(intensity, meshgrid):
+def _calculate_centroid(intensity: Tensor, meshgrid: tuple[Tensor, Tensor]) -> tuple[Tensor, Tensor, Tensor]:
     meshgrid_stack = torch.stack(meshgrid)
     intensity = intensity.unsqueeze(-3)
     normalized_intensity = intensity / intensity.sum((-2, -1), keepdim=True)
@@ -76,7 +77,7 @@ def fftfreq_grad(n: Int, d: Tensor) -> Tensor:
     return fftfreq(n, d=1.0, dtype=d.dtype, device=d.device) / d
 
 
-def get_coherence_evolution(evolution_func):
+def get_coherence_evolution(evolution_func: Callable[..., Field]) -> Callable[..., Field]:
     r"""Construct the evolution function for spatial coherence given an evolution operator :math:`U`.
 
     The input function applies the evolution :math:`U` to a :class:`~torchoptics.fields.Field` instance:
@@ -96,11 +97,11 @@ def get_coherence_evolution(evolution_func):
         \Gamma \to \left( U (U \Gamma)^\dagger \right)^\dagger.
     """
 
-    def _adjoint(data):
+    def _adjoint(data: Tensor) -> Tensor:
         """Compute the adjoint by conjugate-transposing across specific dimensions."""
         return data.conj().transpose(-1, -3).transpose(-2, -4)
 
-    def wrapper(field, *args, **kwargs):
+    def wrapper(field: Field, *args, **kwargs) -> Field:
         evolved = evolution_func(field, *args, **kwargs)
         evolved_conj = evolution_func(field.copy(data=_adjoint(evolved.data)), *args, **kwargs)
         return evolved_conj.copy(data=_adjoint(evolved_conj.data))

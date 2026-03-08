@@ -20,6 +20,7 @@ def dim_propagation(field: Field, propagation_plane: PlanarGrid, propagation_met
     Args:
         field (Field): Input field.
         propagation_plane (PlanarGrid): Plane to which the field is propagated.
+        propagation_method (str): Propagation method to use.
 
     Returns:
         Field: Output field after propagation.

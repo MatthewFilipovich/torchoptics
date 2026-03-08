@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import torch
+from matplotlib.figure import Figure
 from torch import Tensor
 
 from .config import spacing_or_default
@@ -43,6 +44,7 @@ class PlanarGrid(OpticsModule):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the PlanarGrid."""
         super().__init__()
         self._shape = initialize_shape(shape)
         self.register_optics_property("z", z, is_scalar=True)
@@ -79,7 +81,7 @@ class PlanarGrid(OpticsModule):
         """Return the area between adjacent grid points."""
         return self.spacing[0] * self.spacing[1]
 
-    def length(self, use_grid_points=False) -> Tensor:
+    def length(self, use_grid_points: bool = False) -> Tensor:
         """Return the length of the plane along the planar dimensions.
 
         Args:
@@ -91,7 +93,7 @@ class PlanarGrid(OpticsModule):
         shape_tensor = torch.tensor(self.shape, dtype=self.spacing.dtype, device=self.spacing.device)
         return self.spacing * (shape_tensor - 1) if use_grid_points else self.spacing * shape_tensor
 
-    def bounds(self, use_grid_points=False) -> Tensor:
+    def bounds(self, use_grid_points: bool = False) -> Tensor:
         """Return the position of the plane boundaries along the planar dimensions.
 
         Args:
@@ -134,7 +136,13 @@ class PlanarGrid(OpticsModule):
         offset_str = f"({self.offset[0].item():.2e}, {self.offset[1].item():.2e})"
         return f"shape={shape_str}, z={self.z.item():.2e}, spacing={spacing_str}, offset={offset_str}"
 
-    def _visualize(self, data: Tensor, index: tuple = (), show_bounds: bool = False, **kwargs) -> Any:
+    def _visualize(
+        self,
+        data: Tensor,
+        index: tuple = (),
+        show_bounds: bool = False,
+        **kwargs,
+    ) -> Figure | None:
         """Visualize the data tensor."""
         if show_bounds:
             bounds = self.bounds().detach().cpu()

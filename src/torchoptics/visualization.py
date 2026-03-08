@@ -1,12 +1,14 @@
 """Visualization utilities for real or complex-valued tensors using matplotlib."""
 
 from collections.abc import Sequence
-from typing import Any, cast
+from typing import cast
 
 import matplotlib.pyplot as plt
 import torch
 from matplotlib.animation import FuncAnimation
+from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from matplotlib.image import AxesImage
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from torch import Tensor
 
@@ -41,7 +43,8 @@ def visualize_tensor(
 
     """
     if tensor.ndim < 2 or not all(s == 1 for s in tensor.shape[:-2]):
-        raise ValueError(f"Expected tensor to be 2D, but got shape {tensor.shape}.")
+        msg = f"Expected tensor to be 2D, but got shape {tensor.shape}."
+        raise ValueError(msg)
 
     tensor = tensor.detach().cpu().view(tensor.shape[-2], tensor.shape[-1])
 
@@ -111,7 +114,7 @@ def animate_tensor(
     symbol: str | None = None,
     show: bool = True,
     func_anim_kwargs: dict | None = None,
-    **imshow_kwargs,
+    **imshow_kwargs: object,
 ) -> FuncAnimation:
     """Animate a 3D tensor over time using matplotlib.
 
@@ -134,7 +137,8 @@ def animate_tensor(
 
     """
     if tensor.ndim < 3 or not all(s == 1 for s in tensor.shape[:-3]):
-        raise ValueError(f"Expected tensor to be 3D, but got shape {tensor.shape}.")
+        msg = f"Expected tensor to be 3D, but got shape {tensor.shape}."
+        raise ValueError(msg)
 
     tensor = tensor.detach().cpu().view(tensor.shape[-3], tensor.shape[-2], tensor.shape[-1])
     num_frames = tensor.shape[0]
@@ -143,7 +147,8 @@ def animate_tensor(
     titles = [title] * num_frames if isinstance(title, str) or title is None else list(title)
 
     if len(titles) != num_frames:
-        raise ValueError(f"`title` must have length {num_frames}, but got {len(titles)}.")
+        msg = f"`title` must have length {num_frames}, but got {len(titles)}."
+        raise ValueError(msg)
 
     fig = visualize_tensor(
         tensor[0],
@@ -183,7 +188,7 @@ def animate_tensor(
 
 
 def create_image_subplot(
-    ax: Any,
+    ax: Axes,
     tensor: Tensor,
     xlabel: str | None = None,
     ylabel: str | None = None,
@@ -191,7 +196,7 @@ def create_image_subplot(
     cbar_ticks: Sequence[float] | None = None,
     cbar_ticklabels: Sequence[str] | None = None,
     **imshow_kwargs,
-) -> Any:
+) -> AxesImage:
     """Create an image subplot with colorbar, axis labels, and optional title.
 
     Args:
@@ -219,8 +224,8 @@ def create_image_subplot(
         colorbar.set_ticks(cbar_ticks)
     if cbar_ticklabels is not None:
         colorbar.set_ticklabels(cbar_ticklabels)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_title(ax_title)
+    ax.set_xlabel(xlabel or "")
+    ax.set_ylabel(ylabel or "")
+    ax.set_title(ax_title or "")
 
     return im

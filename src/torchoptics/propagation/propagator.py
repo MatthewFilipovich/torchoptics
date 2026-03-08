@@ -46,6 +46,9 @@ def propagator(
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+        propagation_method (str): Propagation method to use.
+        asm_pad (Vector2 | None): Padding size for ASM propagation.
+        interpolation_mode (str): Interpolation mode for resampling.
 
     Returns:
         Field: Output field after propagating to the plane.
@@ -123,7 +126,7 @@ def get_propagation_plane(field: Field, output_plane: PlanarGrid) -> PlanarGrid:
     return create_planar_grid(propagation_shape, output_plane.z, field.spacing, output_plane.offset)
 
 
-def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str):
+def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str) -> bool:
     """Return whether propagation using ASM should be used.
 
     Returns `True` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_RS"`.
@@ -142,7 +145,7 @@ def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, prop
     # Auto: Determine propagation method based on critical propagation distance
     critical_z = calculate_critical_propagation_distance(field, propagation_plane)
     z = (propagation_plane.z - field.z).abs()
-    return torch.any(z < critical_z)
+    return bool(torch.any(z < critical_z))
 
 
 def calculate_critical_propagation_distance(field: Field, propagation_plane: PlanarGrid) -> torch.Tensor:
@@ -171,22 +174,22 @@ def calculate_critical_propagation_distance(field: Field, propagation_plane: Pla
 def validate_propagation_method(value: str) -> None:
     """Validate the propagation method."""
     if not isinstance(value, str):
-        raise TypeError(f"Expected propagation_method to be a string, but got {type(value).__name__}.")
+        msg = f"Expected propagation_method to be a string, but got {type(value).__name__}."
+        raise TypeError(msg)
 
     if value.upper() not in VALID_PROPAGATION_METHODS:
-        raise ValueError(
-            f"Expected propagation_method to be one of {VALID_PROPAGATION_METHODS}, but got {value}.",
-        )
+        msg = f"Expected propagation_method to be one of {VALID_PROPAGATION_METHODS}, but got {value}."
+        raise ValueError(msg)
 
 
 def validate_interpolation_mode(value: str) -> None:
     """Validate the interpolation mode."""
     if not isinstance(value, str):
-        raise TypeError(f"Expected interpolation_mode to be a string, but got {type(value).__name__}.")
+        msg = f"Expected interpolation_mode to be a string, but got {type(value).__name__}."
+        raise TypeError(msg)
     if value.lower() not in VALID_INTERPOLATION_MODES:
-        raise ValueError(
-            f"Expected interpolation_mode to be one of {VALID_INTERPOLATION_MODES}, but got {value}.",
-        )
+        msg = f"Expected interpolation_mode to be one of {VALID_INTERPOLATION_MODES}, but got {value}."
+        raise ValueError(msg)
 
 
 def create_planar_grid(
