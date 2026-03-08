@@ -12,7 +12,7 @@ from .functional import calculate_centroid, calculate_std, get_coherence_evoluti
 from .planar_grid import PlanarGrid
 from .propagation import propagator
 from .types import Scalar, Vector2
-from .utils import copy, validate_tensor_min_ndim
+from .utils import validate_tensor_min_ndim
 
 
 class Field(PlanarGrid):
@@ -146,7 +146,7 @@ class Field(PlanarGrid):
 
         """
         modulated_data = self.data * modulation_profile
-        return copy(self, data=modulated_data)
+        return self.copy(data=modulated_data)
 
     def polarized_modulate(self, polarized_modulation_profile: Tensor) -> Field:
         """Modulates the field by a polarized modulation profile.
@@ -162,7 +162,7 @@ class Field(PlanarGrid):
         modulated_data = (self.data.unsqueeze(self.POLARIZATION_DIM - 1) * polarized_modulation_profile).sum(
             self.POLARIZATION_DIM
         )
-        return copy(self, data=modulated_data)
+        return self.copy(data=modulated_data)
 
     def polarized_split(self) -> tuple[Field, Field, Field]:
         """Splits the field into three polarized fields.
@@ -172,10 +172,12 @@ class Field(PlanarGrid):
 
         """
         self._validate_polarization_dim()
-        fields = tuple(copy(self, data=torch.zeros_like(self.data)) for _ in range(3))
-        for i in range(3):
-            fields[i].data.select(self.POLARIZATION_DIM, i).copy_(self.data.select(self.POLARIZATION_DIM, i))
-        return fields
+        f0 = self.copy(data=torch.zeros_like(self.data))
+        f1 = self.copy(data=torch.zeros_like(self.data))
+        f2 = self.copy(data=torch.zeros_like(self.data))
+        for i, f in enumerate((f0, f1, f2)):
+            f.data.select(self.POLARIZATION_DIM, i).copy_(self.data.select(self.POLARIZATION_DIM, i))
+        return f0, f1, f2
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         """Normalizes the field to a specified power.
@@ -190,7 +192,7 @@ class Field(PlanarGrid):
         ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None]), 0)
         normalized_data = self.data * ratio.sqrt()
 
-        return copy(self, data=normalized_data)
+        return self.copy(data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
         """Returns the inner product of the field (last two data dimensions) with another field.
@@ -225,6 +227,19 @@ class Field(PlanarGrid):
                 f"\n{self.geometry_str()}\n{other.geometry_str()}"
             )
         return outer2d(self.data, other.data) * self.cell_area()
+
+    def copy(self, **kwargs) -> Field:
+        """Creates a copy of the field with optionally updated properties.
+
+        Args:
+            **kwargs: Properties to update in the copy.
+
+        Returns:
+            Field: A new field with updated properties.
+        """
+        attrs = {k: getattr(self, k) for k in ("data", "wavelength", "z", "spacing", "offset")}
+        attrs.update(kwargs)
+        return type(self)(**attrs)
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """Visualizes the field.
@@ -287,7 +302,7 @@ class SpatialCoherence(Field):
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None, None, None]), 0)
         normalized_data = self.data * ratio
-        return copy(self, data=normalized_data)
+        return self.copy(data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
         """SpatialCoherence does not support the inner product."""

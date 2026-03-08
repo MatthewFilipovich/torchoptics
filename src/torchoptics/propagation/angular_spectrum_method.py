@@ -12,7 +12,7 @@ from torch.nn.functional import pad
 from ..functional import fftfreq_grad
 from ..planar_grid import PlanarGrid
 from ..types import Vector2
-from ..utils import copy, initialize_tensor
+from ..utils import initialize_tensor
 
 if TYPE_CHECKING:
     from ..fields import Field
@@ -39,7 +39,7 @@ def asm_propagation(
         field, propagation_distance, asm_pad_factor, propagation_method
     )
     propagated_data = apply_transfer_function(transfer_function, field, asm_pad_factor)
-    propagated_field = copy(field, data=propagated_data, z=propagation_plane.z)
+    propagated_field = field.copy(data=propagated_data, z=propagation_plane.z)
     validate_bounds(propagated_field, propagation_plane, asm_pad_factor)
     return propagated_field
 
