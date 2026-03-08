@@ -9,10 +9,10 @@
 .. toctree::
    :hidden:
 
-   auto_quickstart/quickstart
-   user_guide/index
-   auto_examples/index
-   reference/index
+   quickstart/index
+   user-guide/index
+   examples/index
+   api-reference/index
 
 TorchOptics Documentation
 ==========================
@@ -75,18 +75,8 @@ We welcome contributions! See our `Contributing Guide <https://github.com/Matthe
 Citing TorchOptics
 -------------------
 
-If you use TorchOptics in your research, please cite our `paper <https://arxiv.org/abs/2411.18591>`_:
-
-.. code-block:: bibtex
-   @misc{filipovich2024torchoptics,
-     title={TorchOptics: An open-source Python library for differentiable Fourier optics simulations},
-     author={Matthew J. Filipovich and A. I. Lvovsky},
-     year={2024},
-     eprint={2411.18591},
-     archivePrefix={arXiv},
-     primaryClass={physics.optics},
-     url={https://arxiv.org/abs/2411.18591},
-   }
+If you use TorchOptics in your research, please cite our
+`paper <https://arxiv.org/abs/2411.18591>`_.
 
 License
 -------
