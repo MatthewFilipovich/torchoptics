@@ -1,3 +1,7 @@
+/*
+ *   Copyright (c) 2026 
+ *   All rights reserved.
+ */
 FontAwesome.library.add(
   (faListOldStyle = {
     prefix: "fa-custom",

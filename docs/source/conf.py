@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "TorchOptics"
-copyright = "2024-2025, Matthew Filipovich"
+copyright = "2024-2026, Matthew Filipovich"
 author = "Matthew Filipovich"
 
 # -- General configuration ---------------------------------------------------
@@ -21,12 +21,14 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_gallery.gen_gallery",
     "sphinx_design",
+    "matplotlib.sphinxext.plot_directive",
 ]
 
 autoapi_member_order = "alphabetical"
-autoapi_dirs = ["../../torchoptics"]
+autoapi_dirs = ["../../src/torchoptics"]
 autoapi_type = "python"
 autoapi_add_toctree_entry = False
+autoapi_keep_files = False
 autodoc_typehints = "description"
 autoapi_options = [
     "members",
@@ -41,12 +43,17 @@ intersphinx_mapping = {
 }
 
 sphinx_gallery_conf = {
-    "examples_dirs": ["examples", "quickstart", "user_guide"],
-    "gallery_dirs": ["auto_examples", "auto_quickstart", "auto_user_guide"],
+    "examples_dirs": ["../../examples/"],
+    "gallery_dirs": ["examples"],
     "reference_url": {"torchoptics": None},
     "filename_pattern": "^((?!sphinx_skip).)*$",  # Exclude files with 'sphinx_skip' in the name
     "matplotlib_animations": (True, "jshtml"),
 }
+
+# Matplotlib plot directive configuration
+plot_include_source = True
+plot_html_show_source_link = False
+plot_html_show_formats = False
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -77,7 +84,7 @@ html_theme_options = {
 }
 
 html_static_path = ["_static"]
-html_sidebars = {"auto_quickstart/quickstart": []}  # Disable sidebar for specific pages
+html_sidebars = {"quickstart/index": []}  # Disable sidebar for specific pages
 
 
 # -- Custom configuration ----------------------------------------------------
