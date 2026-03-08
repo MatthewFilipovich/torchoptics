@@ -1,7 +1,7 @@
 """Visualization utilities for real or complex-valued tensors using matplotlib."""
 
 from collections.abc import Sequence
-from typing import Any, Optional, Union, cast
+from typing import Any, cast
 
 import matplotlib.pyplot as plt
 import torch
@@ -13,14 +13,14 @@ from torch import Tensor
 
 def visualize_tensor(
     tensor: Tensor,
-    title: Optional[str] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    symbol: Optional[str] = None,
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    symbol: str | None = None,
     show: bool = True,
     return_fig: bool = False,
     **imshow_kwargs,
-) -> Optional[Figure]:
+) -> Figure | None:
     """
     Visualize a 2D real or complex-valued tensor using matplotlib.
 
@@ -28,17 +28,17 @@ def visualize_tensor(
 
     Args:
         tensor (Tensor): A 2D tensor of shape (H, W).
-        title (str, optional): Title for the figure.
-        xlabel (str, optional): Label for the x-axis.
-        ylabel (str, optional): Label for the y-axis.
-        symbol (str, optional): Symbol used in subplot titles for LaTeX rendering.
-        show (bool, optional): Whether to call `plt.show()`. Defaults to True.
-        return_fig (bool, optional): If True, returns the matplotlib Figure.
+        title (str | None): Title for the figure.
+        xlabel (str | None): Label for the x-axis.
+        ylabel (str | None): Label for the y-axis.
+        symbol (str | None): Symbol used in subplot titles for LaTeX rendering.
+        show (bool): Whether to call `plt.show()`. Defaults to True.
+        return_fig (bool): If True, returns the matplotlib Figure.
         **imshow_kwargs: Additional keyword arguments passed directly to `matplotlib.pyplot.imshow()`, such as
             `cmap`, `vmin`, `vmax`, `interpolation`, etc.
 
     Returns:
-        Optional[plt.Figure]: The matplotlib Figure if `return_fig` is True, else None.
+        plt.Figure | None: The matplotlib Figure if `return_fig` is True, else None.
     """
     if tensor.ndim < 2 or not all(s == 1 for s in tensor.shape[:-2]):
         raise ValueError(f"Expected tensor to be 2D, but got shape {tensor.shape}.")
@@ -105,12 +105,12 @@ def visualize_tensor(
 
 def animate_tensor(
     tensor: Tensor,
-    title: Union[str, Sequence[str], None] = None,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    symbol: Optional[str] = None,
+    title: str | Sequence[str] | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    symbol: str | None = None,
     show: bool = True,
-    func_anim_kwargs: Optional[dict] = None,
+    func_anim_kwargs: dict | None = None,
     **imshow_kwargs,
 ) -> FuncAnimation:
     """
@@ -121,12 +121,12 @@ def animate_tensor(
 
     Args:
         tensor (Tensor): A 3D tensor of shape (T, H, W).
-        title (str or Sequence[str], optional): Title for each frame, or a static title.
-        xlabel (str, optional): Label for the x-axis.
-        ylabel (str, optional): Label for the y-axis.
-        symbol (str, optional): Symbol used in subplot titles for LaTeX rendering.
-        show (bool, optional): Whether to call `plt.show()`. Defaults to True.
-        func_anim_kwargs (dict, optional): Additional keyword arguments for `FuncAnimation`.
+        title (str | Sequence[str] | None): Title for each frame, or a static title.
+        xlabel (str | None): Label for the x-axis.
+        ylabel (str | None): Label for the y-axis.
+        symbol (str | None): Symbol used in subplot titles for LaTeX rendering.
+        show (bool): Whether to call `plt.show()`. Defaults to True.
+        func_anim_kwargs (dict | None): Additional keyword arguments for `FuncAnimation`.
         **imshow_kwargs: Additional keyword arguments passed directly to `matplotlib.pyplot.imshow()`, such as
             `cmap`, `vmin`, `vmax`, `interpolation`, etc.
 
@@ -185,11 +185,11 @@ def animate_tensor(
 def create_image_subplot(
     ax: Any,
     tensor: Tensor,
-    xlabel: Optional[str] = None,
-    ylabel: Optional[str] = None,
-    ax_title: Optional[str] = None,
-    cbar_ticks: Optional[Sequence[float]] = None,
-    cbar_ticklabels: Optional[Sequence[str]] = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    ax_title: str | None = None,
+    cbar_ticks: Sequence[float] | None = None,
+    cbar_ticklabels: Sequence[str] | None = None,
     **imshow_kwargs,
 ) -> Any:
     """
@@ -198,11 +198,11 @@ def create_image_subplot(
     Args:
         ax (Any): Matplotlib axis to draw on.
         tensor (Tensor): 2D tensor to visualize.
-        xlabel (str, optional): Label for x-axis.
-        ylabel (str, optional): Label for y-axis.
-        ax_title (str, optional): Title of the subplot.
-        cbar_ticks (Sequence[float], optional): Ticks to display on the colorbar.
-        cbar_ticklabels (Sequence[str], optional): Labels for the colorbar ticks.
+        xlabel (str | None): Label for x-axis.
+        ylabel (str | None): Label for y-axis.
+        ax_title (str | None): Title of the subplot.
+        cbar_ticks (Sequence[float] | None): Ticks to display on the colorbar.
+        cbar_ticklabels (Sequence[str] | None): Labels for the colorbar ticks.
         **imshow_kwargs: Additional keyword arguments passed directly to `matplotlib.pyplot.imshow()`, such as
             `cmap`, `vmin`, `vmax`, `interpolation`, etc.
 

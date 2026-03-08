@@ -1,7 +1,6 @@
 """This module defines functions to generate Zernike polynomial profiles."""
 
 import math
-from typing import Optional
 
 import torch
 from torch import Tensor
@@ -16,8 +15,8 @@ def zernike(
     n: Int,
     m: Int,
     radius: Scalar,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ) -> Tensor:
     r"""
     Generates a Zernike polynomial profile over a 2D grid.
@@ -48,9 +47,9 @@ def zernike(
         n (int): The radial order of the Zernike polynomial.
         m (int): The azimuthal order of the Zernike polynomial.
         radius (Scalar): The radius of the unit disk.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default.
-        offset (Optional[Vector2]): Center coordinates of the profile. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the profile. Default: `(0, 0)`.
 
     Returns:
         Tensor: The generated Zernike polynomial profile.

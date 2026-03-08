@@ -1,7 +1,7 @@
 """This module contains the base classes for the optical elements."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 from torch import Tensor
 
@@ -19,9 +19,9 @@ class Element(PlanarGrid):
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     def validate_field(self, field: Field) -> None:
@@ -55,9 +55,9 @@ class ModulationElement(Element, ABC):
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     def forward(self, field: Field) -> Field:
@@ -96,9 +96,9 @@ class PolychromaticModulationElement(Element):
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     def forward(self, field: Field) -> Field:
@@ -113,7 +113,7 @@ class PolychromaticModulationElement(Element):
         self.validate_field(field)
         return field.modulate(self.modulation_profile(field.wavelength))
 
-    def visualize(self, wavelength: Optional[Scalar] = None, **kwargs) -> Any:
+    def visualize(self, wavelength: Scalar | None = None, **kwargs) -> Any:
         """
         Visualizes the modulation profile.
 
@@ -124,7 +124,7 @@ class PolychromaticModulationElement(Element):
         return self._visualize(self.modulation_profile(wavelength), **kwargs)
 
     @abstractmethod
-    def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
+    def modulation_profile(self, wavelength: Scalar | None = None) -> Tensor:
         """Returns the modulation profile for the given wavelength."""
 
 
@@ -137,9 +137,9 @@ class PolarizedModulationElement(Element):
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     def forward(self, field: Field) -> Field:

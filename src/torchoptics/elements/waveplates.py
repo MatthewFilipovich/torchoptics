@@ -1,7 +1,5 @@
 """This module defines the waveplate element."""
 
-from typing import Optional
-
 import torch
 from torch import Tensor
 
@@ -37,9 +35,9 @@ class Waveplate(PolarizedModulationElement):
         z (Scalar): Position along the z-axis. Default: `0`.
         phi (Scalar): Phase delay of the waveplate.
         theta (Scalar): Fast axis angle of the waveplate.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     phi: Tensor
@@ -51,8 +49,8 @@ class Waveplate(PolarizedModulationElement):
         phi: Scalar,
         theta: Scalar,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("phi", phi, is_scalar=True)
@@ -89,9 +87,9 @@ class QuarterWaveplate(PolarizedModulationElement):
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
         theta (Scalar): Fast axis angle of the waveplate.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     theta: Tensor
@@ -101,8 +99,8 @@ class QuarterWaveplate(PolarizedModulationElement):
         shape: Vector2,
         theta: Scalar,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)
@@ -138,9 +136,9 @@ class HalfWaveplate(PolarizedModulationElement):
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
         theta (Scalar): Fast axis angle of the waveplate.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     theta: Tensor
@@ -150,8 +148,8 @@ class HalfWaveplate(PolarizedModulationElement):
         shape: Vector2,
         theta: Scalar,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 import torch
 from torch import Tensor
@@ -144,12 +144,12 @@ def linspace_grad(start: Tensor, end: Tensor, steps: int) -> Tensor:
     return start + range_values * step
 
 
-def meshgrid2d(bounds: Union[Tensor, Sequence[Tensor]], shape: Sequence) -> tuple[Tensor, Tensor]:
+def meshgrid2d(bounds: Tensor | Sequence[Tensor], shape: Sequence) -> tuple[Tensor, Tensor]:
     """
     Returns a 2D meshgrid with gradient tracking.
 
     Args:
-        bounds (Union[torch.Tensor, Sequence[torch.Tensor]]): The bounds of the grid.
+        bounds (torch.Tensor | Sequence[torch.Tensor]): The bounds of the grid.
         shape (Sequence): The shape of the grid.
 
     Returns:
@@ -189,7 +189,7 @@ def plane_sample(
         data (torch.Tensor): The input data to interpolate.
         data_plane (PlanarGrid): The plane containing the input data.
         interpolated_plane (PlanarGrid): The plane to interpolate the data to.
-        interpolation_mode (str, optional): The interpolation mode.
+        interpolation_mode (str): The interpolation mode.
 
     Returns:
         torch.Tensor: The interpolated data.

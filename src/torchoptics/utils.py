@@ -27,10 +27,10 @@ def initialize_tensor(
         value (Any): The value to initialize the tensor with.
         is_scalar (bool): If `True`, the tensor is a scalar.
         is_vector2 (bool): If `True`, the tensor is a 2D vector.
-        is_complex (bool, optional): If `True`, the tensor is complex. Default: `False`.
-        is_integer (bool, optional): If `True`, the tensor is integer. Default: `False`.
-        is_positive (bool, optional): If `True`, validates the tensor is positive. Default: `False`.
-        is_non_negative (bool, optional): If `True`, validates the tensor is non-negative. Default: `False`.
+        is_complex (bool): If `True`, the tensor is complex. Default: `False`.
+        is_integer (bool): If `True`, the tensor is integer. Default: `False`.
+        is_positive (bool): If `True`, validates the tensor is positive. Default: `False`.
+        is_non_negative (bool): If `True`, validates the tensor is non-negative. Default: `False`.
     """
     if is_complex and is_integer:
         raise ValueError("Expected is_complex and is_integer to be mutually exclusive, but both are True.")

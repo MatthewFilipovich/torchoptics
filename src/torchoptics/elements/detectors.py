@@ -1,6 +1,6 @@
 """This module defines the Detector elements."""
 
-from typing import Any, Optional
+from typing import Any
 
 from torch import Tensor
 from torch.nn.functional import linear
@@ -28,9 +28,9 @@ class Detector(Element):
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     def forward(self, field: Field) -> Tensor:
@@ -74,9 +74,9 @@ class LinearDetector(Element):
     Args:
         weight (Tensor): Weight matrix of shape (C, H, W).
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     weight: Tensor
@@ -85,8 +85,8 @@ class LinearDetector(Element):
         self,
         weight: Tensor,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         validate_tensor_ndim(weight, "weight", 3)
         super().__init__(weight.shape[1:], z, spacing, offset)

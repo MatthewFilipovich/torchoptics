@@ -1,7 +1,6 @@
 """This module defines functions to generate quadratic phase lens profiles."""
 
 from math import cos, sin
-from typing import Optional
 
 import torch
 
@@ -14,9 +13,9 @@ from ._profile_meshgrid import profile_meshgrid
 def lens_phase(
     shape: Vector2,
     focal_length: Scalar,
-    wavelength: Optional[Scalar] = None,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    wavelength: Scalar | None = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ):
     r"""
     Generates a quadratic phase lens profile, which can be used to represent a thin lens.
@@ -29,10 +28,10 @@ def lens_phase(
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         focal_length (Scalar): Focal length of the lens.
-        wavelength (Optional[Scalar]): Wavelength used for lens operation.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        wavelength (Scalar | None): Wavelength used for lens operation.
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
     """
     wavelength = wavelength_or_default(wavelength)
     focal_length = initialize_tensor("focal_length", focal_length, is_scalar=True)
@@ -47,9 +46,9 @@ def cylindrical_lens_phase(
     shape: Vector2,
     focal_length: Scalar,
     theta: Scalar = 0.0,
-    wavelength: Optional[Scalar] = None,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    wavelength: Scalar | None = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ):
     r"""
     Generates a cylindrical lens profile with a quadratic phase in a specified direction.
@@ -65,10 +64,10 @@ def cylindrical_lens_phase(
         shape (Vector2): Number of grid points along the planar dimensions.
         focal_length (Scalar): Focal length along the axis of the lens.
         theta (Scalar): Orientation angle of the cylindrical axis in radians.
-        wavelength (Optional[Scalar]): Wavelength used for lens operation.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        wavelength (Scalar | None): Wavelength used for lens operation.
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
     """
     wavelength = wavelength_or_default(wavelength)
     focal_length = initialize_tensor("focal_length", focal_length, is_scalar=True)

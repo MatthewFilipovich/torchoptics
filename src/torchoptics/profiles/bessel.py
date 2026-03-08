@@ -1,7 +1,5 @@
 """This module defines a function to generate the bessel beam profile."""
 
-from typing import Optional
-
 import torch
 from torch import Tensor
 
@@ -14,9 +12,9 @@ from ._profile_meshgrid import profile_meshgrid
 def bessel(
     shape: Vector2,
     cone_angle: Scalar,
-    wavelength: Optional[Scalar] = None,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    wavelength: Scalar | None = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ) -> Tensor:
     r"""
     Generates a zeroth-order Bessel beam.
@@ -35,11 +33,11 @@ def bessel(
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         cone_angle (Scalar): The cone angle in radians.
-        wavelength (Scalar, optional): The wavelength of the beam. Default: if `None`, uses a global default
+        wavelength (Scalar | None): The wavelength of the beam. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
 
     Returns:
         Tensor: The generated zeroth-order Bessel beam profile.

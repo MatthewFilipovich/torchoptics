@@ -1,7 +1,5 @@
 """This module defines functions to generate the phase arguments of spherical and plane waves."""
 
-from typing import Optional
-
 import torch
 
 from ..config import wavelength_or_default
@@ -15,9 +13,9 @@ def plane_wave_phase(
     theta: Scalar = 0.0,
     phi: Scalar = 0.0,
     z: Scalar = 0.0,
-    wavelength: Optional[Scalar] = None,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    wavelength: Scalar | None = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ):
     r"""
     Computes the phase argument of a plane wave with arbitrary propagation direction.
@@ -37,10 +35,10 @@ def plane_wave_phase(
         theta (Scalar): Polar angle from the z-axis, in radians.
         phi (Scalar): Azimuthal angle in the x-y plane, in radians.
         z (Scalar): Axial location at which to evaluate the phase. Default: 0.
-        wavelength (Optional[Scalar]): Wavelength of the wave. If None, uses global default.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        wavelength (Scalar | None): Wavelength of the wave. If None, uses global default.
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the wave. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the wave. Default: `(0, 0)`.
 
     Returns:
         torch.Tensor: Real-valued 2D phase argument of the plane wave.
@@ -63,9 +61,9 @@ def plane_wave_phase(
 def spherical_wave_phase(
     shape: Vector2,
     z: Scalar,
-    wavelength: Optional[Scalar] = None,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    wavelength: Scalar | None = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ):
     r"""
     Computes the phase argument of a spherical wave originating from a point source.
@@ -83,10 +81,10 @@ def spherical_wave_phase(
     Args:
         shape (Vector2): Grid shape (height, width).
         z (Scalar): z-location of the observation plane.
-        wavelength (Optional[Scalar]): Wavelength of the wave. If None, uses global default.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        wavelength (Scalar | None): Wavelength of the wave. If None, uses global default.
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the wave. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the wave. Default: `(0, 0)`.
 
     Returns:
         torch.Tensor: Real-valued 2D phase argument of the spherical wave.

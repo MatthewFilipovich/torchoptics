@@ -1,7 +1,5 @@
 """This module defines methods for getting and setting default values for spacing and wavelength."""
 
-from typing import Optional
-
 from torch import Tensor
 
 from .types import Scalar, Vector2
@@ -11,8 +9,8 @@ from .utils import initialize_tensor
 class Config:
     """Global configuration values for torchoptics."""
 
-    spacing: Optional[Tensor] = None
-    wavelength: Optional[Tensor] = None
+    spacing: Tensor | None = None
+    wavelength: Tensor | None = None
 
 
 def get_default_spacing() -> Tensor:
@@ -57,7 +55,7 @@ def set_default_wavelength(value: Scalar) -> None:
     Config.wavelength = initialize_tensor("wavelength", value, is_scalar=True, is_positive=True)
 
 
-def spacing_or_default(spacing: Optional[Vector2]) -> Tensor:
+def spacing_or_default(spacing: Vector2 | None) -> Tensor:
     """Gets the spacing or the default value if ``spacing`` is ``None``."""
     return (
         get_default_spacing()
@@ -66,7 +64,7 @@ def spacing_or_default(spacing: Optional[Vector2]) -> Tensor:
     )
 
 
-def wavelength_or_default(wavelength: Optional[Scalar]) -> Tensor:
+def wavelength_or_default(wavelength: Scalar | None) -> Tensor:
     """Gets the wavelength or the default value if ``wavelength`` is ``None``."""
     return (
         get_default_wavelength()

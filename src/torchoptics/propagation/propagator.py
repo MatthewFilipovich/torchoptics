@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import torch
 
@@ -28,8 +28,8 @@ def propagator(
     field: Field,
     shape: Vector2,
     z: Scalar,
-    spacing: Optional[Vector2],
-    offset: Optional[Vector2],
+    spacing: Vector2 | None,
+    offset: Vector2 | None,
     propagation_method: str,
     asm_pad_factor: Vector2,
     interpolation_mode: str,
@@ -45,9 +45,9 @@ def propagator(
         field (Field): Input field.
         shape (Vector2): Number of grid points along the planar dimensions.
         z (Scalar): Position along the z-axis.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
 
     Returns:
         Field: Output field after propagating to the plane.

@@ -1,7 +1,5 @@
 """This module defines the beam splitter element."""
 
-from typing import Optional
-
 import torch
 from torch import Tensor
 
@@ -39,9 +37,9 @@ class BeamSplitter(Element):
         phi_0 (Scalar): Global phase shift.
         phi_r (Scalar): Reflection phase shift.
         phi_t (Scalar): Transmission phase shift.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     theta: Tensor
@@ -57,8 +55,8 @@ class BeamSplitter(Element):
         phi_r: Scalar,
         phi_t: Scalar,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)
@@ -76,13 +74,13 @@ class BeamSplitter(Element):
         transfer_matrix[1, 1] = -torch.sin(self.theta) * torch.exp(-1j * self.phi_r)
         return transfer_matrix
 
-    def forward(self, field: Field, other: Optional[Field] = None) -> tuple[Field, Field]:
+    def forward(self, field: Field, other: Field | None = None) -> tuple[Field, Field]:
         """
         Applies the beam splitter to the input fields.
 
         Args:
             field (Field): The field to split.
-            other (Optional[Field]): The other field to split. Default: `None`.
+            other (Field | None): The other field to split. Default: `None`.
 
         Returns:
             tuple[Field, Field]: The split fields.

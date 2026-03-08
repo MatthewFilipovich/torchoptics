@@ -1,7 +1,5 @@
 """This module defines functions to generate airy and sinc profiles."""
 
-from typing import Optional
-
 import torch
 from torch import Tensor
 from torch.special import bessel_j1  # Bessel function of the first kind
@@ -12,7 +10,7 @@ from ._profile_meshgrid import profile_meshgrid
 
 
 def airy(
-    shape: Vector2, scale: Scalar, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2, scale: Scalar, spacing: Vector2 | None = None, offset: Vector2 | None = None
 ) -> Tensor:
     r"""
     Generates an Airy pattern profile.
@@ -31,9 +29,9 @@ def airy(
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         scale (Scalar): A scaling factor that determines the size of the Airy disk.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default.
-        offset (Optional[Vector2]): Center coordinates of the profile. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the profile. Default: `(0, 0)`.
 
     Returns:
         Tensor: The generated Airy profile.
@@ -51,8 +49,8 @@ def siemens_star(
     shape: Vector2,
     num_spokes: Int,
     radius: Scalar,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ) -> Tensor:
     r"""
     Generates a `Siemens star pattern <https://en.wikipedia.org/wiki/Siemens_star>`_.
@@ -65,8 +63,8 @@ def siemens_star(
         shape (Vector2): Number of grid points along the planar dimensions.
         num_spokes (int): Number of spokes (must be an even integer).
         radius (Scalar): Radius of the circular Siemens star region.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions.
-        offset (Optional[Vector2]): Center coordinates of the pattern. Default: `(0, 0)`.
+        spacing (Vector2 | None): Distance between grid points along planar dimensions.
+        offset (Vector2 | None): Center coordinates of the pattern. Default: `(0, 0)`.
 
     Returns:
         Tensor: The generated Siemens star pattern with values in [0, 1].
@@ -90,7 +88,7 @@ def siemens_star(
 
 
 def sinc(
-    shape: Vector2, scale: Vector2, spacing: Optional[Vector2] = None, offset: Optional[Vector2] = None
+    shape: Vector2, scale: Vector2, spacing: Vector2 | None = None, offset: Vector2 | None = None
 ) -> Tensor:
     r"""
     Generates a sinc profile.
@@ -109,9 +107,9 @@ def sinc(
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         scale (Vector2): The two scaling factors (widths) of the sinc function in the x and y directions.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default.
-        offset (Optional[Vector2]): Center coordinates of the profile. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the profile. Default: `(0, 0)`.
 
     Returns:
         Tensor: The generated sinc profile.

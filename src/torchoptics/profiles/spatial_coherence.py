@@ -1,6 +1,6 @@
 """This module defines functions to generate spatial coherence function profiles."""
 
-from typing import Callable, Optional
+from collections.abc import Callable
 
 import torch
 from torch import Tensor
@@ -15,8 +15,8 @@ def schell_model(
     shape: Vector2,
     intensity_func: Callable[[Tensor, Tensor], Tensor],
     coherence_func: Callable[[Tensor, Tensor], Tensor],
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ) -> Tensor:
     r"""
     Generates a spatial coherence function profile based on the Schell-model.
@@ -40,9 +40,9 @@ def schell_model(
         coherence_func (Callable[[Tensor, Tensor], Tensor]): Function defining the coherence distribution,
             which takes the pairwise :math:`dx` and :math:`dy` coordinate differences and returns the
             coherence values.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Offset coordinates of the pattern. Default: `(0, 0)`.
+        offset (Vector2 | None): Offset coordinates of the pattern. Default: `(0, 0)`.
 
     Returns:
         torch.Tensor: A 4D tensor representing the mutual coherence function
@@ -63,8 +63,8 @@ def gaussian_schell_model(
     shape: Vector2,
     waist_radius: Scalar,
     coherence_width: Scalar,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ) -> Tensor:
     r"""
     Generates a spatial coherence function profile based on the Gaussian Schell-model.
@@ -87,9 +87,9 @@ def gaussian_schell_model(
         shape (Vector2): Number of grid points along the planar dimensions.
         waist_radius (Scalar): The beam waist radius.
         coherence_width (Scalar): The coherence width.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Offset coordinates of the pattern. Default: `(0, 0)`.
+        offset (Vector2 | None): Offset coordinates of the pattern. Default: `(0, 0)`.
 
     Returns:
         torch.Tensor: A 4D tensor representing the mutual coherence function

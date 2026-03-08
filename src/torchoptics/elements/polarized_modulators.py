@@ -1,7 +1,5 @@
 """This module defines the polarized modulator elements."""
 
-from typing import Optional
-
 import torch
 from torch import Tensor
 
@@ -19,9 +17,9 @@ class PolarizedModulator(PolarizedModulationElement):
     Args:
         polarized_modulation_profile (Tensor): Complex 3x3 polarized modulation profile.
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     polarized_modulation: Tensor
@@ -30,8 +28,8 @@ class PolarizedModulator(PolarizedModulationElement):
         self,
         polarized_modulation: Tensor,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         _validate_tensor(polarized_modulation, "polarized_modulation")
         super().__init__(polarized_modulation.shape[2:], z, spacing, offset)
@@ -50,9 +48,9 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
     Args:
         phase (Tensor): Phase profile (real-valued 3x3 tensor).
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     phase: Tensor
@@ -61,8 +59,8 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
         self,
         phase: Tensor,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         _validate_tensor(phase, "phase")
         super().__init__(phase.shape[2:], z, spacing, offset)
@@ -81,9 +79,9 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
     Args:
         amplitude (Tensor): Amplitude profile (real-valued 3x3 tensor).
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     amplitude: Tensor
@@ -92,8 +90,8 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         self,
         amplitude: Tensor,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         _validate_tensor(amplitude, "amplitude")
         super().__init__(amplitude.shape[2:], z, spacing, offset)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import torch
 from torch import Tensor
@@ -20,12 +20,12 @@ class Field(PlanarGrid):
 
     Args:
         data (Tensor): The complex-valued field data.
-        wavelength (Scalar, optional): The wavelength of the field. Default: if `None`, uses a global default
+        wavelength (Scalar | None): The wavelength of the field. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
 
     """
 
@@ -37,10 +37,10 @@ class Field(PlanarGrid):
     def __init__(
         self,
         data: Tensor,
-        wavelength: Optional[Scalar] = None,
+        wavelength: Scalar | None = None,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         validate_tensor_min_ndim(data, "data", self.DATA_MIN_NDIM)
         super().__init__(data.shape[-2:], z, spacing, offset)
@@ -69,8 +69,8 @@ class Field(PlanarGrid):
         self,
         shape: Vector2,
         z: Scalar,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
         propagation_method: str = "AUTO",
         asm_pad_factor: Vector2 = 2,
         interpolation_mode: str = "nearest",
@@ -80,9 +80,9 @@ class Field(PlanarGrid):
         Args:
             shape (Vector2): Number of grid points along the planar dimensions.
             z (Scalar): Position along the z-axis.
-            spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default:
+            spacing (Vector2 | None): Distance between grid points along planar dimensions. Default:
                 if `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-            offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+            offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
             asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
                 Default: `2`.
@@ -251,12 +251,12 @@ class SpatialCoherence(Field):
 
     Args:
         data (Tensor): The complex-valued spatial coherence data.
-        wavelength (Scalar, optional): The wavelength of the field. Default: if `None`, uses a global default
+        wavelength (Scalar | None): The wavelength of the field. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
 
     """
 

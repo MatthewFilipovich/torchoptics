@@ -1,7 +1,5 @@
 """This module defines the Lens element."""
 
-from typing import Optional
-
 import torch
 from torch import Tensor
 
@@ -27,9 +25,9 @@ class Lens(PolychromaticModulationElement):
         shape (Vector2): Number of grid points along the planar dimensions.
         focal_length (Scalar): Focal length of the lens.
         z (Scalar): Position along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     focal_length: Tensor
@@ -39,13 +37,13 @@ class Lens(PolychromaticModulationElement):
         shape: Vector2,
         focal_length: Scalar,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("focal_length", focal_length, is_scalar=True)
 
-    def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
+    def modulation_profile(self, wavelength: Scalar | None = None) -> Tensor:
         phase = lens_phase(self.shape, self.focal_length, wavelength, self.spacing)
         radius = self.length().min() / 2
         amplitude = circle(self.shape, radius, self.spacing)
@@ -70,9 +68,9 @@ class CylindricalLens(PolychromaticModulationElement):
         focal_length (Scalar): Focal length of the lens.
         z (Scalar): Position along the z-axis. Default: `0`.
         theta (Scalar): Angle of the lens in radians. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
     """
 
     focal_length: Tensor
@@ -84,14 +82,14 @@ class CylindricalLens(PolychromaticModulationElement):
         focal_length: Scalar,
         theta: Scalar = 0,
         z: Scalar = 0,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
     ) -> None:
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("focal_length", focal_length, is_scalar=True)
         self.register_optics_property("theta", theta, is_scalar=True)
 
-    def modulation_profile(self, wavelength: Optional[Scalar] = None) -> Tensor:
+    def modulation_profile(self, wavelength: Scalar | None = None) -> Tensor:
         phase = cylindrical_lens_phase(self.shape, self.focal_length, self.theta, wavelength, self.spacing)
         radius = self.length().min() / 2
         amplitude = circle(self.shape, radius, self.spacing)

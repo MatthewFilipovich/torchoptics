@@ -5,7 +5,7 @@ from torchoptics.profiles import special
 
 
 def make_special_args():
-    return dict(shape=(100, 100), spacing=(0.1, 0.1), offset=(0.0, 0.0))
+    return {"shape": (100, 100), "spacing": (0.1, 0.1), "offset": (0.0, 0.0)}
 
 
 def test_airy():

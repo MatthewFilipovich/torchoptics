@@ -1,7 +1,7 @@
 """This module defines functions to generate Hermite-Gaussian and Gaussian profiles."""
 
 import math
-from typing import Callable, Optional
+from collections.abc import Callable
 
 import torch
 from torch import Tensor
@@ -17,10 +17,10 @@ def hermite_gaussian(
     m: Int,
     n: Int,
     waist_radius: Scalar,
-    wavelength: Optional[Scalar] = None,
+    wavelength: Scalar | None = None,
     waist_z: Scalar = 0,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ) -> Tensor:
     r"""
     Generates a Hermite-Gaussian profile.
@@ -70,12 +70,12 @@ def hermite_gaussian(
         m (int): The mode number in the first planar dimension.
         n (int): The mode number in the second planar dimension.
         waist_radius: The radius of the beam waist.
-        wavelength (Scalar, optional): The wavelength of the beam. Default: if `None`, uses a global default
+        wavelength (Scalar | None): The wavelength of the beam. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
         waist_z: Position of beam waist along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
 
     Returns:
         Tensor: The generated Hermite-Gaussian profile.
@@ -107,10 +107,10 @@ def hermite_gaussian(
 def gaussian(
     shape: Vector2,
     waist_radius: Scalar,
-    wavelength: Optional[Scalar] = None,
+    wavelength: Scalar | None = None,
     waist_z: Scalar = 0,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
 ) -> Tensor:
     r"""
     Generates a Gaussian profile.
@@ -151,12 +151,12 @@ def gaussian(
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         waist_radius: The radius of the beam waist.
-        wavelength (Scalar, optional): The wavelength of the beam. Default: if `None`, uses a global default
+        wavelength (Scalar | None): The wavelength of the beam. Default: if `None`, uses a global default
             (see :meth:`torchoptics.set_default_wavelength()`).
         waist_z: Position of beam waist along the z-axis. Default: `0`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
 
     Returns:
         Tensor: The generated Gaussian profile.

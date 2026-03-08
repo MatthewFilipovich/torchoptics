@@ -1,7 +1,5 @@
 """This module defines functions to generate grating profiles."""
 
-from typing import Optional
-
 import torch
 
 from ..types import Scalar, Vector2
@@ -12,8 +10,8 @@ from ._profile_meshgrid import profile_meshgrid
 def binary_grating(
     shape: Vector2,
     period: Scalar,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
     height: Scalar = 1,
     theta: Scalar = 0,
     duty_cycle: Scalar = 0.5,
@@ -41,9 +39,9 @@ def binary_grating(
         shape (Vector2): Number of grid points along the planar dimensions.
         period (Scalar): The grating period (distance between adjacent grooves).
         duty_cycle (Scalar): The duty cycle of the grating. Default: `0.5`.
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
         height (Scalar): The height of the grating. Default: `1`.
         theta (Scalar): The angle of the grating in radians. Default: `0`.
 
@@ -62,8 +60,8 @@ def binary_grating(
 def blazed_grating(
     shape: Vector2,
     period: Scalar,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
     height: Scalar = 1,
     theta: Scalar = 0,
 ) -> torch.Tensor:
@@ -84,9 +82,9 @@ def blazed_grating(
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         period (Scalar): The grating period (distance between adjacent grooves).
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
         height (Scalar): The height of the grating. Default: `1`.
         theta (Scalar): The angle of the grating in radians. Default: `0`.
 
@@ -107,8 +105,8 @@ def blazed_grating(
 def sinusoidal_grating(
     shape: Vector2,
     period: Scalar,
-    spacing: Optional[Vector2] = None,
-    offset: Optional[Vector2] = None,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
     height: Scalar = 1,
     theta: Scalar = 0,
 ) -> torch.Tensor:
@@ -130,9 +128,9 @@ def sinusoidal_grating(
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         period (Scalar): The grating period (distance between adjacent grooves).
-        spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default: if
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-        offset (Optional[Vector2]): Center coordinates of the beam. Default: `(0, 0)`.
+        offset (Vector2 | None): Center coordinates of the beam. Default: `(0, 0)`.
         height (Scalar): The height of the grating. Default: `1`.
         theta (Scalar): The angle of the grating in radians. Default: `0`.
 

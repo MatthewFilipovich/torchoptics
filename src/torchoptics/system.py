@@ -1,7 +1,9 @@
 """This module defines the System class."""
 
+from __future__ import annotations
+
 from collections.abc import Iterator
-from typing import Optional, Union, overload
+from typing import overload
 
 from torch.nn import Module
 
@@ -56,9 +58,9 @@ class System(Module):
     def __getitem__(self, index: int) -> Element: ...
 
     @overload
-    def __getitem__(self, index: slice) -> "System": ...
+    def __getitem__(self, index: slice) -> System: ...
 
-    def __getitem__(self, index: Union[int, slice]) -> Union[Element, "System"]:
+    def __getitem__(self, index: int | slice) -> Element | System:
         if isinstance(index, slice):
             return self.__class__(*self.elements[index])
         return self.elements[index]
@@ -92,8 +94,8 @@ class System(Module):
         field: Field,
         shape: Vector2,
         z: Scalar,
-        spacing: Optional[Vector2] = None,
-        offset: Optional[Vector2] = None,
+        spacing: Vector2 | None = None,
+        offset: Vector2 | None = None,
         **prop_kwargs,
     ) -> Field:
         """
@@ -103,9 +105,9 @@ class System(Module):
             field (Field): Input field.
             shape (Vector2): Number of grid points along the planar dimensions.
             z (Scalar): Position along the z-axis.
-            spacing (Optional[Vector2]): Distance between grid points along planar dimensions. Default:
+            spacing (Vector2 | None): Distance between grid points along planar dimensions. Default:
                 if `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
-            offset (Optional[Vector2]): Center coordinates of the plane. Default: `(0, 0)`.
+            offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
             asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
                 Default: `2`.
@@ -160,13 +162,13 @@ class System(Module):
         """Returns the elements sorted by their z position."""
         return tuple(sorted(self.elements, key=lambda element: element.z.item()))
 
-    def elements_in_field_path(self, field: Field, last_element: Optional[Element]) -> tuple[Element, ...]:
+    def elements_in_field_path(self, field: Field, last_element: Element | None) -> tuple[Element, ...]:
         """
         Returns the elements along the field path.
 
         Args:
             field (Field): Input field.
-            last_element (Optional[Element]): Last element of the system.
+            last_element (Element | None): Last element of the system.
 
         Returns:
             tuple[Element]: Elements along the field path.
@@ -191,7 +193,7 @@ class System(Module):
 
         return tuple(elements_in_path)
 
-    def _forward(self, field: Field, last_element: Optional[Element], **prop_kwargs) -> Field:
+    def _forward(self, field: Field, last_element: Element | None, **prop_kwargs) -> Field:
         """Propagates the field through the system to the last element, if provided."""
         elements = self.elements_in_field_path(field, last_element)
 
