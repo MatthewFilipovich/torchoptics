@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
 description = "Python library for differentiable Fourier optics simulations with PyTorch."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
   "Intended Audience :: Education",
   "Intended Audience :: Science/Research",
@@ -17,7 +17,6 @@ classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
