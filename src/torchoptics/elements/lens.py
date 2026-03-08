@@ -1,4 +1,4 @@
-"""This module defines the Lens element."""
+"""Lens element definitions."""
 
 import torch
 from torch import Tensor
@@ -9,8 +9,7 @@ from .elements import PolychromaticModulationElement
 
 
 class Lens(PolychromaticModulationElement):
-    r"""
-    Lens element.
+    r"""Lens element.
 
     Represents a thin lens with the following modulation profile:
 
@@ -28,6 +27,7 @@ class Lens(PolychromaticModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     focal_length: Tensor
@@ -40,10 +40,12 @@ class Lens(PolychromaticModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the Lens."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("focal_length", focal_length, is_scalar=True)
 
     def modulation_profile(self, wavelength: Scalar | None = None) -> Tensor:
+        """Return the modulation profile."""
         phase = lens_phase(self.shape, self.focal_length, wavelength, self.spacing)
         radius = self.length().min() / 2
         amplitude = circle(self.shape, radius, self.spacing)
@@ -51,8 +53,7 @@ class Lens(PolychromaticModulationElement):
 
 
 class CylindricalLens(PolychromaticModulationElement):
-    r"""
-    Cylindrical lens element.
+    r"""Cylindrical lens element.
 
     Represents a thin cylindrical lens with the following modulation profile:
 
@@ -71,6 +72,7 @@ class CylindricalLens(PolychromaticModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     focal_length: Tensor
@@ -85,11 +87,13 @@ class CylindricalLens(PolychromaticModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the CylindricalLens."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("focal_length", focal_length, is_scalar=True)
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def modulation_profile(self, wavelength: Scalar | None = None) -> Tensor:
+        """Return the modulation profile."""
         phase = cylindrical_lens_phase(self.shape, self.focal_length, self.theta, wavelength, self.spacing)
         radius = self.length().min() / 2
         amplitude = circle(self.shape, radius, self.spacing)

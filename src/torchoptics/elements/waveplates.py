@@ -1,4 +1,4 @@
-"""This module defines the waveplate element."""
+"""Waveplate element definitions."""
 
 import torch
 from torch import Tensor
@@ -8,27 +8,26 @@ from .elements import PolarizedModulationElement
 
 
 class Waveplate(PolarizedModulationElement):
-    r"""
-    Waveplate element.
+    r"""Waveplate element.
 
     The waveplate is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \cos^2(\theta) + e^{i \phi} \sin^2(\theta) & (1 - e^{i \phi}) \cos(\theta) \sin(\theta) & 0 \\
             (1 - e^{i \phi}) \cos(\theta) \sin(\theta) & \sin^2(\theta) + e^{i \phi} \cos^2(\theta) & 0 \\
             0 & 0 & 1
         \end{bmatrix}
 
-    where 
-        - :math:`\theta` is the fast axis angle, and 
+    where
+        - :math:`\theta` is the fast axis angle, and
         - :math:`\phi` is the phase delay between the fast and slow axes.
 
     .. note::
-        A quarter waveplate (QWP) is obtained by setting :math:`\phi = \pi/2`. 
+        A quarter waveplate (QWP) is obtained by setting :math:`\phi = \pi/2`.
 
-        A half waveplate (HWP) is obtained by setting :math:`\phi = \pi`. 
+        A half waveplate (HWP) is obtained by setting :math:`\phi = \pi`.
 
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
@@ -38,6 +37,7 @@ class Waveplate(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     phi: Tensor
@@ -52,11 +52,13 @@ class Waveplate(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the Waveplate."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("phi", phi, is_scalar=True)
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = torch.cos(self.theta) ** 2 + torch.exp(1j * self.phi) * torch.sin(self.theta) ** 2
         tensor[0, 1] = (1 - torch.exp(1j * self.phi)) * torch.cos(self.theta) * torch.sin(self.theta)
@@ -67,20 +69,19 @@ class Waveplate(PolarizedModulationElement):
 
 
 class QuarterWaveplate(PolarizedModulationElement):
-    r"""
-    Quarter Waveplate element.
+    r"""Quarter Waveplate element.
 
     The quarter waveplate is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \cos^2(\theta) + i \sin^2(\theta) & (1 - i) \cos(\theta) \sin(\theta) & 0 \\
             (1 - i) \cos(\theta) \sin(\theta) & \sin^2(\theta) + i \cos^2(\theta) & 0 \\
             0 & 0 & 1
         \end{bmatrix}
 
-    where 
+    where
         - :math:`\theta` is the fast axis angle.
 
     Args:
@@ -90,6 +91,7 @@ class QuarterWaveplate(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     theta: Tensor
@@ -102,10 +104,12 @@ class QuarterWaveplate(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the QuarterWaveplate."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = torch.cos(self.theta) ** 2 + 1j * torch.sin(self.theta) ** 2
         tensor[0, 1] = (1 - 1j) * torch.cos(self.theta) * torch.sin(self.theta)
@@ -116,20 +120,19 @@ class QuarterWaveplate(PolarizedModulationElement):
 
 
 class HalfWaveplate(PolarizedModulationElement):
-    r"""
-    Half Waveplate element.
+    r"""Half Waveplate element.
 
     The half waveplate is described by the following polarization matrix:
 
     .. math::
-        J = 
+        J =
         \begin{bmatrix}
             \cos^2(\theta) - \sin^2(\theta) & 2 \cos(\theta) \sin(\theta) & 0 \\
             2 \cos(\theta) \sin(\theta) & \sin^2(\theta) - \cos^2(\theta) & 0 \\
             0 & 0 & 1
         \end{bmatrix}
 
-    where 
+    where
         - :math:`\theta` is the fast axis angle.
 
     Args:
@@ -139,6 +142,7 @@ class HalfWaveplate(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     theta: Tensor
@@ -151,10 +155,12 @@ class HalfWaveplate(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the HalfWaveplate."""
         super().__init__(shape, z, spacing, offset)
         self.register_optics_property("theta", theta, is_scalar=True)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         tensor = torch.zeros(3, 3, *self.shape, device=next(self.buffers()).device) + 0j
         tensor[0, 0] = torch.cos(self.theta) ** 2 - torch.sin(self.theta) ** 2
         tensor[0, 1] = 2 * torch.cos(self.theta) * torch.sin(self.theta)

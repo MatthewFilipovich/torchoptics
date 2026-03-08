@@ -1,6 +1,7 @@
-"""This module defines functions to generate the phase arguments of spherical and plane waves."""
+"""Phase argument generation for spherical and plane waves."""
 
 import torch
+from torch import Tensor
 
 from ..config import wavelength_or_default
 from ..types import Scalar, Vector2
@@ -16,9 +17,8 @@ def plane_wave_phase(
     wavelength: Scalar | None = None,
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
-):
-    r"""
-    Computes the phase argument of a plane wave with arbitrary propagation direction.
+) -> Tensor:
+    r"""Compute the phase argument of a plane wave with arbitrary propagation direction.
 
     The phase argument is defined as:
 
@@ -42,6 +42,7 @@ def plane_wave_phase(
 
     Returns:
         torch.Tensor: Real-valued 2D phase argument of the plane wave.
+
     """
     wavelength = wavelength_or_default(wavelength)
     theta = initialize_tensor("theta", theta, is_scalar=True)
@@ -64,9 +65,8 @@ def spherical_wave_phase(
     wavelength: Scalar | None = None,
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
-):
-    r"""
-    Computes the phase argument of a spherical wave originating from a point source.
+) -> Tensor:
+    r"""Compute the phase argument of a spherical wave originating from a point source.
 
     The phase argument is defined as:
 
@@ -88,6 +88,7 @@ def spherical_wave_phase(
 
     Returns:
         torch.Tensor: Real-valued 2D phase argument of the spherical wave.
+
     """
     wavelength = wavelength_or_default(wavelength)
     z = initialize_tensor("z", z, is_scalar=True)
