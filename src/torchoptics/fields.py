@@ -71,6 +71,7 @@ class Field(PlanarGrid):
         z: Scalar,
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
+        *,
         propagation_method: str = "AUTO",
         asm_pad_factor: Vector2 = 2,
         interpolation_mode: str = "nearest",
@@ -88,7 +89,6 @@ class Field(PlanarGrid):
                 Default: `2`.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
 
-
         Returns:
             Field: Output field after propagating to the plane.
 
@@ -97,7 +97,14 @@ class Field(PlanarGrid):
             self, shape, z, spacing, offset, propagation_method, asm_pad_factor, interpolation_mode
         )
 
-    def propagate_to_z(self, z: Scalar, **prop_kwargs) -> Field:
+    def propagate_to_z(
+        self,
+        z: Scalar,
+        *,
+        propagation_method: str = "AUTO",
+        asm_pad_factor: Vector2 = 2,
+        interpolation_mode: str = "nearest",
+    ) -> Field:
         """Propagates the field through free-space to a plane at a specific z position.
 
         The plane has the same ``shape``, ``spacing``, and ``offset`` as the input field.
@@ -109,14 +116,28 @@ class Field(PlanarGrid):
                 Default: `2`.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
 
-
         Returns:
             Field: Output field after propagating to the plane.
 
         """
-        return self.propagate(self.shape, z, self.spacing, self.offset, **prop_kwargs)
+        return self.propagate(
+            self.shape,
+            z,
+            self.spacing,
+            self.offset,
+            propagation_method=propagation_method,
+            asm_pad_factor=asm_pad_factor,
+            interpolation_mode=interpolation_mode,
+        )
 
-    def propagate_to_plane(self, plane: PlanarGrid, **prop_kwargs) -> Field:
+    def propagate_to_plane(
+        self,
+        plane: PlanarGrid,
+        *,
+        propagation_method: str = "AUTO",
+        asm_pad_factor: Vector2 = 2,
+        interpolation_mode: str = "nearest",
+    ) -> Field:
         """Propagates the field through free-space to a plane defined by a :class:`PlanarGrid` object.
 
         Args:
@@ -126,14 +147,21 @@ class Field(PlanarGrid):
                 Default: `2`.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
 
-
         Returns:
             Field: Output field after propagating to the plane.
 
         """
         if not isinstance(plane, PlanarGrid):
             raise TypeError(f"Expected plane to be a PlanarGrid, but got {type(plane).__name__}.")
-        return self.propagate(plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
+        return self.propagate(
+            plane.shape,
+            plane.z,
+            plane.spacing,
+            plane.offset,
+            propagation_method=propagation_method,
+            asm_pad_factor=asm_pad_factor,
+            interpolation_mode=interpolation_mode,
+        )
 
     def modulate(self, modulation_profile: Tensor) -> Field:
         """Modulates the field by a modulation profile.
