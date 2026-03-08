@@ -12,8 +12,6 @@ from torch.nn.functional import grid_sample
 
 from torchoptics.types import Int
 
-from ..utils import copy
-
 if TYPE_CHECKING:
     from ..planar_grid import PlanarGrid
 
@@ -106,8 +104,8 @@ def get_coherence_evolution(evolution_func):
 
     def wrapper(field, *args, **kwargs):
         evolved = evolution_func(field, *args, **kwargs)
-        evolved_conj = evolution_func(copy(field, data=_adjoint(evolved.data)), *args, **kwargs)
-        return copy(evolved_conj, data=_adjoint(evolved_conj.data))
+        evolved_conj = evolution_func(field.copy(data=_adjoint(evolved.data)), *args, **kwargs)
+        return evolved_conj.copy(data=_adjoint(evolved_conj.data))
 
     return wrapper
 

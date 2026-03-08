@@ -12,7 +12,7 @@ from .functional import calculate_centroid, calculate_std, get_coherence_evoluti
 from .planar_grid import PlanarGrid
 from .propagation import propagator
 from .types import Scalar, Vector2
-from .utils import copy, validate_tensor_min_ndim
+from .utils import validate_tensor_min_ndim
 
 
 class Field(PlanarGrid):
@@ -71,8 +71,9 @@ class Field(PlanarGrid):
         z: Scalar,
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
+        *,
         propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
+        asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
         """Propagates the field through free-space to a plane defined by the input parameters.
@@ -84,20 +85,24 @@ class Field(PlanarGrid):
                 if `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
             offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
-                Default: `2`.
+            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
+                Default: if `None`, pads by 2x the input field size in each dimension.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
-
 
         Returns:
             Field: Output field after propagating to the plane.
 
         """
-        return propagator(
-            self, shape, z, spacing, offset, propagation_method, asm_pad_factor, interpolation_mode
-        )
+        return propagator(self, shape, z, spacing, offset, propagation_method, asm_pad, interpolation_mode)
 
-    def propagate_to_z(self, z: Scalar, **prop_kwargs) -> Field:
+    def propagate_to_z(
+        self,
+        z: Scalar,
+        *,
+        propagation_method: str = "AUTO",
+        asm_pad: Vector2 | None = None,
+        interpolation_mode: str = "nearest",
+    ) -> Field:
         """Propagates the field through free-space to a plane at a specific z position.
 
         The plane has the same ``shape``, ``spacing``, and ``offset`` as the input field.
@@ -105,27 +110,40 @@ class Field(PlanarGrid):
         Args:
             z (Scalar): Position along the z-axis.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
-                Default: `2`.
+            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
+                Default: if `None`, pads by 2x the input field size in each dimension.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
-
 
         Returns:
             Field: Output field after propagating to the plane.
 
         """
-        return self.propagate(self.shape, z, self.spacing, self.offset, **prop_kwargs)
+        return self.propagate(
+            self.shape,
+            z,
+            self.spacing,
+            self.offset,
+            propagation_method=propagation_method,
+            asm_pad=asm_pad,
+            interpolation_mode=interpolation_mode,
+        )
 
-    def propagate_to_plane(self, plane: PlanarGrid, **prop_kwargs) -> Field:
+    def propagate_to_plane(
+        self,
+        plane: PlanarGrid,
+        *,
+        propagation_method: str = "AUTO",
+        asm_pad: Vector2 | None = None,
+        interpolation_mode: str = "nearest",
+    ) -> Field:
         """Propagates the field through free-space to a plane defined by a :class:`PlanarGrid` object.
 
         Args:
             plane (PlanarGrid): Plane grid.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
-                Default: `2`.
+            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
+                Default: if `None`, pads by 2x the input field size in each dimension.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
-
 
         Returns:
             Field: Output field after propagating to the plane.
@@ -133,7 +151,15 @@ class Field(PlanarGrid):
         """
         if not isinstance(plane, PlanarGrid):
             raise TypeError(f"Expected plane to be a PlanarGrid, but got {type(plane).__name__}.")
-        return self.propagate(plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
+        return self.propagate(
+            plane.shape,
+            plane.z,
+            plane.spacing,
+            plane.offset,
+            propagation_method=propagation_method,
+            asm_pad=asm_pad,
+            interpolation_mode=interpolation_mode,
+        )
 
     def modulate(self, modulation_profile: Tensor) -> Field:
         """Modulates the field by a modulation profile.
@@ -146,7 +172,7 @@ class Field(PlanarGrid):
 
         """
         modulated_data = self.data * modulation_profile
-        return copy(self, data=modulated_data)
+        return self.copy(data=modulated_data)
 
     def polarized_modulate(self, polarized_modulation_profile: Tensor) -> Field:
         """Modulates the field by a polarized modulation profile.
@@ -162,7 +188,7 @@ class Field(PlanarGrid):
         modulated_data = (self.data.unsqueeze(self.POLARIZATION_DIM - 1) * polarized_modulation_profile).sum(
             self.POLARIZATION_DIM
         )
-        return copy(self, data=modulated_data)
+        return self.copy(data=modulated_data)
 
     def polarized_split(self) -> tuple[Field, Field, Field]:
         """Splits the field into three polarized fields.
@@ -172,10 +198,12 @@ class Field(PlanarGrid):
 
         """
         self._validate_polarization_dim()
-        fields = tuple(copy(self, data=torch.zeros_like(self.data)) for _ in range(3))
-        for i in range(3):
-            fields[i].data.select(self.POLARIZATION_DIM, i).copy_(self.data.select(self.POLARIZATION_DIM, i))
-        return fields
+        f0 = self.copy(data=torch.zeros_like(self.data))
+        f1 = self.copy(data=torch.zeros_like(self.data))
+        f2 = self.copy(data=torch.zeros_like(self.data))
+        for i, f in enumerate((f0, f1, f2)):
+            f.data.select(self.POLARIZATION_DIM, i).copy_(self.data.select(self.POLARIZATION_DIM, i))
+        return f0, f1, f2
 
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         """Normalizes the field to a specified power.
@@ -190,7 +218,7 @@ class Field(PlanarGrid):
         ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None]), 0)
         normalized_data = self.data * ratio.sqrt()
 
-        return copy(self, data=normalized_data)
+        return self.copy(data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
         """Returns the inner product of the field (last two data dimensions) with another field.
@@ -225,6 +253,19 @@ class Field(PlanarGrid):
                 f"\n{self.geometry_str()}\n{other.geometry_str()}"
             )
         return outer2d(self.data, other.data) * self.cell_area()
+
+    def copy(self, **kwargs) -> Field:
+        """Creates a copy of the field with optionally updated properties.
+
+        Args:
+            **kwargs: Properties to update in the copy.
+
+        Returns:
+            Field: A new field with updated properties.
+        """
+        attrs = {k: getattr(self, k) for k in ("data", "wavelength", "z", "spacing", "offset")}
+        attrs.update(kwargs)
+        return type(self)(**attrs)
 
     def visualize(self, *index: int, **kwargs) -> Any:
         """Visualizes the field.
@@ -287,7 +328,7 @@ class SpatialCoherence(Field):
     def normalize(self, normalized_power: Scalar = 1.0) -> Field:
         ratio = torch.nan_to_num((normalized_power / self.power()[..., None, None, None, None]), 0)
         normalized_data = self.data * ratio
-        return copy(self, data=normalized_data)
+        return self.copy(data=normalized_data)
 
     def inner(self, other: Field) -> Tensor:
         """SpatialCoherence does not support the inner product."""
