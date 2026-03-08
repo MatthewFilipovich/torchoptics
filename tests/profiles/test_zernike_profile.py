@@ -5,7 +5,7 @@ from torchoptics.profiles import zernike
 
 
 def make_zernike_args():
-    return dict(shape=(100, 100), radius=50.0, spacing=(1.0, 1.0), offset=(0.0, 0.0))
+    return {"shape": (100, 100), "radius": 50.0, "spacing": (1.0, 1.0), "offset": (0.0, 0.0)}
 
 
 def test_zernike_profile():
