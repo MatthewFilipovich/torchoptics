@@ -1,4 +1,4 @@
-"""This module defines the polarized modulator elements."""
+"""Polarized modulator element definitions."""
 
 import torch
 from torch import Tensor
@@ -9,8 +9,7 @@ from .elements import PolarizedModulationElement
 
 
 class PolarizedModulator(PolarizedModulationElement):
-    """
-    Polarized modulator element.
+    """Polarized modulator element.
 
     The polarized modulator is described by a complex polarized modulation profile.
 
@@ -20,6 +19,7 @@ class PolarizedModulator(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     polarized_modulation: Tensor
@@ -31,17 +31,18 @@ class PolarizedModulator(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the PolarizedModulator."""
         _validate_tensor(polarized_modulation, "polarized_modulation")
         super().__init__(polarized_modulation.shape[2:], z, spacing, offset)
         self.register_optics_property("polarized_modulation", polarized_modulation, is_complex=True)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         return self.polarized_modulation
 
 
 class PolarizedPhaseModulator(PolarizedModulationElement):
-    """
-    Polarized phase-only modulator element.
+    """Polarized phase-only modulator element.
 
     The polarized phase modulator is described by a polarized phase profile.
 
@@ -51,6 +52,7 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     phase: Tensor
@@ -62,17 +64,18 @@ class PolarizedPhaseModulator(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the PolarizedPhaseModulator."""
         _validate_tensor(phase, "phase")
         super().__init__(phase.shape[2:], z, spacing, offset)
         self.register_optics_property("phase", phase)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         return torch.exp(1j * self.phase)
 
 
 class PolarizedAmplitudeModulator(PolarizedModulationElement):
-    """
-    Polarized amplitude-only modulator element.
+    """Polarized amplitude-only modulator element.
 
     The polarized amplitude modulator is described by an amplitude profile.
 
@@ -82,6 +85,7 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
+
     """
 
     amplitude: Tensor
@@ -93,17 +97,18 @@ class PolarizedAmplitudeModulator(PolarizedModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
+        """Initialize the PolarizedAmplitudeModulator."""
         _validate_tensor(amplitude, "amplitude")
         super().__init__(amplitude.shape[2:], z, spacing, offset)
         self.register_optics_property("amplitude", amplitude)
 
     def polarized_modulation_profile(self) -> Tensor:
+        """Return the polarized modulation profile."""
         return self.amplitude + 0j
 
 
-def _validate_tensor(tensor, name):
+def _validate_tensor(tensor: Tensor, name: str) -> None:
     validate_tensor_ndim(tensor, name, 4)
     if tensor.shape[:2] != (3, 3):
-        raise ValueError(
-            f"Expected first two dimensions of {name} to have shape (3, 3), but got {tensor.shape[:2]}"
-        )
+        msg = f"Expected first two dimensions of {name} to have shape (3, 3), but got {tensor.shape[:2]}"
+        raise ValueError(msg)
