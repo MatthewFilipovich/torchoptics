@@ -3,7 +3,7 @@ from typing import Optional
 from torch import Tensor
 
 from ..planar_grid import PlanarGrid
-from ..type_defs import Vector2
+from ..types import Vector2
 
 
 def profile_meshgrid(

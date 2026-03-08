@@ -9,7 +9,7 @@ import torch
 
 from ..functional import plane_sample
 from ..planar_grid import PlanarGrid
-from ..type_defs import Scalar, Vector2
+from ..types import Scalar, Vector2
 from ..utils import copy
 from .angular_spectrum_method import asm_propagation
 from .direct_integration_method import calculate_grid_bounds, dim_propagation

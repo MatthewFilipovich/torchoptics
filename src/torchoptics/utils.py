@@ -6,7 +6,7 @@ from typing import Any
 import torch
 from torch import Tensor
 
-from .type_defs import Vector2
+from .types import Vector2
 
 
 def initialize_tensor(

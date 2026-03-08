@@ -6,7 +6,7 @@ import torch
 from torch import Tensor
 
 from ..fields import Field
-from ..type_defs import Scalar, Vector2
+from ..types import Scalar, Vector2
 from ..utils import copy
 from .elements import Element
 

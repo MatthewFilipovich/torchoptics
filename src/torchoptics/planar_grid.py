@@ -10,7 +10,7 @@ from torch import Tensor
 from .config import spacing_or_default
 from .functional import meshgrid2d
 from .optics_module import OpticsModule
-from .type_defs import Scalar, Vector2
+from .types import Scalar, Vector2
 from .utils import initialize_shape
 from .visualization import visualize_tensor
 

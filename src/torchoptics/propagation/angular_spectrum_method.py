@@ -11,7 +11,7 @@ from torch.nn.functional import pad
 
 from ..functional import fftfreq_grad
 from ..planar_grid import PlanarGrid
-from ..type_defs import Vector2
+from ..types import Vector2
 from ..utils import copy, initialize_tensor
 
 if TYPE_CHECKING:

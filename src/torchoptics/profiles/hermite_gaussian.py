@@ -7,7 +7,7 @@ import torch
 from torch import Tensor
 
 from ..config import wavelength_or_default
-from ..type_defs import Int, Scalar, Vector2
+from ..types import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 from ._profile_meshgrid import profile_meshgrid
 

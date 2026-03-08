@@ -5,7 +5,7 @@ from typing import Optional
 import torch
 from torch import Tensor
 
-from ..type_defs import Scalar, Vector2
+from ..types import Scalar, Vector2
 from .elements import PolarizedModulationElement
 
 

@@ -9,7 +9,7 @@ from torch import Tensor
 from torch.fft import fft2, fftfreq, ifft2
 from torch.nn.functional import grid_sample
 
-from torchoptics.type_defs import Int
+from torchoptics.types import Int
 
 from ..utils import copy
 

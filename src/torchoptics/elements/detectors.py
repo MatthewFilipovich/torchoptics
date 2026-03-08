@@ -6,7 +6,7 @@ from torch import Tensor
 from torch.nn.functional import linear
 
 from ..fields import Field
-from ..type_defs import Scalar, Vector2
+from ..types import Scalar, Vector2
 from ..utils import validate_tensor_ndim
 from .elements import Element
 

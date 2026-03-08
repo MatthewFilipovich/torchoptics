@@ -11,7 +11,7 @@ from .config import wavelength_or_default
 from .functional import calculate_centroid, calculate_std, get_coherence_evolution, inner2d, outer2d
 from .planar_grid import PlanarGrid
 from .propagation import propagator
-from .type_defs import Scalar, Vector2
+from .types import Scalar, Vector2
 from .utils import copy, validate_tensor_min_ndim
 
 

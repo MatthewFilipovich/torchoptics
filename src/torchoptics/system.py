@@ -7,7 +7,7 @@ from torch.nn import Module
 from .elements import Element, IdentityElement
 from .fields import Field
 from .planar_grid import PlanarGrid
-from .type_defs import Scalar, Vector2
+from .types import Scalar, Vector2
 
 
 class System(Module):

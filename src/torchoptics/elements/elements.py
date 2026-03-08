@@ -7,7 +7,7 @@ from torch import Tensor
 
 from ..fields import Field
 from ..planar_grid import PlanarGrid
-from ..type_defs import Scalar
+from ..types import Scalar
 
 
 class Element(PlanarGrid):

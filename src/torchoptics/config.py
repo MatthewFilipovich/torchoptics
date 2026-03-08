@@ -4,7 +4,7 @@ from typing import Optional
 
 from torch import Tensor
 
-from .type_defs import Scalar, Vector2
+from .types import Scalar, Vector2
 from .utils import initialize_tensor
 
 

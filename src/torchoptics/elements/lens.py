@@ -6,7 +6,7 @@ import torch
 from torch import Tensor
 
 from ..profiles import circle, cylindrical_lens_phase, lens_phase
-from ..type_defs import Scalar, Vector2
+from ..types import Scalar, Vector2
 from .elements import PolychromaticModulationElement
 
 

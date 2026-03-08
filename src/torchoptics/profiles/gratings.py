@@ -4,7 +4,7 @@ from typing import Optional
 
 import torch
 
-from ..type_defs import Scalar, Vector2
+from ..types import Scalar, Vector2
 from ..utils import initialize_tensor
 from ._profile_meshgrid import profile_meshgrid
 

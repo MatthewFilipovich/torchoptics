@@ -6,7 +6,7 @@ import torch
 from torch import Tensor
 from torch.special import bessel_j1  # Bessel function of the first kind
 
-from ..type_defs import Int, Scalar, Vector2
+from ..types import Int, Scalar, Vector2
 from ..utils import initialize_tensor
 from ._profile_meshgrid import profile_meshgrid
 
