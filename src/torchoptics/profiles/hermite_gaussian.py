@@ -228,7 +228,7 @@ def calculate_coordinates(
 def calculate_z_div_rayleigh_range(z: Tensor, waist_radius: Tensor, wavelength: Scalar | None) -> Tensor:
     """Calculate z divided by the Rayleigh range."""
     if z == 0:
-        return torch.tensor(0, dtype=waist_radius.dtype)
+        return waist_radius.new_zeros(())
     assert wavelength is not None
     return z / (torch.pi * waist_radius**2 / wavelength)
 
