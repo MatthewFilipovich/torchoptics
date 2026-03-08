@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 def asm_propagation(
-    field: Field, propagation_plane: PlanarGrid, propagation_method: str, asm_pad_factor: Vector2
+    field: Field, propagation_plane: PlanarGrid, propagation_method: str, asm_pad: Vector2 | None
 ) -> Field:
     """
     Propagates the field to a plane using the angular spectrum method (ASM).
@@ -31,24 +31,22 @@ def asm_propagation(
     Returns:
         Field: Output field after propagation.
     """
-    asm_pad_factor = initialize_tensor(
-        "asm_pad_factor", asm_pad_factor, is_vector2=True, is_integer=True, is_non_negative=True
-    )
+    if asm_pad is None:  # Default padding is 2x the input field size in each dimension
+        asm_pad = [2 * field.shape[0], 2 * field.shape[1]]
+    asm_pad = initialize_tensor("asm_pad", asm_pad, is_vector2=True, is_integer=True, is_non_negative=True)
     propagation_distance = propagation_plane.z - field.z
-    transfer_function = calculate_transfer_function(
-        field, propagation_distance, asm_pad_factor, propagation_method
-    )
-    propagated_data = apply_transfer_function(transfer_function, field, asm_pad_factor)
+    transfer_function = calculate_transfer_function(field, propagation_distance, asm_pad, propagation_method)
+    propagated_data = apply_transfer_function(transfer_function, field, asm_pad)
     propagated_field = field.copy(data=propagated_data, z=propagation_plane.z)
-    validate_bounds(propagated_field, propagation_plane, asm_pad_factor)
+    validate_bounds(propagated_field, propagation_plane, asm_pad)
     return propagated_field
 
 
 def calculate_transfer_function(
-    field: Field, propagation_distance: Tensor, asm_pad_factor: Tensor, propagation_method: str
+    field: Field, propagation_distance: Tensor, asm_pad: Tensor, propagation_method: str
 ) -> Tensor:
     """Calculate the transfer function for ASM propagation."""
-    padded_input_shape = torch.tensor(field.shape) * (2 * asm_pad_factor + 1)
+    padded_input_shape = torch.tensor(field.shape) + 2 * asm_pad
     freq_x, freq_y = (fftshift(fftfreq_grad(n, d)) for n, d in zip(padded_input_shape, field.spacing))
     kx, ky = torch.meshgrid(freq_x * 2 * torch.pi, freq_y * 2 * torch.pi, indexing="ij")
     k = 2 * torch.pi / field.wavelength
@@ -63,9 +61,9 @@ def calculate_transfer_function(
     )
 
 
-def apply_transfer_function(transfer_function: Tensor, field: Field, asm_pad_factor: Tensor) -> Tensor:
+def apply_transfer_function(transfer_function: Tensor, field: Field, asm_pad: Tensor) -> Tensor:
     """Apply the transfer function to the field for ASM propagation."""
-    pad_x, pad_y = [int(asm_pad_factor[i] * field.shape[i]) for i in range(2)]
+    pad_x, pad_y = int(asm_pad[0]), int(asm_pad[1])
     data = pad(field.data, (pad_y, pad_y, pad_x, pad_x), mode="constant", value=0)
     data = fftshift(fft2(data))
     data = data * transfer_function
@@ -73,7 +71,7 @@ def apply_transfer_function(transfer_function: Tensor, field: Field, asm_pad_fac
     return data
 
 
-def validate_bounds(propagated_field: Field, target_plane: PlanarGrid, asm_pad_factor: Vector2) -> None:
+def validate_bounds(propagated_field: Field, target_plane: PlanarGrid, asm_pad: Vector2) -> None:
     """Validate that the propagated field bounds contain the target plane bounds."""
     target_plane_bounds = target_plane.bounds(use_grid_points=True)
     propagated_field_bounds = propagated_field.bounds(use_grid_points=True)
@@ -89,6 +87,6 @@ def validate_bounds(propagated_field: Field, target_plane: PlanarGrid, asm_pad_f
 
         raise ValueError(
             f"Propagation plane bounds {formatted_target_bounds} are outside padded field bounds "
-            f"{formatted_propagated_bounds}.\nIncrease asm_pad_factor ({asm_pad_factor}) "
+            f"{formatted_propagated_bounds}.\nIncrease asm_pad ({asm_pad}) "
             f"or adjust propagation plane offset ({formatted_target_offset})."
         )

@@ -132,7 +132,7 @@ def test_field_propagation_methods():
         wavelength=wavelength,
     )
     with pytest.raises(TypeError):
-        input_field.propagate_to_z(propagation_distance, propagation_method=None)
+        input_field.propagate_to_z(propagation_distance, propagation_method=None)  # type: ignore[arg-type]
     with pytest.raises(ValueError):
         input_field.propagate_to_z(propagation_distance, propagation_method="Wrong")
 
@@ -155,7 +155,7 @@ def test_field_asm_propagation():
         spacing=input_field.spacing,
         offset=None,
         propagation_method="ASM",
-        asm_pad_factor=0,
+        asm_pad=0,
     )
     with pytest.raises(ValueError):
         input_field.propagate(
@@ -164,7 +164,7 @@ def test_field_asm_propagation():
             spacing=input_field.spacing,
             offset=(1e-8, 0),
             propagation_method="ASM",
-            asm_pad_factor=0,
+            asm_pad=0,
         )
 
 
@@ -176,25 +176,23 @@ def test_field_asm_propagation_zero_pad():
     for shape in shapes:
         for spacing in spacings:
             field = Field(torch.ones(shape, dtype=torch.cfloat), spacing=spacing, wavelength=wavelength)
-            field_prop = field.propagate_to_z(
-                propagation_distance, propagation_method="asm", asm_pad_factor=0
-            )
+            field_prop = field.propagate_to_z(propagation_distance, propagation_method="asm", asm_pad=0)
             assert pytest.approx(field.power().item()) == field_prop.power().item()
 
 
-def test_field_asm_pad_factor():
+def test_field_asm_pad():
     field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
     with pytest.raises(ValueError):
-        field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, 2, 3))
+        field.propagate_to_z(1, propagation_method="asm", asm_pad=(1, 2, 3))
     with pytest.raises(ValueError):
-        field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, -2))
+        field.propagate_to_z(1, propagation_method="asm", asm_pad=(1, -2))
     with pytest.raises(ValueError):
-        field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, 2.2))
+        field.propagate_to_z(1, propagation_method="asm", asm_pad=(1, 2.2))
     shape = (100, 200)
     spacing = 5e-6
     wavelength = 800e-9
     propagation_distance = 0.05
-    asm_pad_factor = (3, 2)
+    asm_pad = (300, 400)
     square_field1 = torch.ones(shape[0], shape[1], dtype=torch.cfloat)
     input_field1 = Field(
         square_field1,
@@ -202,13 +200,13 @@ def test_field_asm_pad_factor():
         wavelength=wavelength,
     )
     square_field2 = torch.zeros(
-        (1 + 2 * asm_pad_factor[0]) * shape[0],
-        (1 + 2 * asm_pad_factor[1]) * shape[1],
+        shape[0] + 2 * asm_pad[0],
+        shape[1] + 2 * asm_pad[1],
         dtype=torch.cfloat,
     )
     square_field2[
-        asm_pad_factor[0] * shape[0] : (asm_pad_factor[0] + 1) * shape[0],
-        asm_pad_factor[1] * shape[1] : (asm_pad_factor[1] + 1) * shape[1],
+        asm_pad[0] : asm_pad[0] + shape[0],
+        asm_pad[1] : asm_pad[1] + shape[1],
     ] = 1
     input_field2 = Field(
         square_field2,
@@ -220,14 +218,14 @@ def test_field_asm_pad_factor():
         propagation_distance,
         spacing=spacing,
         propagation_method="ASM",
-        asm_pad_factor=asm_pad_factor,
+        asm_pad=asm_pad,
     )
     output_field2 = input_field2.propagate(
         (shape[0], shape[1]),
         propagation_distance,
         spacing=spacing,
         propagation_method="ASM",
-        asm_pad_factor=0,
+        asm_pad=0,
     )
     assert torch.allclose(output_field1.data, output_field2.data)
 
@@ -243,7 +241,7 @@ def test_field_interpolation_modes():
     with pytest.raises(ValueError):
         field.propagate_to_z(1, interpolation_mode="invalid_mode")
     with pytest.raises(TypeError):
-        field.propagate_to_z(1, interpolation_mode=None)
+        field.propagate_to_z(1, interpolation_mode=None)  # type: ignore[arg-type]
 
 
 def test_field_propagate_methods():

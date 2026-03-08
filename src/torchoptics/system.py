@@ -78,7 +78,7 @@ class System(Module):
         field: Field,
         *,
         propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
+        asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
         """
@@ -87,8 +87,8 @@ class System(Module):
         Args:
             field (Field): Input field.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
-                Default: `2`.
+            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
+                Default: if `None`, pads by 2x the input field size in each dimension.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
 
         Returns:
@@ -97,7 +97,7 @@ class System(Module):
             field,
             None,
             propagation_method=propagation_method,
-            asm_pad_factor=asm_pad_factor,
+            asm_pad=asm_pad,
             interpolation_mode=interpolation_mode,
         )
 
@@ -110,7 +110,7 @@ class System(Module):
         offset: Vector2 | None = None,
         *,
         propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
+        asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
         """
@@ -124,8 +124,8 @@ class System(Module):
                 if `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
             offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
-                Default: `2`.
+            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
+                Default: if `None`, pads by 2x the input field size in each dimension.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
 
         Returns:
@@ -136,7 +136,7 @@ class System(Module):
             field,
             last_element,
             propagation_method=propagation_method,
-            asm_pad_factor=asm_pad_factor,
+            asm_pad=asm_pad,
             interpolation_mode=interpolation_mode,
         )
 
@@ -146,7 +146,7 @@ class System(Module):
         z: Scalar,
         *,
         propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
+        asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
         """
@@ -158,8 +158,8 @@ class System(Module):
             field (Field): Input field.
             z (Scalar): Position along the z-axis.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
-                Default: `2`.
+            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
+                Default: if `None`, pads by 2x the input field size in each dimension.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
 
         Returns:
@@ -172,7 +172,7 @@ class System(Module):
             field.spacing,
             field.offset,
             propagation_method=propagation_method,
-            asm_pad_factor=asm_pad_factor,
+            asm_pad=asm_pad,
             interpolation_mode=interpolation_mode,
         )
 
@@ -182,7 +182,7 @@ class System(Module):
         plane: PlanarGrid,
         *,
         propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
+        asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
         """
@@ -192,8 +192,8 @@ class System(Module):
             field (Field): Input field.
             plane (PlanarGrid): Plane grid.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
-                Default: `2`.
+            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
+                Default: if `None`, pads by 2x the input field size in each dimension.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
 
         Returns:
@@ -206,7 +206,7 @@ class System(Module):
             plane.spacing,
             plane.offset,
             propagation_method=propagation_method,
-            asm_pad_factor=asm_pad_factor,
+            asm_pad=asm_pad,
             interpolation_mode=interpolation_mode,
         )
 
@@ -251,7 +251,7 @@ class System(Module):
         last_element: Element | None,
         *,
         propagation_method: str = "AUTO",
-        asm_pad_factor: Vector2 = 2,
+        asm_pad: Vector2 | None = None,
         interpolation_mode: str = "nearest",
     ) -> Field:
         """Propagates the field through the system to the last element, if provided."""
@@ -261,7 +261,7 @@ class System(Module):
             field = field.propagate_to_plane(
                 element,
                 propagation_method=propagation_method,
-                asm_pad_factor=asm_pad_factor,
+                asm_pad=asm_pad,
                 interpolation_mode=interpolation_mode,
             )
             field = element(field)

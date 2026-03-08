@@ -30,7 +30,7 @@ def propagator(
     spacing: Vector2 | None,
     offset: Vector2 | None,
     propagation_method: str,
-    asm_pad_factor: Vector2,
+    asm_pad: Vector2 | None,
     interpolation_mode: str,
 ) -> Field:
     """
@@ -67,12 +67,12 @@ def propagator(
             "Critical propagation distance: [%.2e, %.2e]", critical_z[0].item(), critical_z[1].item()
         )
         if is_asm:
-            logger.debug("ASM padding factor: %s", asm_pad_factor)
+            logger.debug("ASM padding: %s", asm_pad)
         logger.debug("Input field plane: %s", field.geometry_str())
         logger.debug("Propagation plane: %s", propagation_plane.geometry_str())
 
         if is_asm:
-            field = asm_propagation(field, propagation_plane, propagation_method, asm_pad_factor)
+            field = asm_propagation(field, propagation_plane, propagation_method, asm_pad)
         else:
             field = dim_propagation(field, propagation_plane, propagation_method)
 
