@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Sequence, Union
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Union
 
 import torch
 from torch import Tensor

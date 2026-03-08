@@ -1,6 +1,7 @@
 """This module defines the System class."""
 
-from typing import Iterator, Optional, Union, overload
+from collections.abc import Iterator
+from typing import Optional, Union, overload
 
 from torch.nn import Module
 

@@ -1,6 +1,7 @@
 """Visualization utilities for real or complex-valued tensors using matplotlib."""
 
-from typing import Any, Optional, Sequence, Union, cast
+from collections.abc import Sequence
+from typing import Any, Optional, Union, cast
 
 import matplotlib.pyplot as plt
 import torch
