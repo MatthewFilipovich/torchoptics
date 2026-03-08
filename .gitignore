@@ -182,6 +182,8 @@ venv*/
 .vscode
 data/
 
+_version.py
+
 # sphinx-gallery
 docs/source/examples/
 docs/source/sg_execution_times.rst
