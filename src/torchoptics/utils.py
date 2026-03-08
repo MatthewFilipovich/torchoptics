@@ -1,6 +1,5 @@
 """This module defines utility functions for TorchOptics."""
 
-import inspect
 from typing import Any
 
 import torch
@@ -116,32 +115,3 @@ def validate_tensor_min_ndim(tensor: Tensor, name: str, min_ndim: int) -> None:
 
     if tensor.ndim < min_ndim:
         raise ValueError(f"Expected '{name}' to have at least {min_ndim} dimensions, but got {tensor.ndim}.")
-
-
-def copy(obj, **kwargs):
-    """
-    Creates a copy of an object using its `__init__` parameters.
-
-    Args:
-        obj: The object to copy.
-        **kwargs: New properties to update.
-
-    Returns:
-        A copied object with updated properties.
-
-    Raises:
-        ValueError: If the object is missing required instance variables.
-    """
-    cls = type(obj)
-    init_params = [k for k in inspect.signature(cls.__init__).parameters if k != "self"]
-
-    missing_attrs = [k for k in init_params if not hasattr(obj, k)]
-    if missing_attrs:
-        raise ValueError(
-            f"Cannot copy instance of {cls.__name__} because the following required attributes are missing: "
-            f"{missing_attrs}"
-        )
-
-    new_attrs = {k: getattr(obj, k) for k in init_params}
-    new_attrs.update(kwargs)
-    return cls(**new_attrs)
