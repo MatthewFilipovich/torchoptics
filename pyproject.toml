@@ -1,19 +1,35 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.26", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "torchoptics"
-version = "0.4.0"
+dynamic = ["version"]
+authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
+description = "Python library for differentiable Fourier optics simulations with PyTorch."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
   "torch",
   "matplotlib"
 ]
-requires-python = ">=3.9"
-authors = [{name = "Matthew Filipovich", email = "matthew.filipovich@physics.ox.ac.uk"}]
-description = "Python library for differentiable Fourier optics simulations with PyTorch."
-readme = "README.md"
-license = {file = "LICENSE"}
 keywords = [
   "wave optics",
   "PyTorch",
@@ -29,14 +45,12 @@ keywords = [
   "inverse design",
   "differentiable optics"
 ]
-classifiers = [
-  "Programming Language :: Python :: 3",
-  "Operating System :: OS Independent",
-  "Intended Audience :: Science/Research",
-  "Intended Audience :: Education",
-  "Topic :: Scientific/Engineering :: Physics",
-  "License :: OSI Approved :: MIT License"
-]
+
+[project.urls]
+Homepage = "https://github.com/MatthewFilipovich/torchoptics"
+Documentation = "https://torchoptics.readthedocs.io/"
+Tracker = "https://github.com/MatthewFilipovich/torchoptics/issues"
+Changelog = "https://github.com/MatthewFilipovich/torchoptics/releases"
 
 [project.optional-dependencies]
 dev = [
@@ -55,16 +69,15 @@ docs = [
   "sphinx-design",
 ] 
 
-[project.urls]
-Homepage = "https://github.com/MatthewFilipovich/torchoptics"
-Documentation = "https://torchoptics.readthedocs.io/"
-Tracker = "https://github.com/MatthewFilipovich/torchoptics/issues"
-
-[tool.setuptools.package-data]
-"torchoptics" = ["py.typed"]
+[tool.hatch.version]
+source = "vcs"
 
 [tool.ruff]
 line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "C4"]
+ignore = ["B905"]
 
 [tool.coverage.report]
 omit = ["tests/*"]
