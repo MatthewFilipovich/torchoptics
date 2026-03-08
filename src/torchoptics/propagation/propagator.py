@@ -56,7 +56,7 @@ def propagator(
     validate_propagation_method(propagation_method)
     validate_interpolation_mode(interpolation_mode)
 
-    output_plane = PlanarGrid(shape, z, spacing, offset).to(field.data.device)
+    output_plane = create_planar_grid(shape, z, spacing, offset).to(field.data.device)
 
     if output_plane.z != field.z:  # Propagate to output plane z
         propagation_plane = get_propagation_plane(field, output_plane)
@@ -121,7 +121,7 @@ def get_propagation_plane(field: Field, output_plane: PlanarGrid) -> PlanarGrid:
     spacing_ratio = output_plane.spacing / field.spacing
     output_plane_shape = torch.tensor(output_plane.shape, device=spacing_ratio.device)
     propagation_shape = torch.ceil((output_plane_shape - 1) * spacing_ratio).int() + 1
-    return PlanarGrid(propagation_shape, output_plane.z, field.spacing, output_plane.offset)
+    return create_planar_grid(propagation_shape, output_plane.z, field.spacing, output_plane.offset)
 
 
 def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str):
@@ -189,3 +189,16 @@ def validate_interpolation_mode(value: str) -> None:
         raise ValueError(
             f"Expected interpolation_mode to be one of {VALID_INTERPOLATION_MODES}, but got {value}."
         )
+
+
+def create_planar_grid(
+    shape: Vector2, z: Scalar, spacing: Vector2 | None, offset: Vector2 | None
+) -> PlanarGrid:
+    """Creates a PlanarGrid ensuring Parameter tensors are cloned to avoid in-place modifications."""
+    if isinstance(z, torch.nn.Parameter):
+        z = z.clone()
+    if isinstance(spacing, torch.nn.Parameter):
+        spacing = spacing.clone()
+    if isinstance(offset, torch.nn.Parameter):
+        offset = offset.clone()
+    return PlanarGrid(shape, z, spacing, offset)
