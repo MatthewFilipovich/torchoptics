@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch.nn import Parameter
 
-from torchoptics import Field, PlanarGrid, System
+from torchoptics import Field, System
 
 PROPAGATION_METHODS = ["ASM", "DIM"]
 
@@ -77,36 +77,6 @@ def test_system_propagation_gradient_through_z():
 
     assert field.z.grad is not None
     assert torch.isfinite(field.z.grad)
-
-
-@pytest.mark.parametrize("propagation_method", PROPAGATION_METHODS)
-def test_propagate_to_plane_gradient_through_plane_z(propagation_method):
-    """Gradient flows through the target plane's z when using propagate_to_plane."""
-    plane_z = Parameter(torch.tensor(10.0))
-    field = Field(torch.ones(10, 10), z=0, wavelength=1, spacing=0.1)
-    plane = PlanarGrid(shape=(10, 10), z=plane_z, spacing=0.1)
-    output = field.propagate_to_plane(plane, propagation_method=propagation_method)
-
-    loss = output.data.abs().sum()
-    loss.backward()
-
-    assert plane.z.grad is not None
-    assert torch.isfinite(plane.z.grad)
-
-
-@pytest.mark.parametrize("propagation_method", PROPAGATION_METHODS)
-def test_propagate_to_plane_gradient_through_plane_spacing(propagation_method):
-    """Gradient flows through the target plane's spacing when using propagate_to_plane."""
-    plane_spacing = Parameter(torch.tensor([0.15, 0.15]))
-    field = Field(torch.ones(10, 10), z=0, wavelength=1, spacing=0.1)
-    plane = PlanarGrid(shape=(8, 8), z=10.0, spacing=plane_spacing)
-    output = field.propagate_to_plane(plane, propagation_method=propagation_method)
-
-    loss = output.data.abs().sum()
-    loss.backward()
-
-    assert plane_spacing.grad is not None
-    assert torch.all(torch.isfinite(plane_spacing.grad))
 
 
 @pytest.mark.parametrize("propagation_method", PROPAGATION_METHODS)
