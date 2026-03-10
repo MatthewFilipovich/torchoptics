@@ -8,6 +8,8 @@ build:
 python:
   install:
     - method: pip
-      path: .[docs]
+      path: . # Install torchoptics
+    - requirements: docs/requirements-docs.txt
+
 sphinx:
   configuration: docs/source/conf.py

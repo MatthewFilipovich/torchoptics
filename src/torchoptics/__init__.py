@@ -1,4 +1,4 @@
-"""TorchOptics: Differentiable wave optics simulation library built on PyTorch."""
+"""TorchOptics: Differentiable wave optics simulations with PyTorch."""
 
 from torchoptics import elements, functional, profiles, propagation
 from torchoptics.config import (
