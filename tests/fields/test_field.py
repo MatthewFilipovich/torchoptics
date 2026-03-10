@@ -4,7 +4,7 @@ import torch
 from matplotlib.figure import Figure
 from scipy.special import fresnel
 
-from torchoptics import Field, PlanarGrid
+from torchoptics import Field, PlanarGrid, SpatialCoherence
 from torchoptics.propagation import VALID_PROPAGATION_METHODS
 
 # Helper for gaussian_2d
@@ -27,17 +27,17 @@ def analytical_square_aperture_field(x, L, N_f, wavelength, propagation_distance
 
 def test_field_initialization():
     shape = (10, 11)
-    data = torch.ones(shape, dtype=torch.cdouble)
+    data = torch.ones(shape, dtype=torch.cfloat)
     z = 5.0
     spacing = 1.0
     offset = None
     wavelength = 0.3
     pg = Field(data, wavelength, z, spacing, offset)
-    assert torch.equal(pg.data, torch.ones(shape, dtype=torch.cdouble))
-    assert torch.equal(pg.z, torch.tensor(5.0, dtype=torch.double))
-    assert torch.equal(pg.spacing, torch.tensor([1.0, 1.0], dtype=torch.double))
-    assert torch.equal(pg.offset, torch.tensor([0.0, 0.0], dtype=torch.double))
-    assert torch.equal(pg.wavelength, torch.tensor(0.3, dtype=torch.double))
+    assert torch.equal(pg.data, torch.ones(shape, dtype=torch.cfloat))
+    assert torch.equal(pg.z, torch.tensor(5.0))
+    assert torch.equal(pg.spacing, torch.tensor([1.0, 1.0]))
+    assert torch.equal(pg.offset, torch.tensor([0.0, 0.0]))
+    assert torch.equal(pg.wavelength, torch.tensor(0.3))
     with pytest.raises(TypeError):
         Field("Wrong type", spacing=1, wavelength=1)  # type: ignore
     with pytest.raises(ValueError):
@@ -55,11 +55,11 @@ def test_field_centroid_and_std():
     sigma_x, sigma_y = 2.6, 1.75
     mu_x, mu_y = -2.34, 3.23
     data = (gaussian_2d(x, y, sigma_x, sigma_y, mu_x, mu_y)) ** 0.5
-    field = Field(data.to(torch.cdouble), wavelength, z, spacing, offset)
+    field = Field(data.to(torch.cfloat), wavelength, z, spacing, offset)
     centroid = field.centroid()
     std = field.std()
-    assert torch.allclose(centroid, torch.tensor([mu_x, mu_y], dtype=torch.double), atol=1e-3)
-    assert torch.allclose(std, torch.tensor([sigma_x, sigma_y], dtype=torch.double), atol=1e-3)
+    assert torch.allclose(centroid, torch.tensor([mu_x, mu_y]), atol=1e-3)
+    assert torch.allclose(std, torch.tensor([sigma_x, sigma_y]), atol=1e-3)
 
 
 def test_field_propagation_square_aperture():
@@ -72,7 +72,7 @@ def test_field_propagation_square_aperture():
         for propagation_method in VALID_PROPAGATION_METHODS:
             square_field = torch.ones(shape, shape, device=device)
             input_field = Field(
-                square_field.to(torch.cdouble),
+                square_field.to(torch.cfloat),
                 spacing=spacing,
                 wavelength=wavelength,
             ).to(device)
@@ -86,7 +86,7 @@ def test_field_propagation_square_aperture():
             L = (shape - 1) * spacing
             N_f = (L / 2) ** 2 / (wavelength * propagation_distance)
             analytical_field = analytical_square_aperture_field(x, L, N_f, wavelength, propagation_distance)
-            assert np.allclose(output_field.data.cpu(), analytical_field, atol=1e-1)
+            assert np.allclose(output_field.data.cpu(), analytical_field, atol=2e-1)
 
 
 def test_field_offset():
@@ -95,7 +95,7 @@ def test_field_offset():
     wavelength = 800e-9
     propagation_distance = 0.05
     for propagation_method in VALID_PROPAGATION_METHODS:
-        square_field = torch.ones(shape, shape, dtype=torch.cdouble)
+        square_field = torch.ones(shape, shape, dtype=torch.cfloat)
         input_field = Field(
             square_field,
             spacing=spacing,
@@ -117,7 +117,7 @@ def test_field_offset():
         offset_output_field = offset_input_field.propagate(
             (shape, shape), propagation_distance, spacing=spacing, propagation_method=propagation_method
         )
-        assert torch.allclose(offset_output_field.data[100:, :-30], output_field.data[:-100, 30:])
+        assert torch.allclose(offset_output_field.data[100:, :-30], output_field.data[:-100, 30:], atol=1e-3)
 
 
 def test_field_propagation_methods():
@@ -125,14 +125,14 @@ def test_field_propagation_methods():
     spacing = 5e-6
     wavelength = 800e-9
     propagation_distance = 0.05
-    square_field = torch.ones(shape, shape, dtype=torch.cdouble)
+    square_field = torch.ones(shape, shape, dtype=torch.cfloat)
     input_field = Field(
         square_field,
         spacing=spacing,
         wavelength=wavelength,
     )
     with pytest.raises(TypeError):
-        input_field.propagate_to_z(propagation_distance, propagation_method=None)
+        input_field.propagate_to_z(propagation_distance, propagation_method=None)  # type: ignore[arg-type]
     with pytest.raises(ValueError):
         input_field.propagate_to_z(propagation_distance, propagation_method="Wrong")
 
@@ -142,7 +142,7 @@ def test_field_asm_propagation():
     spacing = 5e-6
     wavelength = 800e-9
     propagation_distance = 0.05
-    square_field = torch.ones(shape, shape, dtype=torch.cdouble)
+    square_field = torch.ones(shape, shape, dtype=torch.cfloat)
     input_field = Field(
         square_field,
         spacing=spacing,
@@ -155,7 +155,7 @@ def test_field_asm_propagation():
         spacing=input_field.spacing,
         offset=None,
         propagation_method="ASM",
-        asm_pad_factor=0,
+        asm_pad=0,
     )
     with pytest.raises(ValueError):
         input_field.propagate(
@@ -164,7 +164,7 @@ def test_field_asm_propagation():
             spacing=input_field.spacing,
             offset=(1e-8, 0),
             propagation_method="ASM",
-            asm_pad_factor=0,
+            asm_pad=0,
         )
 
 
@@ -175,40 +175,38 @@ def test_field_asm_propagation_zero_pad():
     propagation_distance = 1
     for shape in shapes:
         for spacing in spacings:
-            field = Field(torch.ones(shape, dtype=torch.cdouble), spacing=spacing, wavelength=wavelength)
-            field_prop = field.propagate_to_z(
-                propagation_distance, propagation_method="asm", asm_pad_factor=0
-            )
+            field = Field(torch.ones(shape, dtype=torch.cfloat), spacing=spacing, wavelength=wavelength)
+            field_prop = field.propagate_to_z(propagation_distance, propagation_method="asm", asm_pad=0)
             assert pytest.approx(field.power().item()) == field_prop.power().item()
 
 
-def test_field_asm_pad_factor():
+def test_field_asm_pad():
     field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
     with pytest.raises(ValueError):
-        field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, 2, 3))
+        field.propagate_to_z(1, propagation_method="asm", asm_pad=(1, 2, 3))
     with pytest.raises(ValueError):
-        field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, -2))
+        field.propagate_to_z(1, propagation_method="asm", asm_pad=(1, -2))
     with pytest.raises(ValueError):
-        field.propagate_to_z(1, propagation_method="asm", asm_pad_factor=(1, 2.2))
+        field.propagate_to_z(1, propagation_method="asm", asm_pad=(1, 2.2))
     shape = (100, 200)
     spacing = 5e-6
     wavelength = 800e-9
     propagation_distance = 0.05
-    asm_pad_factor = (3, 2)
-    square_field1 = torch.ones(shape[0], shape[1], dtype=torch.cdouble)
+    asm_pad = (300, 400)
+    square_field1 = torch.ones(shape[0], shape[1], dtype=torch.cfloat)
     input_field1 = Field(
         square_field1,
         spacing=spacing,
         wavelength=wavelength,
     )
     square_field2 = torch.zeros(
-        (1 + 2 * asm_pad_factor[0]) * shape[0],
-        (1 + 2 * asm_pad_factor[1]) * shape[1],
-        dtype=torch.cdouble,
+        shape[0] + 2 * asm_pad[0],
+        shape[1] + 2 * asm_pad[1],
+        dtype=torch.cfloat,
     )
     square_field2[
-        asm_pad_factor[0] * shape[0] : (asm_pad_factor[0] + 1) * shape[0],
-        asm_pad_factor[1] * shape[1] : (asm_pad_factor[1] + 1) * shape[1],
+        asm_pad[0] : asm_pad[0] + shape[0],
+        asm_pad[1] : asm_pad[1] + shape[1],
     ] = 1
     input_field2 = Field(
         square_field2,
@@ -220,14 +218,14 @@ def test_field_asm_pad_factor():
         propagation_distance,
         spacing=spacing,
         propagation_method="ASM",
-        asm_pad_factor=asm_pad_factor,
+        asm_pad=asm_pad,
     )
     output_field2 = input_field2.propagate(
         (shape[0], shape[1]),
         propagation_distance,
         spacing=spacing,
         propagation_method="ASM",
-        asm_pad_factor=0,
+        asm_pad=0,
     )
     assert torch.allclose(output_field1.data, output_field2.data)
 
@@ -236,14 +234,14 @@ def test_field_interpolation_modes():
     shape = (100, 100)
     spacing = 1e-6
     wavelength = 500e-9
-    data = torch.ones(shape, dtype=torch.cdouble)
+    data = torch.ones(shape, dtype=torch.cfloat)
     field = Field(data, wavelength, spacing=spacing)
     for mode in ["nearest", "bilinear", "bicubic"]:
         field.propagate_to_z(1, interpolation_mode=mode)
     with pytest.raises(ValueError):
         field.propagate_to_z(1, interpolation_mode="invalid_mode")
     with pytest.raises(TypeError):
-        field.propagate_to_z(1, interpolation_mode=None)
+        field.propagate_to_z(1, interpolation_mode=None)  # type: ignore[arg-type]
 
 
 def test_field_propagate_methods():
@@ -257,22 +255,57 @@ def test_field_propagate_methods():
         field.propagate_to_plane("Not a PlanarGrid object")  # type: ignore
 
 
+def test_field_copy():
+    data = torch.ones(10, 10, dtype=torch.cfloat)
+    field = Field(data, wavelength=500e-9, z=1.0, spacing=5e-6, offset=(1e-5, 2e-5))
+
+    # Basic copy fidelity: all attributes are preserved
+    copied = field.copy()
+    assert torch.equal(copied.data, field.data)
+    assert torch.equal(copied.wavelength, field.wavelength)
+    assert torch.equal(copied.z, field.z)
+    assert torch.equal(copied.spacing, field.spacing)
+    assert torch.equal(copied.offset, field.offset)
+    assert type(copied) is Field
+
+    # Attribute overriding: specified kwargs replace original values
+    new_data = 2 * torch.ones(10, 10, dtype=torch.cfloat)
+    overridden = field.copy(data=new_data, z=3.0, spacing=1e-5, offset=(0.0, 0.0))
+    assert torch.equal(overridden.data, new_data)
+    assert torch.equal(overridden.z, torch.tensor(3.0))
+    assert torch.equal(overridden.spacing, torch.tensor([1e-5, 1e-5]))
+    assert torch.equal(overridden.offset, torch.tensor([0.0, 0.0]))
+    # Unoverridden attributes remain unchanged
+    assert torch.equal(overridden.wavelength, field.wavelength)
+
+    # Subclass type preservation: SpatialCoherence.copy() returns a SpatialCoherence
+    sc_data = torch.ones(10, 10, 10, 10, dtype=torch.cfloat)
+    sc = SpatialCoherence(sc_data, wavelength=500e-9, z=0.0, spacing=5e-6)
+    sc_copy = sc.copy()
+    assert type(sc_copy) is SpatialCoherence
+    assert torch.equal(sc_copy.data, sc.data)
+    assert torch.equal(sc_copy.z, sc.z)
+    sc_copy_overridden = sc.copy(z=2.0)
+    assert type(sc_copy_overridden) is SpatialCoherence
+    assert torch.equal(sc_copy_overridden.z, torch.tensor(2.0))
+
+
 def test_field_modulate():
     field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
     modulated_field = field.modulate(10 * torch.ones(10, 10))
-    assert torch.allclose(modulated_field.data, 10 * torch.ones(10, 10, dtype=torch.cdouble))
+    assert torch.allclose(modulated_field.data, 10 * torch.ones(10, 10, dtype=torch.cfloat))
 
 
 def test_field_normalization():
     field = Field(torch.rand(10, 10), spacing=10e-6, wavelength=800e-9)
     normalized_field = field.normalize(2)
-    assert torch.allclose(normalized_field.power(), torch.tensor(2, dtype=torch.double))
+    assert torch.allclose(normalized_field.power(), torch.tensor(2.0))
 
 
 def test_field_inner():
     field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
     inner = field.inner(field)
-    assert torch.allclose(inner, torch.tensor(100, dtype=torch.cdouble))
+    assert torch.allclose(inner, torch.tensor(100, dtype=torch.cfloat))
     with pytest.raises(ValueError):
         field.inner(Field(torch.ones(5, 5), spacing=1, wavelength=1))
 
@@ -280,14 +313,14 @@ def test_field_inner():
 def test_field_outer():
     field = Field(torch.ones(10, 10), spacing=1, wavelength=1)
     outer = field.outer(field)
-    assert torch.allclose(outer, torch.ones(10, 10, 10, 10, dtype=torch.cdouble))
+    assert torch.allclose(outer, torch.ones(10, 10, 10, 10, dtype=torch.cfloat))
     with pytest.raises(ValueError):
         field.outer(Field(torch.ones(5, 5), spacing=1, wavelength=1))
 
 
 def test_field_visualize():
     shape = (10, 10)
-    data = torch.ones(shape, dtype=torch.cdouble)
+    data = torch.ones(shape, dtype=torch.cfloat)
     field = Field(data, wavelength=1, spacing=1)
     fig = field.visualize(show=False, return_fig=True)
     assert isinstance(fig, Figure)
@@ -298,4 +331,4 @@ def test_field_polarized_split():
     split_fields = field.polarized_split()
     assert len(split_fields) == 3
     for i, split_field in enumerate(split_fields):
-        assert torch.allclose(split_field.data[i], torch.ones(10, 10, dtype=torch.cdouble))
+        assert torch.allclose(split_field.data[i], torch.ones(10, 10, dtype=torch.cfloat))

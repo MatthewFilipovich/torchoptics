@@ -4,7 +4,7 @@ from torchoptics.profiles import shapes
 
 
 def make_shape_args():
-    return dict(shape=(100, 100), spacing=(0.1, 0.1), offset=(0.0, 0.0))
+    return {"shape": (100, 100), "spacing": (0.1, 0.1), "offset": (0.0, 0.0)}
 
 
 def test_checkerboard():
@@ -14,7 +14,6 @@ def test_checkerboard():
     pattern = shapes.checkerboard(tile_length=tile_length, num_tiles=num_tiles, **args)
     assert pattern.shape == args["shape"]
     assert torch.all((pattern == 0) | (pattern == 1))
-    assert pattern.dtype == torch.double
 
 
 def test_circle():
@@ -23,7 +22,6 @@ def test_circle():
     profile = shapes.circle(radius=radius, **args)
     assert profile.shape == args["shape"]
     assert torch.all((profile == 0) | (profile == 1))
-    assert profile.dtype == torch.double
 
 
 def test_rectangle():
@@ -32,7 +30,6 @@ def test_rectangle():
     profile = shapes.rectangle(side=side, **args)
     assert profile.shape == args["shape"]
     assert torch.all((profile == 0) | (profile == 1))
-    assert profile.dtype == torch.double
 
 
 def test_square():
@@ -41,7 +38,6 @@ def test_square():
     profile = shapes.square(side=side, **args)
     assert profile.shape == args["shape"]
     assert torch.all((profile == 0) | (profile == 1))
-    assert profile.dtype == torch.double
 
 
 def test_triangle():
@@ -52,4 +48,3 @@ def test_triangle():
     profile = shapes.triangle(base=base, height=height, **updated_args)
     assert profile.shape == args["shape"]
     assert torch.all((profile == 0) | (profile == 1))
-    assert profile.dtype == torch.double

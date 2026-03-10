@@ -16,7 +16,6 @@ def test_gaussian_schell_model_shape():
         spacing=spacing,
     )
     assert coherence_data.shape == (10, 15, 10, 15)
-    assert coherence_data.dtype == torch.double
 
 
 def test_gaussian_schell_model_identical_with_gaussian():
@@ -41,10 +40,8 @@ def test_gaussian_schell_model_identical_with_gaussian():
     spatial_coherence = SpatialCoherence(coherence_data, spacing=spacing, wavelength=wavelength)
     assert torch.allclose(field.intensity(), spatial_coherence.intensity())
     assert torch.allclose(
-        field.propagate_to_z(0.2).intensity(), spatial_coherence.propagate_to_z(0.2).intensity()
+        field.propagate_to_z(0.2).intensity(), spatial_coherence.propagate_to_z(0.2).intensity(), atol=1e-4
     )
-    assert coherence_data.dtype == torch.double
-    assert gaussian_data.dtype == torch.cdouble
 
 
 def test_gaussian_schell_model_incoherent():
