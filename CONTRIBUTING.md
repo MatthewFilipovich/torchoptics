@@ -20,7 +20,7 @@ To prepare your environment for development and testing:
    ```
 3. **Install TorchOptics in development mode**:
    ```bash
-   uv sync --all-extras
+   pip install -e '.[dev]'
    ```
 4. **Install pre-commit hooks**:
    ```bash
@@ -56,15 +56,16 @@ Submit your changes by opening a pull request from your fork.
 
 If you want to update the documentation, you can preview it locally before submitting a pull request.
 
+1. **Install documentation dependencies**:
 
-1. **Build the documentation**:
    ```bash
-   make -C docs html
+   pip install -r docs/requirements-docs.txt
    ```
 
 2. **Serve the documentation locally**:
+
    ```bash
-   python -m http.server 8000 --directory docs/build/html
+   sphinx-autobuild docs/source docs/build/html
    ```
 
-Then open [http://localhost:8000/](http://localhost:8000/) in your browser. Re-run the build command whenever you change the docs, and refresh the page to see the updates.
+The site will be available at [http://localhost:8000/](http://localhost:8000/).
