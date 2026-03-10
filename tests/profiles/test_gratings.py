@@ -3,7 +3,7 @@ from typing import TypedDict
 import torch
 
 from torchoptics.profiles import gratings
-from torchoptics.types import Scalar
+from torchoptics.type_defs import Scalar
 
 
 class GratingArgs(TypedDict):
