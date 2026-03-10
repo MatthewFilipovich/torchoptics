@@ -24,6 +24,7 @@ def test_blazed_grating():
     profile = gratings.blazed_grating(period=period, height=height, **args)
     assert profile.shape == args["shape"]
     assert not torch.is_complex(profile)
+    assert profile.dtype == torch.double
 
 
 def test_sinusoidal_grating():
@@ -35,6 +36,7 @@ def test_sinusoidal_grating():
     assert not torch.is_complex(profile)
     assert torch.all(profile >= -height)
     assert torch.all(profile <= height)
+    assert profile.dtype == torch.double
 
 
 def test_binary_grating():
@@ -44,3 +46,4 @@ def test_binary_grating():
     assert profile.shape == args["shape"]
     assert not torch.is_complex(profile)
     assert torch.all((profile == 0) | (profile == 1))
+    assert profile.dtype == torch.double

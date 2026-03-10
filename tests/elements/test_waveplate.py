@@ -28,7 +28,7 @@ def test_waveplate_modulation_profile():
                 [1.0, 0.0],
                 [0.0, 1.0],
             ],
-            dtype=torch.cfloat,
+            dtype=torch.cdouble,
         )
         .unsqueeze(-1)
         .unsqueeze(-1)
@@ -50,7 +50,7 @@ def test_waveplate_profile():
             [1 - 1j, 1 + 1j, 0],
             [0, 0, 2],
         ],
-        dtype=torch.cfloat,
+        dtype=torch.cdouble,
     ).unsqueeze(-1).unsqueeze(-1).expand(3, 3, *shape)
     assert torch.allclose(polarized_modulation_profile, expected_matrix)
 
@@ -70,6 +70,4 @@ def test_half_waveplate_profile():
     spacing = 1
     hwp = HalfWaveplate(shape, theta, spacing=spacing)
     waveplate = Waveplate(shape, torch.pi, theta, spacing=spacing)
-    assert torch.allclose(
-        hwp.polarized_modulation_profile(), waveplate.polarized_modulation_profile(), atol=1e-6
-    )
+    assert torch.allclose(hwp.polarized_modulation_profile(), waveplate.polarized_modulation_profile())

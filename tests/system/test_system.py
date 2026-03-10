@@ -14,9 +14,9 @@ def make_system_setup():
     modulator1_offset = (0.0, 0.0)
     modulator2_spacing = 6e-6
     modulator2_offset = (1.3e-6, -3.5e-6)
-    square_field = torch.ones(shape, shape, dtype=torch.cfloat)
+    square_field = torch.ones(shape, shape, dtype=torch.cdouble)
     input_field = Field(square_field, spacing=spacing, wavelength=wavelength)
-    mod_profile = torch.ones(shape, shape, dtype=torch.cfloat)
+    mod_profile = torch.ones(shape, shape, dtype=torch.cdouble)
     return (
         shape,
         spacing,

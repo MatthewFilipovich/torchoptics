@@ -272,9 +272,7 @@ class SpatialCoherence(Field):
 
         data_flattened = self.data.flatten(-4, -3).flatten(-2, -1)
         intensity = torch.diagonal(data_flattened, dim1=-2, dim2=-1).unflatten(-1, self.shape)
-        max_real = intensity.real.abs().max()
-        atol = max(max_real.item() * 1e-5, 1e-7)
-        if not torch.allclose(intensity.imag, torch.zeros_like(intensity.imag), atol=atol):
+        if not torch.allclose(intensity.imag, torch.zeros_like(intensity.imag), atol=1e-7):
             raise ValueError(
                 "Spatial coherence diagonal values are expected to be real, but significant imaginary "
                 "components were found.\n"

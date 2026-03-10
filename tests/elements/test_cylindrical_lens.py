@@ -12,7 +12,7 @@ def test_cylindrical_lens():
     lens = CylindricalLens(shape, focal_length, 0, spacing=spacing)
     assert lens.shape == shape
     assert lens.focal_length == focal_length
-    assert torch.is_complex(lens.modulation_profile(wavelength))
+    assert lens.modulation_profile(wavelength).dtype == torch.cdouble
     field = Field(torch.ones(3, *shape), wavelength=wavelength, spacing=spacing)
     output_field = lens(field)
     assert isinstance(output_field, Field)

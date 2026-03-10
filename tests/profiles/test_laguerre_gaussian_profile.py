@@ -39,7 +39,7 @@ def test_laguerre_gaussian_orthogonality():
 def test_laguerre_gaussian_dtype():
     profiles = make_laguerre_gaussian_profiles()
     for profile in profiles:
-        assert torch.is_complex(profile)
+        assert profile.dtype == torch.cdouble
 
 
 def test_laguerre_gaussian_normalization():

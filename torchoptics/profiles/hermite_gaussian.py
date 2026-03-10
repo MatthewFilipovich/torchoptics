@@ -218,7 +218,7 @@ def calculate_z_div_rayleigh_range(z, waist_radius, wavelength):
 def calculate_phase_shift(mode_nums, wavelength, x, y, z, z_div_rayleigh_range, is_hg):
     """Calculate the phase shift of the beam."""
     if z == 0:
-        return torch.tensor(0, dtype=torch.get_default_dtype())
+        return torch.tensor(0, dtype=torch.double)
     radius_of_curvature = z * (1 + z_div_rayleigh_range ** (-2))
     wave_number = 2.0 * torch.pi / wavelength
     radial_distance = torch.sqrt(x**2 + y**2)

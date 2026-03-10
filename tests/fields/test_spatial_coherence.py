@@ -13,7 +13,9 @@ def make_spatial_coherence_fixture():
     z = 0
     spacing = 9.2e-6
     offset = (-102e-6, 83e-6)
-    input_field = torch.rand(shape) * torch.exp(2j * torch.pi * torch.rand(shape))
+    input_field = torch.rand(shape, dtype=torch.double) * torch.exp(
+        2j * torch.pi * torch.rand(shape, dtype=torch.double)
+    )
     input_spatial_coherence = outer2d(input_field, input_field)
     field = Field(input_field, wavelength, z, spacing, offset)
     spatial_coherence = SpatialCoherence(input_spatial_coherence, wavelength, z, spacing, offset)
@@ -86,7 +88,7 @@ def test_spatial_coherence_normalization_coherent():
     field_norm = field.normalize(normalized_power)
     spatial_coherence_norm = spatial_coherence.normalize(normalized_power)
     assert torch.allclose(field_norm.intensity(), spatial_coherence_norm.intensity())
-    assert torch.allclose(spatial_coherence_norm.power(), torch.tensor(normalized_power))
+    assert torch.allclose(spatial_coherence_norm.power(), torch.tensor(normalized_power, dtype=torch.double))
 
 
 def test_spatial_coherence_visualization():
@@ -101,7 +103,9 @@ def test_spatial_coherence_raise_error():
     z = 0
     spacing = 9.2e-6
     offset = (-102e-6, 83e-6)
-    input_field = torch.rand(shape) * torch.exp(2j * torch.pi * torch.rand(shape))
+    input_field = torch.rand(shape, dtype=torch.double) * torch.exp(
+        2j * torch.pi * torch.rand(shape, dtype=torch.double)
+    )
     input_spatial_coherence = outer2d(input_field, input_field)
     input_spatial_coherence[0, 3] = input_spatial_coherence[3, 0] + 2  # Make non-Hermitian
     spatial_coherence = SpatialCoherence(input_spatial_coherence, wavelength, z, spacing, offset)

@@ -14,6 +14,7 @@ def test_airy():
     profile = special.airy(scale=scale, **args)
     assert profile.shape == args["shape"]
     assert torch.all(profile >= 0)
+    assert profile.dtype == torch.double
 
 
 def test_sinc():
@@ -22,6 +23,7 @@ def test_sinc():
     profile = special.sinc(scale=scale, **args)
     assert profile.shape == args["shape"]
     assert torch.all(profile >= 0)
+    assert profile.dtype == torch.double
 
 
 def test_siemens_star():
@@ -31,5 +33,6 @@ def test_siemens_star():
     profile = special.siemens_star(num_spokes=num_spokes, radius=radius, **args)
     assert profile.shape == args["shape"]
     assert torch.all((profile == 0) | (profile == 1))
+    assert profile.dtype == torch.double
     with pytest.raises(ValueError):
         special.siemens_star(num_spokes=num_spokes + 1, radius=radius, **args)

@@ -19,9 +19,9 @@ def test_initialization():
     shape, z, spacing, offset = make_planar_grid()
     plane = PlanarGrid(shape=shape, z=z, spacing=spacing, offset=offset)
     assert plane.shape == shape
-    assert torch.equal(plane.z, torch.tensor(z))
-    assert torch.equal(plane.spacing, torch.tensor(spacing))
-    assert torch.equal(plane.offset, torch.tensor(offset))
+    assert torch.equal(plane.z, torch.tensor(z, dtype=torch.double))
+    assert torch.equal(plane.spacing, torch.tensor(spacing, dtype=torch.double))
+    assert torch.equal(plane.offset, torch.tensor(offset, dtype=torch.double))
 
 
 def test_shape():
@@ -36,7 +36,7 @@ def test_default_initialization():
     torchoptics.set_default_spacing((0.1, 0.1))
     shape, z, _, _ = make_planar_grid()
     plane = PlanarGrid(shape=shape, z=z)
-    assert torch.equal(plane.spacing, torch.tensor((0.1, 0.1)))
+    assert torch.equal(plane.spacing, torch.tensor((0.1, 0.1), dtype=torch.double))
 
 
 def test_geometry_property():
@@ -44,9 +44,9 @@ def test_geometry_property():
     plane = PlanarGrid(shape=shape, z=z, spacing=spacing, offset=offset)
     expected_geometry = {
         "shape": shape,
-        "z": torch.tensor(z),
-        "spacing": torch.tensor(spacing),
-        "offset": torch.tensor(offset),
+        "z": torch.tensor(z, dtype=torch.double),
+        "spacing": torch.tensor(spacing, dtype=torch.double),
+        "offset": torch.tensor(offset, dtype=torch.double),
     }
     assert plane.geometry["shape"] == expected_geometry["shape"]
     assert torch.equal(plane.geometry["z"], expected_geometry["z"])
@@ -57,14 +57,16 @@ def test_geometry_property():
 def test_grid_cell_area():
     shape, z, spacing, offset = make_planar_grid()
     plane = PlanarGrid(shape=shape, z=z, spacing=spacing, offset=offset)
-    expected_area = torch.tensor(spacing[0] * spacing[1])
-    assert torch.allclose(plane.cell_area(), expected_area)
+    expected_area = torch.tensor(spacing[0] * spacing[1], dtype=torch.double)
+    assert torch.equal(plane.cell_area(), expected_area)
 
 
 def test_extent():
     shape, z, spacing, offset = make_planar_grid()
     plane = PlanarGrid(shape=shape, z=z, spacing=spacing, offset=offset)
-    expected_extent = torch.tensor(spacing) * (torch.tensor(shape, dtype=torch.float) - 1)
+    expected_extent = torch.tensor(spacing, dtype=torch.double) * (
+        torch.tensor(shape, dtype=torch.double) - 1
+    )
     assert torch.equal(plane.length(True), expected_extent)
 
 

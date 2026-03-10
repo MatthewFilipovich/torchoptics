@@ -17,6 +17,7 @@ def test_bessel_shape_and_dtype():
         offset=offset,
     )
     assert profile.shape == shape
+    assert profile.dtype == torch.double
 
 
 def test_bessel_values():
