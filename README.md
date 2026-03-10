@@ -42,62 +42,64 @@ Read the full documentation at [torchoptics.readthedocs.io](https://torchoptics.
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MatthewFilipovich/torchoptics/blob/main/docs/source/_static/torchoptics_colab.ipynb)
 
-This example shows how to simulate a 4f imaging system using TorchOptics, computing and visualizing the field at each focal plane along the optical axis:
+### Simulate an optical system
+
+Image a Siemens star resolution target through a 4f relay:
+
+```python
+import torchoptics
+from torchoptics import Field, System
+from torchoptics.elements import Lens
+from torchoptics.profiles import siemens_star
+
+torchoptics.set_default_spacing(10e-6)
+torchoptics.set_default_wavelength(700e-9)
+
+shape = (1000, 1000)
+input_field = Field(siemens_star(shape, num_spokes=36, radius=4e-3))
+
+f = 200e-3
+system = System(
+    Lens(shape, f, z=1 * f),
+    Lens(shape, f, z=3 * f),
+)
+
+output = system.measure_at_z(input_field, z=4 * f)
+output.visualize(title="4f System Output")
+```
+
+### Optimize an optical element
+
+Learn phase masks that convert a Gaussian beam into a Laguerre-Gaussian donut mode:
 
 ```python
 import torch
 import torchoptics
 from torchoptics import Field, System
-from torchoptics.elements import Lens
-from torchoptics.profiles import checkerboard
+from torchoptics.elements import PhaseModulator
+from torchoptics.profiles import gaussian, laguerre_gaussian
 
-# Set simulation properties
-shape = 1000  # Number of grid points in each dimension
-spacing = 10e-6  # Spacing between grid points (m)
-wavelength = 700e-9  # Field wavelength (m)
-focal_length = 200e-3  # Lens focal length (m)
-tile_length = 400e-6  # Checkerboard tile length (m)
-num_tiles = 15  # Number of tiles in each dimension
+torchoptics.set_default_spacing(10e-6)
+torchoptics.set_default_wavelength(700e-9)
 
-# Determine device
-device = "cuda" if torch.cuda.is_available() else "cpu"
+shape = (250, 250)
+input_field = Field(gaussian(shape, waist_radius=500e-6))
+target = Field(laguerre_gaussian(shape, p=0, l=1, waist_radius=500e-6), z=0.6)
 
-# Configure default properties
-torchoptics.set_default_spacing(spacing)
-torchoptics.set_default_wavelength(wavelength)
-
-# Initialize input field with checkerboard pattern
-field_data = checkerboard(shape, tile_length, num_tiles)
-input_field = Field(field_data).to(device)
-
-# Define 4f optical system with two lenses
 system = System(
-    Lens(shape, focal_length, z=1 * focal_length),
-    Lens(shape, focal_length, z=3 * focal_length),
-).to(device)
+    PhaseModulator(torch.nn.Parameter(torch.zeros(shape)), z=0.0),
+    PhaseModulator(torch.nn.Parameter(torch.zeros(shape)), z=0.2),
+    PhaseModulator(torch.nn.Parameter(torch.zeros(shape)), z=0.4),
+)
 
-# Measure field at focal planes along the z-axis
-measurements = [
-    system.measure_at_z(input_field, z=i * focal_length)
-    for i in range(5)
-]
-
-# Visualize the measured intensity distributions
-for i, measurement in enumerate(measurements):
-    measurement.visualize(title=f"z={i}f", vmax=1)
+optimizer = torch.optim.Adam(system.parameters(), lr=0.1)
+for _ in range(200):
+    optimizer.zero_grad()
+    output = system.measure_at_z(input_field, z=0.6)
+    loss = 1 - output.inner(target).abs().square()
+    loss.backward()
+    optimizer.step()
 ```
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/4f_simulation.png" width="700px">
-  <br>
-  <em>Intensity distributions at different focal planes in the 4f system.</em>
-</p>
-
-<p align="center">
-  <img width="300px" src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/4f_propagation.gif">
-  <br>
-  <em>Propagation of the intensity distribution.</em>
-</p>
 
 _For more examples and detailed usage, please refer to the [documentation](https://torchoptics.readthedocs.io/)._
 
