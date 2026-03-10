@@ -117,3 +117,19 @@ set the default to the most commonly used wavelength and override where needed:
 
     # Blue channel
     blue_field = Field(data, wavelength=450e-9)
+
+
+Floating-Point Precision
+-------------------------
+
+TorchOptics uses single precision (``float32``) by default, following PyTorch's convention. For
+simulations that require higher numerical accuracy — especially when using Rayleigh-Sommerfeld
+propagation methods (``ASM_RS``, ``DIM_RS``, ``AUTO_RS``) — you can switch to double precision:
+
+.. code-block:: python
+
+    import torch
+    torch.set_default_dtype(torch.float64)
+
+This should be set **before** creating any fields or optical elements. See
+:ref:`user-guide-precision` for more details on when double precision is recommended.

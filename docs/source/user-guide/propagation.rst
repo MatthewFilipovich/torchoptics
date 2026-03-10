@@ -118,6 +118,18 @@ obliquity factor and may provide improved accuracy for certain geometries:
     output = field.propagate_to_z(z=0.5, propagation_method="ASM_RS")
     output = field.propagate(shape=300, z=0.5, propagation_method="DIM_RS")
 
+.. important::
+    RS propagation methods are more sensitive to floating-point precision. If you encounter
+    numerical artifacts when using ``ASM_RS``, ``DIM_RS``, or ``AUTO_RS``, switch to double
+    precision:
+
+    .. code-block:: python
+
+        import torch
+        torch.set_default_dtype(torch.float64)
+
+    See :ref:`user-guide-precision` for details.
+
 
 Automatic Method Selection
 ----------------------------
@@ -226,3 +238,28 @@ Choosing the Right Method
    * - Unsure which to use
      - ``AUTO`` (default)
      - Automatically selects the best method
+
+
+.. _user-guide-precision:
+
+Floating-Point Precision
+-------------------------
+
+By default, TorchOptics uses single precision (``float32``), matching PyTorch's default. This is
+sufficient for most simulations and provides better performance, especially on GPUs.
+
+However, some simulations — particularly those using Rayleigh-Sommerfeld propagation methods
+(``ASM_RS``, ``DIM_RS``, ``AUTO_RS``) — may require double precision (``float64``) for accurate
+results. The RS formulation involves computing :math:`\sqrt{x^2 + y^2 + z^2}`, which can
+lose significant digits in single precision when the terms have very different magnitudes.
+
+To enable double precision, set the default dtype at the start of your script:
+
+.. code-block:: python
+
+    import torch
+    torch.set_default_dtype(torch.float64)
+
+.. tip::
+    If you observe unexpected artifacts or inaccurate results, switching to ``float64`` is a
+    good first debugging step.
