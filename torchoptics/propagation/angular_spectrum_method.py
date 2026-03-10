@@ -52,15 +52,14 @@ def calculate_transfer_function(
     freq_x, freq_y = (fftshift(fftfreq_grad(n, d)) for n, d in zip(padded_input_shape, field.spacing))
     kx, ky = torch.meshgrid(freq_x * 2 * torch.pi, freq_y * 2 * torch.pi, indexing="ij")
     k = 2 * torch.pi / field.wavelength
+    kz_squared = (k**2 - kx**2 - ky**2).to(torch.cdouble)  # Ensure kz_squared is complex for sqrt calculation
+    kz = torch.sqrt(kz_squared)  # kz is imaginary for evanescent waves where kz^2 < 0
 
-    if propagation_method.upper() in ("ASM_RS", "AUTO_RS"):  # Use Rayleigh-Sommerfeld (RS) equation
-        kz_squared = (k**2 - kx**2 - ky**2) + 0j  # kz_squared is complex for sqrt calculation
-        kz = torch.sqrt(kz_squared)  # kz is imaginary for evanescent waves where kz^2 < 0
-        return torch.exp(1j * kz * propagation_distance)
-
-    return torch.exp(1j * k * propagation_distance) * torch.exp(
-        -1j * field.wavelength * propagation_distance * (kx**2 + ky**2) / (4 * torch.pi)
-    )
+    if propagation_method in {"ASM_FRESNEL", "AUTO_FRESNEL"}:
+        return torch.exp(1j * k * propagation_distance) * torch.exp(
+            -1j * field.wavelength * propagation_distance * (kx**2 + ky**2) / (4 * torch.pi)
+        )
+    return torch.exp(1j * kz * propagation_distance)  # ASM using RS equation
 
 
 def apply_transfer_function(transfer_function: Tensor, field: Field, asm_pad_factor: Tensor) -> Tensor:
