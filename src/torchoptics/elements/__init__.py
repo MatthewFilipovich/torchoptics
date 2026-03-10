@@ -1,4 +1,4 @@
-"""Optical element classes."""
+"""This module contains the classes for the optical elements."""
 
 from .beam_splitters import BeamSplitter, PolarizingBeamSplitter
 from .detectors import Detector, LinearDetector
@@ -11,28 +11,28 @@ from .polarizers import LeftCircularPolarizer, LinearPolarizer, RightCircularPol
 from .waveplates import HalfWaveplate, QuarterWaveplate, Waveplate
 
 __all__ = [
-    "AmplitudeModulator",
     "BeamSplitter",
-    "CylindricalLens",
+    "PolarizingBeamSplitter",
     "Detector",
-    "Element",
-    "HalfWaveplate",
-    "IdentityElement",
-    "LeftCircularPolarizer",
-    "Lens",
     "LinearDetector",
-    "LinearPolarizer",
+    "Element",
     "ModulationElement",
+    "PolarizedModulationElement",
+    "PolychromaticModulationElement",
+    "IdentityElement",
+    "CylindricalLens",
+    "Lens",
+    "AmplitudeModulator",
     "Modulator",
     "PhaseModulator",
+    "PolychromaticPhaseModulator",
     "PolarizedAmplitudeModulator",
-    "PolarizedModulationElement",
     "PolarizedModulator",
     "PolarizedPhaseModulator",
-    "PolarizingBeamSplitter",
-    "PolychromaticModulationElement",
-    "PolychromaticPhaseModulator",
-    "QuarterWaveplate",
+    "LeftCircularPolarizer",
+    "LinearPolarizer",
     "RightCircularPolarizer",
+    "HalfWaveplate",
+    "QuarterWaveplate",
     "Waveplate",
 ]

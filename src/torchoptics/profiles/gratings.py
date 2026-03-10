@@ -1,4 +1,4 @@
-"""Grating profile generation functions."""
+"""This module defines functions to generate grating profiles."""
 
 import torch
 
@@ -16,15 +16,16 @@ def binary_grating(
     theta: Scalar = 0,
     duty_cycle: Scalar = 0.5,
 ) -> torch.Tensor:
-    r"""Generate a binary grating profile.
+    r"""
+    Generates a binary grating profile.
 
     The binary grating profile is defined by the following equation:
 
     .. math::
-        \psi(x, y) =
-        \begin{cases}
+        \psi(x, y) = 
+        \begin{cases} 
         0 & \text{if } \mod \left(\frac{x \cos \theta + y \sin \theta}{\Lambda}, 1\right) < d \\
-        h & \text{otherwise}
+        h & \text{otherwise} 
         \end{cases}
 
     where:
@@ -46,8 +47,8 @@ def binary_grating(
 
     Returns:
         Tensor: The generated transmission function.
-
     """
+
     duty_cycle = initialize_tensor("duty_cycle", duty_cycle, is_scalar=True)
     height = initialize_tensor("height", height, is_scalar=True)
     theta = initialize_tensor("theta", theta, is_scalar=True)
@@ -64,7 +65,8 @@ def blazed_grating(
     height: Scalar = 1,
     theta: Scalar = 0,
 ) -> torch.Tensor:
-    r"""Generate a blazed grating profile.
+    r"""
+    Generates a blazed grating profile.
 
     The blazed grating profile is defined by the following equation:
 
@@ -88,8 +90,8 @@ def blazed_grating(
 
     Returns:
         Tensor: The generated transmission function.
-
     """
+
     period = initialize_tensor("period", period, is_scalar=True)
     height = initialize_tensor("height", height, is_scalar=True)
     theta = initialize_tensor("theta", theta, is_scalar=True)
@@ -108,7 +110,8 @@ def sinusoidal_grating(
     height: Scalar = 1,
     theta: Scalar = 0,
 ) -> torch.Tensor:
-    r"""Generate a sinusoidal grating profile.
+    r"""
+    Generates a sinusoidal grating profile.
 
     The sinusoidal grating profile is defined by the following equation:
 
@@ -133,8 +136,8 @@ def sinusoidal_grating(
 
     Returns:
         Tensor: The generated transmission function.
-
     """
+
     period = initialize_tensor("period", period, is_scalar=True)
     height = initialize_tensor("height", height, is_scalar=True)
     theta = initialize_tensor("theta", theta, is_scalar=True)

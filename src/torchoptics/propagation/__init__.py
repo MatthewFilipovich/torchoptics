@@ -1,4 +1,4 @@
-"""Field propagation functions."""
+"""This module defines functions for field propagation."""
 
 from .propagator import (
     VALID_INTERPOLATION_MODES,

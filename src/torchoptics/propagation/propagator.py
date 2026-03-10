@@ -1,4 +1,4 @@
-"""Functions to propagate Field objects."""
+"""This module defines functions to propagate Field objects."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ import torch
 
 from ..functional import plane_sample
 from ..planar_grid import PlanarGrid
+from ..types import Scalar, Vector2
 from .angular_spectrum_method import asm_propagation
 from .direct_integration_method import calculate_grid_bounds, dim_propagation
 
@@ -16,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from ..fields import Field
-    from ..types import Scalar, Vector2
 
 
 VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_RS", "ASM", "ASM_RS", "DIM", "DIM_RS"}
@@ -33,7 +33,8 @@ def propagator(
     asm_pad: Vector2 | None,
     interpolation_mode: str,
 ) -> Field:
-    """Propagate the field through free-space to a plane defined by the input parameters.
+    """
+    Propagates the field through free-space to a plane defined by the input parameters.
 
     First, the field is propagated to the plane determined by :meth:`get_propagation_plane()`. This propagated
     field is then interpolated using :func:`torchoptics.functional.plane_sample()` to match the geometry of
@@ -46,14 +47,11 @@ def propagator(
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
-        propagation_method (str): Propagation method to use.
-        asm_pad (Vector2 | None): Padding size for ASM propagation.
-        interpolation_mode (str): Interpolation mode for resampling.
 
     Returns:
         Field: Output field after propagating to the plane.
-
     """
+
     validate_propagation_method(propagation_method)
     validate_interpolation_mode(interpolation_mode)
 
@@ -66,9 +64,7 @@ def propagator(
         logger.info("--- Propagating using %s method ---", "ASM" if is_asm else "DIM")
         critical_z = calculate_critical_propagation_distance(field, propagation_plane)
         logger.debug(
-            "Critical propagation distance: [%.2e, %.2e]",
-            critical_z[0].item(),
-            critical_z[1].item(),
+            "Critical propagation distance: [%.2e, %.2e]", critical_z[0].item(), critical_z[1].item()
         )
         if is_asm:
             logger.debug("ASM padding: %s", asm_pad)
@@ -91,7 +87,8 @@ def propagator(
 
 
 def get_propagation_plane(field: Field, output_plane: PlanarGrid) -> PlanarGrid:
-    r"""Create a propagation plane that is equal to or slightly larger than the specified output plane.
+    r"""
+    Creates a propagation plane that is equal to or slightly larger than the specified output plane.
 
     The propagation plane adopts the same ``spacing`` as the ``field``, and retains the same ``z`` and
     ``offset`` values as the ``output_plane``.
@@ -126,8 +123,8 @@ def get_propagation_plane(field: Field, output_plane: PlanarGrid) -> PlanarGrid:
     return create_planar_grid(propagation_shape, output_plane.z, field.spacing, output_plane.offset)
 
 
-def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str) -> bool:
-    """Return whether propagation using ASM should be used.
+def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str):
+    """Returns whether propagation using ASM should be used.
 
     Returns `True` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_RS"`.
 
@@ -145,11 +142,12 @@ def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, prop
     # Auto: Determine propagation method based on critical propagation distance
     critical_z = calculate_critical_propagation_distance(field, propagation_plane)
     z = (propagation_plane.z - field.z).abs()
-    return bool(torch.any(z < critical_z))
+    return torch.any(z < critical_z)
 
 
 def calculate_critical_propagation_distance(field: Field, propagation_plane: PlanarGrid) -> torch.Tensor:
-    r"""Calculate the critical propagation distance for determining the propagation method.
+    r"""
+    Calculates the critical propagation distance for determining the propagation method.
 
     The minimum distance is calculated using the criteria in Eq. A.17 from D. Voelz's textbook "Computational
     Fourier Optics: A MATLAB Tutorial" (2011):
@@ -174,31 +172,28 @@ def calculate_critical_propagation_distance(field: Field, propagation_plane: Pla
 def validate_propagation_method(value: str) -> None:
     """Validate the propagation method."""
     if not isinstance(value, str):
-        msg = f"Expected propagation_method to be a string, but got {type(value).__name__}."
-        raise TypeError(msg)
+        raise TypeError(f"Expected propagation_method to be a string, but got {type(value).__name__}.")
 
     if value.upper() not in VALID_PROPAGATION_METHODS:
-        msg = f"Expected propagation_method to be one of {VALID_PROPAGATION_METHODS}, but got {value}."
-        raise ValueError(msg)
+        raise ValueError(
+            f"Expected propagation_method to be one of {VALID_PROPAGATION_METHODS}, but got {value}."
+        )
 
 
 def validate_interpolation_mode(value: str) -> None:
     """Validate the interpolation mode."""
     if not isinstance(value, str):
-        msg = f"Expected interpolation_mode to be a string, but got {type(value).__name__}."
-        raise TypeError(msg)
+        raise TypeError(f"Expected interpolation_mode to be a string, but got {type(value).__name__}.")
     if value.lower() not in VALID_INTERPOLATION_MODES:
-        msg = f"Expected interpolation_mode to be one of {VALID_INTERPOLATION_MODES}, but got {value}."
-        raise ValueError(msg)
+        raise ValueError(
+            f"Expected interpolation_mode to be one of {VALID_INTERPOLATION_MODES}, but got {value}."
+        )
 
 
 def create_planar_grid(
-    shape: Vector2,
-    z: Scalar,
-    spacing: Vector2 | None,
-    offset: Vector2 | None,
+    shape: Vector2, z: Scalar, spacing: Vector2 | None, offset: Vector2 | None
 ) -> PlanarGrid:
-    """Create a PlanarGrid ensuring Parameter tensors are cloned to avoid in-place modifications."""
+    """Creates a PlanarGrid ensuring Parameter tensors are cloned to avoid in-place modifications."""
     if isinstance(z, torch.nn.Parameter):
         z = z.clone()
     if isinstance(spacing, torch.nn.Parameter):

@@ -1,14 +1,12 @@
 """Visualization utilities for real or complex-valued tensors using matplotlib."""
 
 from collections.abc import Sequence
-from typing import cast
+from typing import Any, cast
 
 import matplotlib.pyplot as plt
 import torch
 from matplotlib.animation import FuncAnimation
-from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-from matplotlib.image import AxesImage
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from torch import Tensor
 
@@ -23,7 +21,8 @@ def visualize_tensor(
     return_fig: bool = False,
     **imshow_kwargs,
 ) -> Figure | None:
-    """Visualize a 2D real or complex-valued tensor using matplotlib.
+    """
+    Visualize a 2D real or complex-valued tensor using matplotlib.
 
     If the tensor is complex, two subplots are shown: one for the magnitude squared and one for the phase.
 
@@ -40,11 +39,9 @@ def visualize_tensor(
 
     Returns:
         plt.Figure | None: The matplotlib Figure if `return_fig` is True, else None.
-
     """
     if tensor.ndim < 2 or not all(s == 1 for s in tensor.shape[:-2]):
-        msg = f"Expected tensor to be 2D, but got shape {tensor.shape}."
-        raise ValueError(msg)
+        raise ValueError(f"Expected tensor to be 2D, but got shape {tensor.shape}.")
 
     tensor = tensor.detach().cpu().view(tensor.shape[-2], tensor.shape[-1])
 
@@ -114,9 +111,10 @@ def animate_tensor(
     symbol: str | None = None,
     show: bool = True,
     func_anim_kwargs: dict | None = None,
-    **imshow_kwargs: object,
+    **imshow_kwargs,
 ) -> FuncAnimation:
-    """Animate a 3D tensor over time using matplotlib.
+    """
+    Animate a 3D tensor over time using matplotlib.
 
     The first dimension of the tensor is treated as time or frame index. If the tensor is complex,
     each frame is visualized as both magnitude squared and phase.
@@ -134,11 +132,9 @@ def animate_tensor(
 
     Returns:
         FuncAnimation: The matplotlib animation object.
-
     """
     if tensor.ndim < 3 or not all(s == 1 for s in tensor.shape[:-3]):
-        msg = f"Expected tensor to be 3D, but got shape {tensor.shape}."
-        raise ValueError(msg)
+        raise ValueError(f"Expected tensor to be 3D, but got shape {tensor.shape}.")
 
     tensor = tensor.detach().cpu().view(tensor.shape[-3], tensor.shape[-2], tensor.shape[-1])
     num_frames = tensor.shape[0]
@@ -147,8 +143,7 @@ def animate_tensor(
     titles = [title] * num_frames if isinstance(title, str) or title is None else list(title)
 
     if len(titles) != num_frames:
-        msg = f"`title` must have length {num_frames}, but got {len(titles)}."
-        raise ValueError(msg)
+        raise ValueError(f"`title` must have length {num_frames}, but got {len(titles)}.")
 
     fig = visualize_tensor(
         tensor[0],
@@ -160,7 +155,7 @@ def animate_tensor(
         return_fig=True,
         **imshow_kwargs,
     )
-    fig = cast("Figure", fig)
+    fig = cast(Figure, fig)
     axes = fig.axes
 
     if is_complex:
@@ -177,9 +172,9 @@ def animate_tensor(
             ims[0].set_array(tensor[frame])
 
         if titles[frame]:
-            fig.suptitle(titles[frame], y=0.95)  # type: ignore[arg-type]
+            fig.suptitle(titles[frame], y=0.95)  # type: ignore
 
-    anim = FuncAnimation(fig, update, frames=num_frames, **(func_anim_kwargs or {}))  # type: ignore[arg-type]
+    anim = FuncAnimation(fig, update, frames=num_frames, **(func_anim_kwargs or {}))  # type: ignore
 
     if show:
         plt.show()
@@ -188,7 +183,7 @@ def animate_tensor(
 
 
 def create_image_subplot(
-    ax: Axes,
+    ax: Any,
     tensor: Tensor,
     xlabel: str | None = None,
     ylabel: str | None = None,
@@ -196,11 +191,12 @@ def create_image_subplot(
     cbar_ticks: Sequence[float] | None = None,
     cbar_ticklabels: Sequence[str] | None = None,
     **imshow_kwargs,
-) -> AxesImage:
-    """Create an image subplot with colorbar, axis labels, and optional title.
+) -> Any:
+    """
+    Create an image subplot with colorbar, axis labels, and optional title.
 
     Args:
-        ax (Axes): Matplotlib axis to draw on.
+        ax (Any): Matplotlib axis to draw on.
         tensor (Tensor): 2D tensor to visualize.
         xlabel (str | None): Label for x-axis.
         ylabel (str | None): Label for y-axis.
@@ -211,8 +207,7 @@ def create_image_subplot(
             `cmap`, `vmin`, `vmax`, `interpolation`, etc.
 
     Returns:
-        AxesImage: The image object returned by `imshow`.
-
+        Any: The image object returned by `imshow`.
     """
     imshow_kwargs.setdefault("cmap", "inferno")
 
@@ -224,8 +219,8 @@ def create_image_subplot(
         colorbar.set_ticks(cbar_ticks)
     if cbar_ticklabels is not None:
         colorbar.set_ticklabels(cbar_ticklabels)
-    ax.set_xlabel(xlabel or "")
-    ax.set_ylabel(ylabel or "")
-    ax.set_title(ax_title or "")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(ax_title)
 
     return im

@@ -1,11 +1,12 @@
-"""IdentityElement element."""
+"""This module defines the IdentityElement element."""
 
 from ..fields import Field
 from .elements import Element
 
 
 class IdentityElement(Element):
-    """Identity element.
+    """
+    Identity element.
 
     The identity element does not modify the input field. It is useful as a placeholder element in
     :class:`torchoptics.System`.
@@ -16,10 +17,9 @@ class IdentityElement(Element):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
-
     """
 
     def forward(self, field: Field) -> Field:
-        """Return the input field without modification."""
+        """Returns the input field without modification."""
         self.validate_field(field)
         return field

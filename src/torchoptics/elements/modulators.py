@@ -1,4 +1,4 @@
-"""Modulator element definitions."""
+"""This module defines the modulator elements."""
 
 import torch
 from torch import Tensor
@@ -10,7 +10,8 @@ from .elements import ModulationElement, PolychromaticModulationElement
 
 
 class Modulator(ModulationElement):
-    """Modulator element.
+    """
+    Modulator element.
 
     The modulator is described by a complex modulation profile.
 
@@ -20,7 +21,6 @@ class Modulator(ModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
-
     """
 
     modulation: Tensor
@@ -32,18 +32,17 @@ class Modulator(ModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
-        """Initialize the Modulator."""
         validate_tensor_ndim(modulation, "modulation", 2)
         super().__init__(modulation.shape, z, spacing, offset)
         self.register_optics_property("modulation", modulation, is_complex=True)
 
     def modulation_profile(self) -> Tensor:
-        """Return the modulation profile."""
         return self.modulation
 
 
 class PhaseModulator(ModulationElement):
-    """Phase-only modulator element.
+    """
+    Phase-only modulator element.
 
     The phase modulator is described by a phase profile.
 
@@ -53,7 +52,6 @@ class PhaseModulator(ModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
-
     """
 
     phase: Tensor
@@ -65,18 +63,17 @@ class PhaseModulator(ModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
-        """Initialize the PhaseModulator."""
         validate_tensor_ndim(phase, "phase", 2)
         super().__init__(phase.shape, z, spacing, offset)
         self.register_optics_property("phase", phase)
 
     def modulation_profile(self) -> Tensor:
-        """Return the modulation profile."""
         return torch.exp(1j * self.phase)
 
 
 class AmplitudeModulator(ModulationElement):
-    """Amplitude-only modulator element.
+    """
+    Amplitude-only modulator element.
 
     The amplitude modulator is described by an amplitude profile.
 
@@ -86,7 +83,6 @@ class AmplitudeModulator(ModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
-
     """
 
     amplitude: Tensor
@@ -98,18 +94,17 @@ class AmplitudeModulator(ModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
-        """Initialize the AmplitudeModulator."""
         validate_tensor_ndim(amplitude, "amplitude", 2)
         super().__init__(amplitude.shape, z, spacing, offset)
         self.register_optics_property("amplitude", amplitude)
 
     def modulation_profile(self) -> Tensor:
-        """Return the modulation profile."""
         return self.amplitude + 0j
 
 
 class PolychromaticPhaseModulator(PolychromaticModulationElement):
-    r"""Phase-only modulator element that modulates the optical field based on the optical path length (OPL).
+    r"""
+    Phase-only modulator element that modulates the optical field based on the optical path length (OPL).
 
     The modulation is applied according to:
 
@@ -129,7 +124,6 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
         offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
-
     """
 
     optical_path_length: Tensor
@@ -141,12 +135,10 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
-        """Initialize the PolychromaticPhaseModulator."""
         validate_tensor_ndim(optical_path_length, "optical_path_length", 2)
         super().__init__(optical_path_length.shape, z, spacing, offset)
         self.register_optics_property("optical_path_length", optical_path_length)
 
     def modulation_profile(self, wavelength: Scalar | None = None) -> Tensor:
-        """Return the modulation profile."""
         wavelength = wavelength_or_default(wavelength)
         return torch.exp(2j * torch.pi / wavelength * self.optical_path_length)

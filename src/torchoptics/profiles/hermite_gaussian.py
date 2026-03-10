@@ -1,7 +1,7 @@
-"""Hermite-Gaussian and Gaussian profile generation functions."""
+"""This module defines functions to generate Hermite-Gaussian and Gaussian profiles."""
 
 import math
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 
 import torch
 from torch import Tensor
@@ -22,16 +22,17 @@ def hermite_gaussian(
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
 ) -> Tensor:
-    r"""Generate a Hermite-Gaussian profile.
+    r"""
+    Generates a Hermite-Gaussian profile.
 
     The Hermite-Gaussian profile is defined by the following equation:
 
     .. math::
         \begin{align*}
-        \psi_{mn}(x, y, z) &= \frac{w_0}{w(z)} H_m\left(\sqrt{2}\frac{x}{w(z)}\right)
+        \psi_{mn}(x, y, z) &= \frac{w_0}{w(z)} H_m\left(\sqrt{2}\frac{x}{w(z)}\right) 
         H_n\left(\sqrt{2}\frac{y}{w(z)}\right) \\
         & \quad \times \exp\left(-\frac{x^2 + y^2}{w(z)^2}\right) \\
-        & \quad \times \exp\left(i\left[kz + \frac{k(x^2 + y^2)}{2R(z)}
+        & \quad \times \exp\left(i\left[kz + \frac{k(x^2 + y^2)}{2R(z)} 
         - (m+n+1)\arctan\left(\frac{z}{z_R}\right)\right]\right),
         \end{align*}
 
@@ -63,7 +64,7 @@ def hermite_gaussian(
         k = \frac{2\pi}{\lambda}
 
     - :math:`H_m` and :math:`H_n`: The Hermite polynomials of order :math:`m` and :math:`n`.
-
+    
     Args:
         shape (Vector2): Number of grid points along the planar dimensions.
         m (int): The mode number in the first planar dimension.
@@ -78,27 +79,19 @@ def hermite_gaussian(
 
     Returns:
         Tensor: The generated Hermite-Gaussian profile.
-
     """
     m = initialize_tensor("m", m, is_scalar=True, is_integer=True, is_non_negative=True)
     n = initialize_tensor("n", n, is_scalar=True, is_integer=True, is_non_negative=True)
     waist_radius = initialize_tensor("waist_radius", waist_radius, is_scalar=True, is_positive=True)
 
     x, y, phase_shift, wz, waist_ratio = calculate_beam_properties(
-        (m, n),
-        waist_radius,
-        shape,
-        wavelength,
-        waist_z,
-        spacing,
-        offset,
-        True,
+        (m, n), waist_radius, shape, wavelength, waist_z, spacing, offset, True
     )
 
     u_x = 2.0**0.5 * x / wz
     u_y = 2.0**0.5 * y / wz
     normalization_constant = torch.sqrt(
-        2.0 ** (1 - m - n) / (math.factorial(m) * math.factorial(n) * torch.pi * waist_radius**2),
+        2.0 ** (1 - m - n) / (math.factorial(m) * math.factorial(n) * torch.pi * waist_radius**2)
     )
 
     return (
@@ -119,7 +112,8 @@ def gaussian(
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
 ) -> Tensor:
-    r"""Generate a Gaussian profile.
+    r"""
+    Generates a Gaussian profile.
 
     The Gaussian profile is defined by the following equation:
 
@@ -189,16 +183,7 @@ def hermite_poly(n: Int) -> Callable[[Tensor], Tensor]:
     return poly
 
 
-def calculate_beam_properties(
-    mode_nums: Sequence[Int],
-    waist_radius: Tensor,
-    shape: Vector2,
-    wavelength: Scalar | None,
-    waist_z: Scalar,
-    spacing: Vector2 | None,
-    offset: Vector2 | None,
-    is_hg: bool,
-) -> tuple[Tensor, Tensor, Tensor, Tensor, Tensor]:
+def calculate_beam_properties(mode_nums, waist_radius, shape, wavelength, waist_z, spacing, offset, is_hg):
     """Calculate the properties of the beam."""
     wavelength = get_wavelength(wavelength, waist_z)
     x, y, z = calculate_coordinates(shape, waist_z, spacing, offset)
@@ -209,43 +194,31 @@ def calculate_beam_properties(
     return x, y, phase_shift, wz, waist_ratio
 
 
-def get_wavelength(wavelength: Scalar | None, waist_z: Scalar) -> Scalar | None:
+def get_wavelength(wavelength, waist_z):
     """Get the wavelength of the beam."""
     if waist_z == 0:  # Wavelength does not matter at the waist (can be None)
         return wavelength
     return wavelength_or_default(wavelength)
 
 
-def calculate_coordinates(
-    shape: Vector2, waist_z: Scalar, spacing: Vector2 | None, offset: Vector2 | None
-) -> tuple[Tensor, Tensor, Tensor]:
+def calculate_coordinates(shape, waist_z, spacing, offset):
     """Calculate the coordinates of the beam."""
     x, y = profile_meshgrid(shape, spacing, offset)
     z = initialize_tensor("waist_z", waist_z, is_scalar=True)
     return x, y, z
 
 
-def calculate_z_div_rayleigh_range(z: Tensor, waist_radius: Tensor, wavelength: Scalar | None) -> Tensor:
+def calculate_z_div_rayleigh_range(z, waist_radius, wavelength):
     """Calculate z divided by the Rayleigh range."""
     if z == 0:
-        return waist_radius.new_zeros(())
-    assert wavelength is not None
+        return 0
     return z / (torch.pi * waist_radius**2 / wavelength)
 
 
-def calculate_phase_shift(
-    mode_nums: Sequence[Int],
-    wavelength: Scalar | None,
-    x: Tensor,
-    y: Tensor,
-    z: Tensor,
-    z_div_rayleigh_range: Tensor,
-    is_hg: bool,
-) -> Tensor:
+def calculate_phase_shift(mode_nums, wavelength, x, y, z, z_div_rayleigh_range, is_hg):
     """Calculate the phase shift of the beam."""
     if z == 0:
         return torch.tensor(0, dtype=torch.get_default_dtype())
-    assert wavelength is not None
     radius_of_curvature = z * (1 + z_div_rayleigh_range ** (-2))
     wave_number = 2.0 * torch.pi / wavelength
     radial_distance = torch.sqrt(x**2 + y**2)
@@ -258,11 +231,11 @@ def calculate_phase_shift(
     return phase_shift
 
 
-def calculate_wz(waist_radius: Tensor, z_div_rayleigh_range: Tensor) -> Tensor:
+def calculate_wz(waist_radius, z_div_rayleigh_range):
     """Calculate the beam waist radius."""
     return waist_radius * (1 + z_div_rayleigh_range**2) ** 0.5
 
 
-def calculate_waist_ratio(z_div_rayleigh_range: Tensor) -> Tensor:
+def calculate_waist_ratio(z_div_rayleigh_range):
     """Calculate the ratio of the beam waist radius to the beam waist radius at the waist."""
     return 1 / (1 + z_div_rayleigh_range**2) ** 0.5

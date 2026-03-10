@@ -1,4 +1,4 @@
-"""Type aliases for the torchoptics package."""
+"""This module defines type aliases for the torchoptics package."""
 
 from collections.abc import Sequence
 from typing import TypeAlias

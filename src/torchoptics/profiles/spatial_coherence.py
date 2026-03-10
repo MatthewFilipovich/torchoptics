@@ -1,4 +1,4 @@
-"""Spatial coherence function profile generation."""
+"""This module defines functions to generate spatial coherence function profiles."""
 
 from collections.abc import Callable
 
@@ -18,7 +18,8 @@ def schell_model(
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
 ) -> Tensor:
-    r"""Generate a spatial coherence function profile based on the Schell-model.
+    r"""
+    Generates a spatial coherence function profile based on the Schell-model.
 
     The Schell model describes partially coherent light as a combination of an intensity distribution
     and a spatial coherence function. The mutual coherence function :math:`\Gamma(x_1, y_1, x_2, y_2)`
@@ -46,7 +47,6 @@ def schell_model(
     Returns:
         torch.Tensor: A 4D tensor representing the mutual coherence function
         :math:`\Gamma(x_1, y_1, x_2, y_2)`.
-
     """
     x, y = profile_meshgrid(shape, spacing, offset)
     intensity = intensity_func(x, y)
@@ -66,7 +66,8 @@ def gaussian_schell_model(
     spacing: Vector2 | None = None,
     offset: Vector2 | None = None,
 ) -> Tensor:
-    r"""Generate a spatial coherence function profile based on the Gaussian Schell-model.
+    r"""
+    Generates a spatial coherence function profile based on the Gaussian Schell-model.
 
     The Gaussian Schell-model assumes both the intensity and coherence functions have Gaussian profiles.
     The mutual coherence function :math:`\Gamma(x_1, y_1, x_2, y_2)` is defined as:
@@ -93,15 +94,14 @@ def gaussian_schell_model(
     Returns:
         torch.Tensor: A 4D tensor representing the mutual coherence function
         :math:`\Gamma(x_1, x_2, y_1, y_2)`.
-
     """
 
-    def coherence_func(dx: Tensor, dy: Tensor) -> Tensor:
+    def coherence_func(dx, dy):
         if coherence_width == 0:  # Return 1 only at (x, y) = (0, 0), and 0 elsewhere
             return (dx == 0) * (dy == 0)
         return torch.exp(-(dx**2 + dy**2) / (2 * coherence_width**2))
 
-    def intensity_func(x: Tensor, y: Tensor) -> Tensor:
+    def intensity_func(x, y):
         return 2 / (torch.pi * waist_radius**2) * torch.exp(-(2 * (x**2 + y**2)) / waist_radius**2)
 
     # Use the general Schell model to compute the coherence profile
