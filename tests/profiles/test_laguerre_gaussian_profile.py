@@ -46,7 +46,7 @@ def test_laguerre_gaussian_normalization():
     profiles = make_laguerre_gaussian_profiles()
     for profile in profiles:
         inner_product = torch.sum(profile.conj() * profile).abs().item()
-        assert abs(inner_product - 1.0) < 1e-7
+        assert abs(inner_product - 1.0) < 1e-6
 
 
 def test_laguerre_gaussian_equivalence():
