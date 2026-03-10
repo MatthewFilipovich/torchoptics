@@ -73,33 +73,21 @@ class System(Module):
         """Returns the elements in the system."""
         return self._elements
 
-    def forward(
-        self,
-        field: Field,
-        *,
-        propagation_method: str = "AUTO",
-        asm_pad: Vector2 | None = None,
-        interpolation_mode: str = "nearest",
-    ) -> Field:
+    def forward(self, field: Field, **prop_kwargs) -> Field:
         """
         Propagates the field through the system.
 
         Args:
             field (Field): Input field.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
-                Default: if `None`, pads by 2x the input field size in each dimension.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating through the system."""
-        return self._forward(
-            field,
-            None,
-            propagation_method=propagation_method,
-            asm_pad=asm_pad,
-            interpolation_mode=interpolation_mode,
-        )
+        return self._forward(field, None, **prop_kwargs)
 
     def measure(
         self,
@@ -108,10 +96,7 @@ class System(Module):
         z: Scalar,
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
-        *,
-        propagation_method: str = "AUTO",
-        asm_pad: Vector2 | None = None,
-        interpolation_mode: str = "nearest",
+        **prop_kwargs,
     ) -> Field:
         """
         Propagates the field through the system to a plane defined by the input parameters.
@@ -124,31 +109,18 @@ class System(Module):
                 if `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
             offset (Vector2 | None): Center coordinates of the plane. Default: `(0, 0)`.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
-                Default: if `None`, pads by 2x the input field size in each dimension.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
         """
         last_element = IdentityElement(shape, z, spacing, offset).to(field.data.device)
-        return self._forward(
-            field,
-            last_element,
-            propagation_method=propagation_method,
-            asm_pad=asm_pad,
-            interpolation_mode=interpolation_mode,
-        )
+        return self._forward(field, last_element, **prop_kwargs)
 
-    def measure_at_z(
-        self,
-        field: Field,
-        z: Scalar,
-        *,
-        propagation_method: str = "AUTO",
-        asm_pad: Vector2 | None = None,
-        interpolation_mode: str = "nearest",
-    ) -> Field:
+    def measure_at_z(self, field: Field, z: Scalar, **prop_kwargs) -> Field:
         """
         Propagates the field through the system to a plane at a specific z position.
 
@@ -158,33 +130,17 @@ class System(Module):
             field (Field): Input field.
             z (Scalar): Position along the z-axis.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
-                Default: if `None`, pads by 2x the input field size in each dimension.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
         """
-        return self.measure(
-            field,
-            field.shape,
-            z,
-            field.spacing,
-            field.offset,
-            propagation_method=propagation_method,
-            asm_pad=asm_pad,
-            interpolation_mode=interpolation_mode,
-        )
+        return self.measure(field, field.shape, z, field.spacing, field.offset, **prop_kwargs)
 
-    def measure_at_plane(
-        self,
-        field: Field,
-        plane: PlanarGrid,
-        *,
-        propagation_method: str = "AUTO",
-        asm_pad: Vector2 | None = None,
-        interpolation_mode: str = "nearest",
-    ) -> Field:
+    def measure_at_plane(self, field: Field, plane: PlanarGrid, **prop_kwargs) -> Field:
         """
         Propagates the field through the system to a plane defined by a :class:`PlanarGrid` object.
 
@@ -192,23 +148,15 @@ class System(Module):
             field (Field): Input field.
             plane (PlanarGrid): Plane grid.
             propagation_method (str): The propagation method to use. Default: `"AUTO"`.
-            asm_pad (Vector2 | None): The padding size along both planar dimensions for ASM propagation.
-                Default: if `None`, pads by 2x the input field size in each dimension.
+            asm_pad_factor (Vector2): The padding factor along both planar dimensions for ASM propagation.
+                Default: `2`.
             interpolation_mode (str): The interpolation mode to use. Default: `"nearest"`.
+
 
         Returns:
             Field: Output field after propagating to the plane.
         """
-        return self.measure(
-            field,
-            plane.shape,
-            plane.z,
-            plane.spacing,
-            plane.offset,
-            propagation_method=propagation_method,
-            asm_pad=asm_pad,
-            interpolation_mode=interpolation_mode,
-        )
+        return self.measure(field, plane.shape, plane.z, plane.spacing, plane.offset, **prop_kwargs)
 
     def sorted_elements(self) -> tuple[Element, ...]:
         """Returns the elements sorted by their z position."""
@@ -245,25 +193,12 @@ class System(Module):
 
         return tuple(elements_in_path)
 
-    def _forward(
-        self,
-        field: Field,
-        last_element: Element | None,
-        *,
-        propagation_method: str = "AUTO",
-        asm_pad: Vector2 | None = None,
-        interpolation_mode: str = "nearest",
-    ) -> Field:
+    def _forward(self, field: Field, last_element: Element | None, **prop_kwargs) -> Field:
         """Propagates the field through the system to the last element, if provided."""
         elements = self.elements_in_field_path(field, last_element)
 
         for i, element in enumerate(elements):
-            field = field.propagate_to_plane(
-                element,
-                propagation_method=propagation_method,
-                asm_pad=asm_pad,
-                interpolation_mode=interpolation_mode,
-            )
+            field = field.propagate_to_plane(element, **prop_kwargs)
             field = element(field)
 
             if not isinstance(field, Field) and i < len(elements) - 1:

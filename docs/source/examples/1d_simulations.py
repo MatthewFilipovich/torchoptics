@@ -4,8 +4,8 @@
 
 Simulates 1D field propagation using the angular spectrum method (ASM).
 
-We can perform 1D simulations using ASM along the :math:`x`-axis by ensuring the ``shape`` along
-the :math:`y`-axis is set to ``1`` and ``asm_pad`` along the :math:`y`-axis is set to ``0``.
+We can perform 1D simulations using ASM along the :math:`x`-axis by ensuring the ``shape`` and
+``asm_pad_factor`` along the :math:`y`-axis are set to ``1`` and ``0``, respectively.
 """
 
 import matplotlib.animation as animation
@@ -37,14 +37,14 @@ plt.show()
 # Propagation Using ASM
 # ---------------------
 # We propagate the field using the angular spectrum method (ASM) and visualize
-# its intensity at different distances. The ``asm_pad`` is set to ``(50000, 0)``
-# (50x the 1000-point field size along x, 0 along y).
+# its intensity at different distances. The ``asm_pad_factor`` is set to ``(50, 0)``,
+# ensuring propagation occurs only along the :math:`x`-axis.
 
 z_values = [0, 0.5, 1, 1.5, 2, 2.5]
 fig, axes = plt.subplots(len(z_values), 1, figsize=(6, 15), sharex=True)
 
 for ax, z in zip(axes, z_values):
-    propagated_field = field.propagate_to_z(z, asm_pad=(50000, 0), propagation_method="asm")
+    propagated_field = field.propagate_to_z(z, asm_pad_factor=(50, 0), propagation_method="asm")
     ax.plot(x, propagated_field.intensity().squeeze())
     ax.set_title(f"z = {z} m")
     ax.set_xlabel("x (m)")
@@ -65,7 +65,7 @@ z_list = torch.linspace(0, 3, num_frames)
 
 # Compute intensities at each propagation step
 intensities = [
-    field.propagate_to_z(z, asm_pad=(50000, 0), propagation_method="asm").intensity().squeeze()
+    field.propagate_to_z(z, asm_pad_factor=(50, 0), propagation_method="asm").intensity().squeeze()
     for z in z_list
 ]
 
