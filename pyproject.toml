@@ -72,9 +72,6 @@ docs = [
 [tool.hatch.version]
 source = "vcs"
 
-[tool.hatch.build.hooks.vcs]
-version-file = "src/torchoptics/_version.py"
-
 [tool.ruff]
 line-length = 110
 

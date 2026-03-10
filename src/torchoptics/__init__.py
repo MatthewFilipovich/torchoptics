@@ -13,8 +13,6 @@ from torchoptics.planar_grid import PlanarGrid
 from torchoptics.system import System
 from torchoptics.visualization import animate_tensor, visualize_tensor
 
-from ._version import __version__
-
 __all__ = [
     "Field",
     "OpticsModule",
@@ -31,5 +29,4 @@ __all__ = [
     "set_default_spacing",
     "set_default_wavelength",
     "visualize_tensor",
-    "__version__",
 ]
