@@ -63,7 +63,7 @@ def initialize_tensor(
 
     if is_vector2:
         if tensor.numel() == 1:  # Convert scalar to 2D vector
-            tensor = torch.full((2,), tensor.item())
+            tensor = tensor.expand(2).clone()
         if tensor.numel() != 2:
             msg = f"Expected {name} to be a 2D vector, but got a tensor with shape {tensor.shape}."
             raise ValueError(msg)
