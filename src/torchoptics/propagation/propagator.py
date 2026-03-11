@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ..types import Scalar, Vector2
 
 
-VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_RS", "ASM", "ASM_RS", "DIM", "DIM_RS"}
+VALID_PROPAGATION_METHODS = {"AUTO", "AUTO_FRESNEL", "ASM", "ASM_FRESNEL", "DIM", "DIM_FRESNEL"}
 VALID_INTERPOLATION_MODES = {"none", "bilinear", "bicubic", "nearest"}
 
 
@@ -129,20 +129,20 @@ def get_propagation_plane(field: Field, output_plane: PlanarGrid) -> PlanarGrid:
 def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str) -> bool:
     """Return whether propagation using ASM should be used.
 
-    Returns `True` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_RS"`.
+    Returns `True` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_FRESNEL"`.
 
-    Returns `False` if :attr:`field.propagation_method` is `"DIM"` or `"DIM_RS"`.
+    Returns `False` if :attr:`field.propagation_method` is `"DIM"` or `"DIM_FRESNEL"`.
 
-    If :attr:`field.propagation_method` is `"auto"`, the propagation method is determined based on the
-    condition set in :func:`calculate_critical_propagation_distance`. Returns `True` if at least one of the
-    two planar dimensions meets the condition; otherwise, returns `False`.
+    If :attr:`field.propagation_method` is `"AUTO"` or `"AUTO_FRESNEL"`, the propagation family is
+    determined based on the condition set in :func:`calculate_critical_propagation_distance`. Returns `True`
+    if at least one of the two planar dimensions meets the condition; otherwise, returns `False`.
     """
-    if propagation_method.upper() in ("DIM", "DIM_RS"):
+    if propagation_method.upper() in ("DIM", "DIM_FRESNEL"):
         return False
-    if propagation_method.upper() in ("ASM", "ASM_RS"):
+    if propagation_method.upper() in ("ASM", "ASM_FRESNEL"):
         return True
 
-    # Auto: Determine propagation method based on critical propagation distance
+    # Auto: determine the propagation family based on critical propagation distance.
     critical_z = calculate_critical_propagation_distance(field, propagation_plane)
     z = (propagation_plane.z - field.z).abs()
     return bool(torch.any(z < critical_z))

@@ -61,11 +61,12 @@ def calculate_transfer_function(
     kx, ky = torch.meshgrid(freq_x * 2 * torch.pi, freq_y * 2 * torch.pi, indexing="ij")
     k = 2 * torch.pi / field.wavelength
 
-    if propagation_method.upper() in ("ASM_RS", "AUTO_RS"):  # Use Rayleigh-Sommerfeld (RS) equation
+    if propagation_method.upper() in ("ASM", "AUTO"):  # Unnamed default uses Rayleigh-Sommerfeld (RS)
         kz_squared = (k**2 - kx**2 - ky**2) + 0j  # kz_squared is complex for sqrt calculation
         kz = torch.sqrt(kz_squared)  # kz is imaginary for evanescent waves where kz^2 < 0
         return torch.exp(1j * kz * propagation_distance)
 
+    # Explicit _FRESNEL variants use the Fresnel approximation.
     return torch.exp(1j * k * propagation_distance) * torch.exp(
         -1j * field.wavelength * propagation_distance * (kx**2 + ky**2) / (4 * torch.pi),
     )

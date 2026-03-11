@@ -5,7 +5,8 @@ from typing import Any
 import torch
 from torch import Tensor
 
-from .types import Vector2
+from .config import get_default_dtype, get_default_spacing, get_default_wavelength
+from .types import Scalar, Vector2
 
 
 def initialize_tensor(
@@ -44,12 +45,14 @@ def initialize_tensor(
         msg = f"Expected {name} to contain integer values, but found non-integer values."
         raise ValueError(msg)
 
+    default_dtype = get_default_dtype()
+
     if is_integer:
         dtype = torch.int64
     elif is_complex:
-        dtype = torch.complex128 if torch.get_default_dtype() == torch.float64 else torch.complex64
+        dtype = torch.complex128 if default_dtype == torch.float64 else torch.complex64
     else:
-        dtype = torch.float64 if torch.get_default_dtype() == torch.float64 else torch.float32
+        dtype = default_dtype
     tensor = value.clone().to(dtype) if isinstance(value, Tensor) else torch.tensor(value, dtype=dtype)
 
     if is_scalar:
@@ -85,6 +88,24 @@ def initialize_shape(shape: Vector2) -> tuple[int, int]:
     """
     shape_tensor = initialize_tensor("shape", shape, is_vector2=True, is_integer=True, is_positive=True)
     return (shape_tensor[0].item(), shape_tensor[1].item())  # type: ignore[return-value]
+
+
+def spacing_or_default(spacing: Vector2 | None) -> Tensor:
+    """Get the spacing or the default value if ``spacing`` is ``None``."""
+    return (
+        get_default_spacing()
+        if spacing is None
+        else initialize_tensor("spacing", spacing, is_vector2=True, is_positive=True)
+    )
+
+
+def wavelength_or_default(wavelength: Scalar | None) -> Tensor:
+    """Get the wavelength or the default value if ``wavelength`` is ``None``."""
+    return (
+        get_default_wavelength()
+        if wavelength is None
+        else initialize_tensor("wavelength", wavelength, is_scalar=True, is_positive=True)
+    )
 
 
 def validate_tensor_ndim(tensor: Tensor, name: str, ndim: int) -> None:

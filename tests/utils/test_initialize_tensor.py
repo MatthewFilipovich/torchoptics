@@ -1,6 +1,7 @@
 import pytest
 import torch
 
+from torchoptics.config import get_default_dtype, set_default_dtype
 from torchoptics.utils import initialize_tensor
 
 
@@ -32,6 +33,26 @@ def test_initialize_complex_tensor():
     tensor = initialize_tensor("complex", 1.0 + 2.0j, is_complex=True)
     assert torch.is_tensor(tensor)
     assert tensor.item() == 1.0 + 2.0j
+
+
+def test_initialize_tensor_uses_configured_default_dtype():
+    original_dtype = get_default_dtype()
+    try:
+        set_default_dtype(torch.float32)
+        tensor = initialize_tensor("scalar", 1.0, is_scalar=True)
+        assert tensor.dtype == torch.float32
+    finally:
+        set_default_dtype(original_dtype)
+
+
+def test_initialize_complex_tensor_uses_configured_default_dtype():
+    original_dtype = get_default_dtype()
+    try:
+        set_default_dtype(torch.float32)
+        tensor = initialize_tensor("complex", 1.0 + 2.0j, is_complex=True)
+        assert tensor.dtype == torch.complex64
+    finally:
+        set_default_dtype(original_dtype)
 
 
 def test_initialize_integer_tensor():

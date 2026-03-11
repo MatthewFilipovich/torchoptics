@@ -2,8 +2,10 @@
 
 from torchoptics import elements, functional, profiles, propagation
 from torchoptics.config import (
+    get_default_dtype,
     get_default_spacing,
     get_default_wavelength,
+    set_default_dtype,
     set_default_spacing,
     set_default_wavelength,
 )
@@ -23,11 +25,13 @@ __all__ = [
     "System",
     "animate_tensor",
     "elements",
+    "get_default_dtype",
     "functional",
     "get_default_spacing",
     "get_default_wavelength",
     "profiles",
     "propagation",
+    "set_default_dtype",
     "set_default_spacing",
     "set_default_wavelength",
     "visualize_tensor",

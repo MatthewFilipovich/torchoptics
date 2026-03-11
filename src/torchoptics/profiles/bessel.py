@@ -3,9 +3,8 @@
 import torch
 from torch import Tensor
 
-from ..config import wavelength_or_default
 from ..types import Scalar, Vector2
-from ..utils import initialize_tensor
+from ..utils import initialize_tensor, wavelength_or_default
 from ._profile_meshgrid import profile_meshgrid
 
 

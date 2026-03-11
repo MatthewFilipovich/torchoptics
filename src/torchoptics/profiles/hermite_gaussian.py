@@ -6,9 +6,9 @@ from collections.abc import Callable, Sequence
 import torch
 from torch import Tensor
 
-from ..config import wavelength_or_default
+from ..config import get_default_dtype
 from ..types import Int, Scalar, Vector2
-from ..utils import initialize_tensor
+from ..utils import initialize_tensor, wavelength_or_default
 from ._profile_meshgrid import profile_meshgrid
 
 
@@ -244,7 +244,7 @@ def calculate_phase_shift(
 ) -> Tensor:
     """Calculate the phase shift of the beam."""
     if z == 0:
-        return torch.tensor(0, dtype=torch.get_default_dtype())
+        return torch.tensor(0, dtype=get_default_dtype())
     assert wavelength is not None
     radius_of_curvature = z * (1 + z_div_rayleigh_range ** (-2))
     wave_number = 2.0 * torch.pi / wavelength
