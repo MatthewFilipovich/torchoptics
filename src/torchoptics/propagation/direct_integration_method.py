@@ -65,13 +65,14 @@ def calculate_impulse_response(
     propagation_distance = propagation_plane.z - field.z
     k = 2 * torch.pi / field.wavelength
 
-    if propagation_method.upper() in ("DIM_RS", "AUTO_RS"):  # Use Rayleigh-Sommerfeld (RS) equation
+    if propagation_method.upper() in ("DIM", "AUTO"):  # Unnamed default uses Rayleigh-Sommerfeld (RS)
         r_squared = x**2 + y**2 + propagation_distance**2
         r = torch.sqrt(r_squared) if propagation_distance >= 0 else -torch.sqrt(r_squared)
-        return (  # DIM using RS equation
+        return (
             1 / (2 * torch.pi) * (1 / r - 1j * k) * torch.exp(1j * k * r) * propagation_distance / r_squared
         ) * field.cell_area()
 
+    # Explicit _FRESNEL variants use the Fresnel approximation.
     return (
         (torch.exp(1j * k * propagation_distance) / (1j * field.wavelength * propagation_distance))
         * torch.exp(1j * k / (2 * propagation_distance) * (x**2 + y**2))

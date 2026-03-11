@@ -1,6 +1,7 @@
 import pytest
 import torch
 
+from torchoptics.config import get_default_dtype, set_default_dtype
 from torchoptics.utils import initialize_tensor
 
 
@@ -28,10 +29,48 @@ def test_initialize_vector2_tensor():
     assert tensor.tolist() == [1.0, 2.0]
 
 
+def test_initialize_vector2_from_scalar_preserves_configured_dtype():
+    original_dtype = get_default_dtype()
+    try:
+        set_default_dtype(torch.float64)
+        tensor = initialize_tensor("vector2", 1.0, is_vector2=True)
+        assert tensor.dtype == torch.float64
+        assert tensor.tolist() == [1.0, 1.0]
+    finally:
+        set_default_dtype(original_dtype)
+
+
+def test_initialize_vector2_from_scalar_tensor_preserves_device():
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    scalar = torch.tensor(1.0, device=device)
+    tensor = initialize_tensor("vector2", scalar, is_vector2=True)
+    assert tensor.device == scalar.device
+
+
 def test_initialize_complex_tensor():
     tensor = initialize_tensor("complex", 1.0 + 2.0j, is_complex=True)
     assert torch.is_tensor(tensor)
     assert tensor.item() == 1.0 + 2.0j
+
+
+def test_initialize_tensor_uses_configured_default_dtype():
+    original_dtype = get_default_dtype()
+    try:
+        set_default_dtype(torch.float32)
+        tensor = initialize_tensor("scalar", 1.0, is_scalar=True)
+        assert tensor.dtype == torch.float32
+    finally:
+        set_default_dtype(original_dtype)
+
+
+def test_initialize_complex_tensor_uses_configured_default_dtype():
+    original_dtype = get_default_dtype()
+    try:
+        set_default_dtype(torch.float32)
+        tensor = initialize_tensor("complex", 1.0 + 2.0j, is_complex=True)
+        assert tensor.dtype == torch.complex64
+    finally:
+        set_default_dtype(original_dtype)
 
 
 def test_initialize_integer_tensor():

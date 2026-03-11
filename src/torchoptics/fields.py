@@ -8,11 +8,10 @@ import torch
 from matplotlib.figure import Figure
 from torch import Tensor
 
-from .config import wavelength_or_default
 from .functional import calculate_centroid, calculate_std, get_coherence_evolution, inner2d, outer2d
 from .planar_grid import PlanarGrid
 from .propagation import propagator
-from .utils import validate_tensor_min_ndim
+from .utils import validate_tensor_min_ndim, wavelength_or_default
 
 if TYPE_CHECKING:
     from .types import Scalar, Vector2

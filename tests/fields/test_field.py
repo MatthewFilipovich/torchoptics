@@ -5,7 +5,7 @@ from matplotlib.figure import Figure
 from scipy.special import fresnel
 
 from torchoptics import Field, PlanarGrid, SpatialCoherence
-from torchoptics.propagation import VALID_PROPAGATION_METHODS
+from torchoptics.propagation import VALID_PROPAGATION_METHODS, is_angular_spectrum_method
 
 # Helper for gaussian_2d
 
@@ -118,6 +118,16 @@ def test_field_offset():
             (shape, shape), propagation_distance, spacing=spacing, propagation_method=propagation_method
         )
         assert torch.allclose(offset_output_field.data[100:, :-30], output_field.data[:-100, 30:], atol=1e-3)
+
+
+def test_explicit_propagation_method_families():
+    field = Field(torch.ones(10, 10, dtype=torch.cfloat), spacing=1, wavelength=1)
+    propagation_plane = PlanarGrid((10, 10), z=1, spacing=1)
+
+    assert is_angular_spectrum_method(field, propagation_plane, "ASM") is True
+    assert is_angular_spectrum_method(field, propagation_plane, "ASM_FRESNEL") is True
+    assert is_angular_spectrum_method(field, propagation_plane, "DIM") is False
+    assert is_angular_spectrum_method(field, propagation_plane, "DIM_FRESNEL") is False
 
 
 def test_field_propagation_methods():

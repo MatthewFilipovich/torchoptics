@@ -8,10 +8,9 @@ import torch
 from matplotlib.figure import Figure
 from torch import Tensor
 
-from .config import spacing_or_default
 from .functional import meshgrid2d
 from .optics_module import OpticsModule
-from .utils import initialize_shape
+from .utils import initialize_shape, spacing_or_default
 from .visualization import visualize_tensor
 
 if TYPE_CHECKING:
