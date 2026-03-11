@@ -129,13 +129,13 @@ def get_propagation_plane(field: Field, output_plane: PlanarGrid) -> PlanarGrid:
 def is_angular_spectrum_method(field: Field, propagation_plane: PlanarGrid, propagation_method: str) -> bool:
     """Return whether propagation using ASM should be used.
 
-    Returns `True` if :attr:`field.propagation_method` is `"ASM"` or `"ASM_FRESNEL"`.
+    Returns `True` if ``propagation_method`` is `"ASM"` or `"ASM_FRESNEL"`.
 
-    Returns `False` if :attr:`field.propagation_method` is `"DIM"` or `"DIM_FRESNEL"`.
+    Returns `False` if ``propagation_method`` is `"DIM"` or `"DIM_FRESNEL"`.
 
-    If :attr:`field.propagation_method` is `"AUTO"` or `"AUTO_FRESNEL"`, the propagation family is
-    determined based on the condition set in :func:`calculate_critical_propagation_distance`. Returns `True`
-    if at least one of the two planar dimensions meets the condition; otherwise, returns `False`.
+    If ``propagation_method`` is `"AUTO"` or `"AUTO_FRESNEL"`, the propagation family is determined
+    based on the condition set in :func:`calculate_critical_propagation_distance`. Returns `True` if at
+    least one of the two planar dimensions meets the condition; otherwise, returns `False`.
     """
     if propagation_method.upper() in ("DIM", "DIM_FRESNEL"):
         return False
