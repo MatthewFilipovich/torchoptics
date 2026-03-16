@@ -63,7 +63,7 @@ def propagator(
         propagation_plane = get_propagation_plane(field, output_plane)
         is_asm = is_angular_spectrum_method(field, propagation_plane, propagation_method)
 
-        logger.info("--- Propagating using %s method ---", "ASM" if is_asm else "DIM")
+        logger.debug("--- Propagating using %s method ---", "ASM" if is_asm else "DIM")
         critical_z = calculate_critical_propagation_distance(field, propagation_plane)
         logger.debug(
             "Critical propagation distance: [%.2e, %.2e]",
@@ -84,7 +84,7 @@ def propagator(
         transformed_data = plane_sample(field.data, field, output_plane, interpolation_mode)
         field = field.copy(data=transformed_data, spacing=output_plane.spacing, offset=output_plane.offset)
 
-        logger.info("--- Interpolating to output plane geometry ---")
+        logger.debug("--- Interpolating to output plane geometry ---")
         logger.debug("Output plane: %s", output_plane.geometry_str())
 
     return field
