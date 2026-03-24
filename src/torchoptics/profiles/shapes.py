@@ -162,7 +162,9 @@ def regular_polygon(
         Tensor: The generated regular polygon profile.
 
     """
-    num_sides_tensor = initialize_tensor("num_sides", num_sides, is_scalar=True, is_integer=True, is_positive=True)
+    num_sides_tensor = initialize_tensor(
+        "num_sides", num_sides, is_scalar=True, is_integer=True, is_positive=True
+    )
     if num_sides_tensor < 3:
         msg = f"Expected num_sides to be >= 3, but got {num_sides}."
         raise ValueError(msg)
@@ -171,7 +173,10 @@ def regular_polygon(
     theta = initialize_tensor("theta", theta, is_scalar=True)
     x, y = profile_meshgrid(shape, spacing, offset)
     apothem = radius * math.cos(math.pi / num_sides)
-    normals = theta + (2 * torch.arange(num_sides, device=theta.device, dtype=theta.dtype) + 1) * math.pi / num_sides
+    normals = (
+        theta
+        + (2 * torch.arange(num_sides, device=theta.device, dtype=theta.dtype) + 1) * math.pi / num_sides
+    )
     mask = torch.ones(x.shape, dtype=torch.bool, device=x.device)
     for a in normals:
         mask &= x * torch.cos(a) + y * torch.sin(a) <= apothem
