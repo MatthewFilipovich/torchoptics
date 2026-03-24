@@ -62,7 +62,7 @@ def test_regular_polygon_invalid_num_sides():
     with pytest.raises(ValueError, match="num_sides"):
         shapes.regular_polygon(num_sides=-1, radius=4.0, **args)
     with pytest.raises(ValueError, match="num_sides"):
-        shapes.regular_polygon(num_sides=3.5, radius=4.0, **args)
+        shapes.regular_polygon(num_sides=3.5, radius=4.0, **args)  # type: ignore[arg-type]
 
 
 def test_regular_polygon_output_shape():
