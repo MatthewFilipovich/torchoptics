@@ -1,5 +1,6 @@
 import math
 
+import pytest
 import torch
 
 from torchoptics.profiles import shapes
@@ -50,6 +51,18 @@ def test_octagon():
     # octagon should equal regular_polygon with 8 sides and theta=pi/8
     expected = shapes.regular_polygon(num_sides=8, radius=radius, theta=math.pi / 8, **args)
     assert torch.equal(profile, expected)
+
+
+def test_regular_polygon_invalid_num_sides():
+    args = make_shape_args()
+    with pytest.raises(ValueError, match="num_sides"):
+        shapes.regular_polygon(num_sides=2, radius=4.0, **args)
+    with pytest.raises(ValueError, match="num_sides"):
+        shapes.regular_polygon(num_sides=0, radius=4.0, **args)
+    with pytest.raises(ValueError, match="num_sides"):
+        shapes.regular_polygon(num_sides=-1, radius=4.0, **args)
+    with pytest.raises(ValueError, match="num_sides"):
+        shapes.regular_polygon(num_sides=3.5, radius=4.0, **args)
 
 
 def test_regular_polygon_output_shape():
