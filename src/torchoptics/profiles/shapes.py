@@ -162,6 +162,11 @@ def regular_polygon(
         Tensor: The generated regular polygon profile.
 
     """
+    num_sides_tensor = initialize_tensor("num_sides", num_sides, is_scalar=True, is_integer=True, is_positive=True)
+    if num_sides_tensor < 3:
+        msg = f"Expected num_sides to be >= 3, but got {num_sides}."
+        raise ValueError(msg)
+    num_sides = int(num_sides_tensor.item())
     radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
     theta = initialize_tensor("theta", theta, is_scalar=True)
     x, y = profile_meshgrid(shape, spacing, offset)
