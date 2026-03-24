@@ -166,7 +166,7 @@ def regular_polygon(
     theta = initialize_tensor("theta", theta, is_scalar=True)
     x, y = profile_meshgrid(shape, spacing, offset)
     apothem = radius * math.cos(math.pi / num_sides)
-    normals = theta + (2 * torch.arange(num_sides) + 1) * math.pi / num_sides
+    normals = theta + (2 * torch.arange(num_sides, device=theta.device, dtype=theta.dtype) + 1) * math.pi / num_sides
     mask = torch.ones(x.shape, dtype=torch.bool, device=x.device)
     for a in normals:
         mask &= x * torch.cos(a) + y * torch.sin(a) <= apothem
