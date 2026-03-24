@@ -1,5 +1,7 @@
 """Shape profile generation functions."""
 
+import math
+
 import torch
 from torch import Tensor
 
@@ -69,6 +71,50 @@ def circle(
     return (r <= radius).to(get_default_dtype())
 
 
+def hexagon(
+    shape: Vector2,
+    radius: Scalar,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
+) -> Tensor:
+    """Generate a hexagonal profile.
+
+    Args:
+        shape (Vector2): Number of grid points along the planar dimensions.
+        radius (Scalar): The circumradius (center-to-vertex distance) of the hexagon.
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
+            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
+        offset (Vector2 | None): Center coordinates of the profile. Default: `(0, 0)`.
+
+    Returns:
+        Tensor: The generated hexagonal profile.
+
+    """
+    return regular_polygon(shape, 6, radius, spacing, offset)
+
+
+def octagon(
+    shape: Vector2,
+    radius: Scalar,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
+) -> Tensor:
+    """Generate an octagonal profile.
+
+    Args:
+        shape (Vector2): Number of grid points along the planar dimensions.
+        radius (Scalar): The circumradius (center-to-vertex distance) of the octagon.
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
+            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
+        offset (Vector2 | None): Center coordinates of the profile. Default: `(0, 0)`.
+
+    Returns:
+        Tensor: The generated octagonal profile.
+
+    """
+    return regular_polygon(shape, 8, radius, spacing, offset, theta=math.pi / 8)
+
+
 def rectangle(
     shape: Vector2,
     side: Vector2,
@@ -91,6 +137,40 @@ def rectangle(
     side = initialize_tensor("side", side, is_vector2=True, is_positive=True)
     x, y = profile_meshgrid(shape, spacing, offset)
     return ((x.abs() <= side[0] / 2) & (y.abs() <= side[1] / 2)).to(get_default_dtype())
+
+
+def regular_polygon(
+    shape: Vector2,
+    num_sides: int,
+    radius: Scalar,
+    spacing: Vector2 | None = None,
+    offset: Vector2 | None = None,
+    theta: Scalar = 0,
+) -> Tensor:
+    """Generate a regular N-sided polygon profile.
+
+    Args:
+        shape (Vector2): Number of grid points along the planar dimensions.
+        num_sides (int): Number of sides (must be >= 3).
+        radius (Scalar): The circumradius (center-to-vertex distance).
+        spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
+            `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
+        offset (Vector2 | None): Center coordinates of the profile. Default: `(0, 0)`.
+        theta (Scalar): Rotation angle in radians (angle of the first vertex). Default: `0`.
+
+    Returns:
+        Tensor: The generated regular polygon profile.
+
+    """
+    radius = initialize_tensor("radius", radius, is_scalar=True, is_positive=True)
+    theta = initialize_tensor("theta", theta, is_scalar=True)
+    x, y = profile_meshgrid(shape, spacing, offset)
+    apothem = radius * math.cos(math.pi / num_sides)
+    normals = theta + (2 * torch.arange(num_sides) + 1) * math.pi / num_sides
+    mask = torch.ones(x.shape, dtype=torch.bool, device=x.device)
+    for a in normals:
+        mask &= x * torch.cos(a) + y * torch.sin(a) <= apothem
+    return mask.to(get_default_dtype())
 
 
 def square(
