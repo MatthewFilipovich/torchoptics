@@ -45,15 +45,54 @@ def test_phase_modulation_profile_consistency():
     assert torch.allclose(modulator.modulation_profile(), phase_modulator.modulation_profile())
 
 
-def test_polychromatic_phase_modulator():
-    optical_path_length = torch.rand((10, 12))
+def test_polychromatic_phase_modulator_scalar_n():
+    thickness = torch.rand((10, 12))
+    n = 1.5
     z = 1.5
-    polychromatic_modulator = PolychromaticPhaseModulator(optical_path_length, z)
+    modulator = PolychromaticPhaseModulator(thickness, n=n, z=z)
     wavelength = 700e-9
-    expected_profile = torch.exp(2j * torch.pi / torch.tensor(wavelength) * optical_path_length)
-    assert torch.allclose(polychromatic_modulator.modulation_profile(wavelength), expected_profile)
+    expected = torch.exp(2j * torch.pi / torch.tensor(wavelength) * (n - 1) * thickness)
+    assert torch.allclose(modulator.modulation_profile(wavelength), expected)
     field = Field(torch.ones(3, 10, 12), wavelength=700e-9, z=z, spacing=1)
-    assert isinstance(polychromatic_modulator(field), Field)
+    assert isinstance(modulator(field), Field)
+
+
+def test_polychromatic_phase_modulator_callable_n():
+    thickness = torch.rand((10, 12))
+    z = 1.5
+
+    def n_func(wl):
+        return 1.5 + 0.01e-12 / wl**2
+
+    modulator = PolychromaticPhaseModulator(thickness, n=n_func, z=z)
+    wavelength = 700e-9
+    n_val = n_func(wavelength)
+    expected = torch.exp(2j * torch.pi / torch.tensor(wavelength) * (n_val - 1) * thickness)
+    assert torch.allclose(modulator.modulation_profile(wavelength), expected)
+
+
+def test_polychromatic_phase_modulator_callable_n_wavelength_dependence():
+    """Verify that a callable n produces different profiles at different wavelengths."""
+    thickness = torch.ones((10, 12))
+    z = 1.5
+
+    def n_func(wl):
+        return 1.5 + 0.01e-12 / wl**2
+
+    modulator = PolychromaticPhaseModulator(thickness, n=n_func, z=z)
+    profile_400 = modulator.modulation_profile(400e-9)
+    profile_700 = modulator.modulation_profile(700e-9)
+    assert not torch.allclose(profile_400, profile_700)
+
+
+def test_polychromatic_phase_modulator_n1():
+    """With n=1, (n-1)=0, so modulation should be all ones."""
+    thickness = torch.rand((10, 12))
+    z = 1.5
+    modulator = PolychromaticPhaseModulator(thickness, n=1, z=z)
+    wavelength = 700e-9
+    profile = modulator.modulation_profile(wavelength)
+    assert torch.allclose(profile, torch.ones_like(profile))
 
 
 def test_amplitude_modulation_profile_consistency():
@@ -72,6 +111,8 @@ def test_error_on_invalid_tensor_input():
         PhaseModulator("not a tensor", z)  # type: ignore
     with pytest.raises(TypeError):
         AmplitudeModulator("not a tensor", z)  # type: ignore
+    with pytest.raises(TypeError):
+        PolychromaticPhaseModulator("not a tensor", n=1.5, z=z)  # type: ignore
 
 
 def test_error_on_incorrect_dimensions():
@@ -83,6 +124,8 @@ def test_error_on_incorrect_dimensions():
         PhaseModulator(invalid_tensor, z)
     with pytest.raises(ValueError):
         AmplitudeModulator(invalid_tensor, z)
+    with pytest.raises(ValueError):
+        PolychromaticPhaseModulator(invalid_tensor, n=1.5, z=z)
 
 
 def test_visualization():
@@ -94,8 +137,8 @@ def test_visualization():
 
 
 def test_polychromatic_visualization():
-    optical_path_length = torch.rand((10, 12))
+    thickness = torch.rand((10, 12))
     z = 1.5
-    polychromatic_modulator = PolychromaticPhaseModulator(optical_path_length, z)
+    polychromatic_modulator = PolychromaticPhaseModulator(thickness, n=1.5, z=z)
     fig = polychromatic_modulator.visualize(700e-9, show=False, return_fig=True)
     assert isinstance(fig, Figure)
