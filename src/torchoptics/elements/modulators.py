@@ -137,7 +137,7 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
     """
 
     thickness: Tensor
-    n: Callable[[Scalar], Scalar]
+    n: Scalar | Callable[[Scalar], Scalar]
 
     def __init__(
         self,
@@ -151,9 +151,10 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
         validate_tensor_ndim(thickness, "thickness", 2)
         super().__init__(thickness.shape, z, spacing, offset)
         self.register_optics_property("thickness", thickness)
-        self.n = n if isinstance(n, Callable) else lambda _: n
+        self.n = n
 
     def modulation_profile(self, wavelength: Scalar | None = None) -> Tensor:
         """Return the modulation profile."""
         wavelength = wavelength_or_default(wavelength)
-        return torch.exp(2j * torch.pi / wavelength * (self.n(wavelength) - 1) * self.thickness)
+        n = self.n(wavelength) if callable(self.n) else self.n
+        return torch.exp(2j * torch.pi / wavelength * (n - 1) * self.thickness)
