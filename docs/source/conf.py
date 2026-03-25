@@ -1,7 +1,10 @@
+from sphinx_gallery.sorting import ExplicitOrder  # type: ignore[import-untyped]
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
+
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -48,6 +51,17 @@ sphinx_gallery_conf = {
     "reference_url": {"torchoptics": None},
     "filename_pattern": "^((?!sphinx_skip).)*$",  # Exclude files with 'sphinx_skip' in the name
     "matplotlib_animations": (True, "jshtml"),
+    "subsection_order": ExplicitOrder(
+        [
+            "../../examples/basics",
+            "../../examples/beam_modes",
+            "../../examples/optical_systems",
+            "../../examples/advanced",
+            "../../examples/optimization",
+            "../../examples/quantum_computing",
+            "../../examples/quantum_states",
+        ]
+    ),
 }
 
 # Matplotlib plot directive configuration

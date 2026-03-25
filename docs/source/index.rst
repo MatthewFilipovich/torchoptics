@@ -17,7 +17,7 @@
 TorchOptics Documentation
 ==========================
 
-TorchOptics is a differentiable wave optics simulation library built on PyTorch.
+**TorchOptics** is an open-source Python library for simulating optical systems using `Fourier optics <https://en.wikipedia.org/wiki/Fourier_optics>`_, built on `PyTorch <https://pytorch.org/>`_. It provides GPU-accelerated, fully differentiable wave optics simulations, enabling end-to-end optimization of optical hardware jointly with machine learning models.
 
 Key Features
 ------------
@@ -26,32 +26,32 @@ Key Features
    :gutter: 2
 
    .. grid-item-card:: 🌊 **Differentiable Wave Optics**
-      :class-card: sd-bg-light sd-border sd-shadow
+      :class-card: sd-border sd-shadow-sm sd-card-hover
 
       Model, analyze, and optimize optical systems using Fourier optics.
 
    .. grid-item-card:: 🔥 **Built on PyTorch**
-      :class-card: sd-bg-light sd-border sd-shadow
+      :class-card: sd-border sd-shadow-sm sd-card-hover
 
       GPU acceleration, batch processing, and automatic differentiation.
 
    .. grid-item-card:: 🛠️ **End-to-End Optimization**
-      :class-card: sd-bg-light sd-border sd-shadow
+      :class-card: sd-border sd-shadow-sm sd-card-hover
 
       Joint optimization of optical hardware and machine learning models.
 
    .. grid-item-card:: 🔬 **Optical Elements**
-      :class-card: sd-bg-light sd-border sd-shadow
+      :class-card: sd-border sd-shadow-sm sd-card-hover
 
-      Lenses, modulators, detectors, polarizers, and more.
+      Lenses, phase/amplitude modulators, detectors, polarizers, and more.
 
    .. grid-item-card:: 🖼️ **Spatial Profiles**
-      :class-card: sd-bg-light sd-border sd-shadow
+      :class-card: sd-border sd-shadow-sm sd-card-hover
 
-      Hermite-Gaussian, Laguerre-Gaussian, Zernike modes, and others.
+      Hermite-Gaussian, Laguerre-Gaussian, Zernike modes, gratings, and others.
 
    .. grid-item-card:: 🔆 **Polarization & Coherence**
-      :class-card: sd-bg-light sd-border sd-shadow
+      :class-card: sd-border sd-shadow-sm sd-card-hover
 
       Simulate polarized light and fields with arbitrary spatial coherence.
 
@@ -59,8 +59,6 @@ Key Features
 
 Installation
 ------------
-
-TorchOptics is available on `PyPI <https://pypi.org/project/torchoptics>`_ and can be installed with:
 
 .. code-block:: bash
 
@@ -70,7 +68,7 @@ TorchOptics is available on `PyPI <https://pypi.org/project/torchoptics>`_ and c
 Contributing
 --------------
 
-We welcome contributions! See our `Contributing Guide <https://github.com/MatthewFilipovich/torchoptics/blob/main/CONTRIBUTING.md>`_ for details.
+Contributions are welcome! See the `Contributing Guide <https://github.com/MatthewFilipovich/torchoptics/blob/main/CONTRIBUTING.md>`_ for details.
 
 Citing TorchOptics
 -------------------
@@ -81,4 +79,4 @@ If you use TorchOptics in your research, please cite our
 License
 -------
 
-TorchOptics is distributed under the MIT License. See the `LICENSE <https://github.com/MatthewFilipovich/torchoptics/blob/main/LICENSE>`_ file for more details.
+Distributed under the MIT License. See `LICENSE <https://github.com/MatthewFilipovich/torchoptics/blob/main/LICENSE>`_ for details.
