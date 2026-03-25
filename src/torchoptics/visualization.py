@@ -67,7 +67,7 @@ def visualize_tensor(
             "vmax": torch.pi,
             "cmap": "twilight_shifted",
             "norm": None,
-            "interpolation": "none",
+            "interpolation": "bilinear",
         }
 
         create_image_subplot(  # Plot phase

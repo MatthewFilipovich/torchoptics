@@ -1,13 +1,17 @@
 User Guide
-===========
+==========
 
-.. important::
-    **The User Guide is under development.** For detailed information about the library, please refer to the `arXiv paper <https://arxiv.org/abs/2411.18591>`_.
+The sections below cover the core components of the TorchOptics library:
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents
-   
+
+   configuration
    fields
+   propagation
+   profiles
    elements
    systems
+   polarization
+   spatial_coherence
+   inverse_design

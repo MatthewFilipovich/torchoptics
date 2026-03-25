@@ -6,3 +6,8 @@
 .sphx-glr-download-zip        /* Download zipped link in footer */ {
   display: none;
 }
+
+.navbar-brand,
+.navbar-brand .project-name{
+  font-size: 1.7rem;
+}

@@ -13,22 +13,21 @@
 
 </div>
 
-> TorchOptics is a differentiable wave optics simulation library built on PyTorch.
+**TorchOptics** is an open-source Python library for simulating optical systems using [Fourier optics](https://en.wikipedia.org/wiki/Fourier_optics), built on [PyTorch](https://pytorch.org/). It provides GPU-accelerated, fully differentiable wave optics simulations, enabling end-to-end optimization of optical hardware jointly with machine learning models.
 
-# Key Features
+Learn more in our [paper on arXiv](https://arxiv.org/abs/2411.18591).
+
+## Key Features
 
 - 🌊 **Differentiable Wave Optics** — Model, analyze, and optimize optical systems using Fourier optics.
 - 🔥 **Built on PyTorch** — GPU acceleration, batch processing, and automatic differentiation.
 - 🛠️ **End-to-End Optimization** — Joint optimization of optical hardware and machine learning models.
-- 🔬 **Optical Elements** — Lenses, modulators, detectors, polarizers, and more.
-- 🖼️ **Spatial Profiles** — Hermite-Gaussian, Laguerre-Gaussian, Zernike modes, and others.
+- 🔬 **Optical Elements** — Lenses, phase/amplitude modulators, detectors, polarizers, and more.
+- 🖼️ **Spatial Profiles** — Hermite-Gaussian, Laguerre-Gaussian, Zernike modes, gratings, and others.
 - 🔆 **Polarization and Coherence** — Simulate polarized light and fields with arbitrary spatial coherence.
 
-Learn more about TorchOptics in our research paper on [arXiv](https://arxiv.org/abs/2411.18591).
 
-# Installation
-
-TorchOptics is available on [PyPI](https://pypi.org/project/torchoptics/) and can be installed with:
+## Installation
 
 ```bash
 pip install torchoptics
@@ -36,74 +35,117 @@ pip install torchoptics
 
 ## Documentation
 
-Read the full documentation at [torchoptics.readthedocs.io](https://torchoptics.readthedocs.io/).
+Full documentation is available at [torchoptics.readthedocs.io](https://torchoptics.readthedocs.io/).
 
-## Usage
+## Examples
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/MatthewFilipovich/torchoptics/blob/main/docs/source/_static/torchoptics_colab.ipynb)
+### Wave Propagation
 
-This example shows how to simulate a 4f imaging system using TorchOptics, computing and visualizing the field at each focal plane along the optical axis:
+Simulate free-space propagation of an octagonal aperture:
+
+```python
+import torch
+import torchoptics
+from torchoptics import Field
+from torchoptics.profiles import octagon
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+torchoptics.set_default_spacing(10e-6)
+torchoptics.set_default_wavelength(700e-9)
+
+field = Field(octagon(shape=500, radius=150e-5)).to(device)
+
+for z in torch.linspace(0, 2, 11):
+    field.propagate_to_z(z).visualize(title=f"z = {z:.2f} m")
+```
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/propagation_octagon.gif" width="200">
+</p>
+
+### 4f Imaging System
+
+Simulate a 4f system with a high-pass spatial filter:
 
 ```python
 import torch
 import torchoptics
 from torchoptics import Field, System
-from torchoptics.elements import Lens
-from torchoptics.profiles import checkerboard
+from torchoptics.elements import AmplitudeModulator, Lens
+from torchoptics.profiles import checkerboard, circle
 
-# Set simulation properties
-shape = 1000  # Number of grid points in each dimension
-spacing = 10e-6  # Spacing between grid points (m)
-wavelength = 700e-9  # Field wavelength (m)
-focal_length = 200e-3  # Lens focal length (m)
-tile_length = 400e-6  # Checkerboard tile length (m)
-num_tiles = 15  # Number of tiles in each dimension
-
-# Determine device
 device = "cuda" if torch.cuda.is_available() else "cpu"
+torchoptics.set_default_spacing(10e-6)
+torchoptics.set_default_wavelength(700e-9)
 
-# Configure default properties
-torchoptics.set_default_spacing(spacing)
-torchoptics.set_default_wavelength(wavelength)
+shape = 1000
+f = 200e-3
 
-# Initialize input field with checkerboard pattern
-field_data = checkerboard(shape, tile_length, num_tiles)
-input_field = Field(field_data).to(device)
+input_field = Field(checkerboard(shape, tile_length=400e-6, num_tiles=15)).to(device)
 
-# Define 4f optical system with two lenses
 system = System(
-    Lens(shape, focal_length, z=1 * focal_length),
-    Lens(shape, focal_length, z=3 * focal_length),
+    Lens(shape, f, z=1 * f),
+    AmplitudeModulator(1 - circle(shape, radius=5e-4), z=2 * f),
+    Lens(shape, f, z=3 * f),
 ).to(device)
 
-# Measure field at focal planes along the z-axis
-measurements = [
-    system.measure_at_z(input_field, z=i * focal_length)
-    for i in range(5)
-]
-
-# Visualize the measured intensity distributions
-for i, measurement in enumerate(measurements):
-    measurement.visualize(title=f"z={i}f", vmax=1)
+for i in range(5):
+    system.measure_at_z(input_field, z=i * f).visualize(title=f"z={i}f", vmax=1)
 ```
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/4f_simulation.png" width="700px">
-  <br>
-  <em>Intensity distributions at different focal planes in the 4f system.</em>
+  <img src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/4f_system.png" width="700px">
 </p>
+
+### Inverse Design
+
+Train a diffractive optical system to convert a Gaussian beam into a petal beam:
+
+```python
+import torch
+import torchoptics
+from torch.nn import Parameter
+from torchoptics import Field, System
+from torchoptics.elements import PhaseModulator
+from torchoptics.profiles import gaussian, laguerre_gaussian
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+torchoptics.set_default_spacing(10e-6)
+torchoptics.set_default_wavelength(700e-9)
+
+shape = 250
+waist_radius = 300e-6
+
+input_field = Field(gaussian(shape, waist_radius=waist_radius), z=0).to(device)
+
+petal_profile = laguerre_gaussian(shape, p=0, l=4, waist_radius=waist_radius)
+petal_profile += laguerre_gaussian(shape, p=0, l=-4, waist_radius=waist_radius)
+target_field = Field(petal_profile, z=0.8).normalize().to(device)
+
+system = System(
+    PhaseModulator(Parameter(torch.zeros(shape, shape)), z=0.2),
+    PhaseModulator(Parameter(torch.zeros(shape, shape)), z=0.4),
+    PhaseModulator(Parameter(torch.zeros(shape, shape)), z=0.6),
+).to(device)
+
+optimizer = torch.optim.Adam(system.parameters(), lr=0.05)
+for iteration in range(100):
+    optimizer.zero_grad()
+    output_field = system.measure_at_z(input_field, 0.8)
+    loss = 1 - output_field.inner(target_field).abs().square()
+    loss.backward()
+    optimizer.step()
+```
 
 <p align="center">
-  <img width="300px" src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/4f_propagation.gif">
-  <br>
-  <em>Propagation of the intensity distribution.</em>
+  <img src="https://raw.githubusercontent.com/MatthewFilipovich/torchoptics/main/docs/source/_static/training_petal_beam.gif" width="700">
 </p>
 
-_For more examples and detailed usage, please refer to the [documentation](https://torchoptics.readthedocs.io/)._
+For more examples, see the [examples gallery](https://torchoptics.readthedocs.io/en/stable/examples/index.html).
 
 ## Contributing
 
-We welcome contributions! See our [Contributing Guide](https://github.com/MatthewFilipovich/torchoptics/blob/main/CONTRIBUTING.md) for details.
+Contributions are welcome! See the [Contributing Guide](https://github.com/MatthewFilipovich/torchoptics/blob/main/CONTRIBUTING.md) for details.
 
 ## Citing TorchOptics
 
@@ -123,4 +165,4 @@ If you use TorchOptics in your research, please cite our [paper](https://arxiv.o
 
 ## License
 
-TorchOptics is distributed under the MIT License. See the [LICENSE](https://github.com/MatthewFilipovich/torchoptics/blob/main/LICENSE) file for more details.
+Distributed under the MIT License. See [LICENSE](https://github.com/MatthewFilipovich/torchoptics/blob/main/LICENSE) for details.
