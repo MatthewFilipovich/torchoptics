@@ -1,5 +1,7 @@
 """Modulator element definitions."""
 
+from collections.abc import Callable
+
 import torch
 from torch import Tensor
 
@@ -108,22 +110,25 @@ class AmplitudeModulator(ModulationElement):
 
 
 class PolychromaticPhaseModulator(PolychromaticModulationElement):
-    r"""Phase-only modulator element that modulates the optical field based on the optical path length (OPL).
+    r"""Phase-only modulator element that modulates the optical field based on physical thickness.
 
     The modulation is applied according to:
 
     .. math::
-        \mathcal{M}(x, y) = \exp\left(i \frac{2 \pi}{\lambda} \cdot \text{OPL}\right)
+        \mathcal{M}(x, y) = \exp\left(i \frac{2 \pi}{\lambda}
+        \left[ n\left(\lambda\right) - 1 \right] t(x, y)\right)
 
     where:
 
     - :math:`\mathcal{M}` is the modulation profile applied to the optical field.
     - :math:`\lambda` is the wavelength of the light.
-    - :math:`\text{OPL}` is the optical path length, accounting for both the physical distance and the
-      refractive index of the medium.
+    - :math:`n(\lambda)` is the wavelength-dependent refractive index of the medium.
+    - :math:`t(x, y)` is the physical thickness of the medium at each point.
 
     Args:
-        optical_path_length (Tensor): Optical path length (real-valued tensor).
+        thickness (Tensor): Physical thickness of the medium (real-valued tensor).
+        n (Scalar | Callable[[Scalar], Scalar]): Refractive index. Can be a scalar (constant) or a
+            callable that takes the wavelength and returns the refractive index (for dispersive media).
         z (Scalar): Position along the z-axis. Default: `0`.
         spacing (Vector2 | None): Distance between grid points along planar dimensions. Default: if
             `None`, uses a global default (see :meth:`torchoptics.set_default_spacing()`).
@@ -131,21 +136,24 @@ class PolychromaticPhaseModulator(PolychromaticModulationElement):
 
     """
 
-    optical_path_length: Tensor
+    thickness: Tensor
+    n: Callable[[Scalar], Scalar]
 
     def __init__(
         self,
-        optical_path_length: Tensor,
+        thickness: Tensor,
+        n: Scalar | Callable[[Scalar], Scalar],
         z: Scalar = 0,
         spacing: Vector2 | None = None,
         offset: Vector2 | None = None,
     ) -> None:
         """Initialize the PolychromaticPhaseModulator."""
-        validate_tensor_ndim(optical_path_length, "optical_path_length", 2)
-        super().__init__(optical_path_length.shape, z, spacing, offset)
-        self.register_optics_property("optical_path_length", optical_path_length)
+        validate_tensor_ndim(thickness, "thickness", 2)
+        super().__init__(thickness.shape, z, spacing, offset)
+        self.register_optics_property("thickness", thickness)
+        self.n = n if isinstance(n, Callable) else lambda _: n
 
     def modulation_profile(self, wavelength: Scalar | None = None) -> Tensor:
         """Return the modulation profile."""
         wavelength = wavelength_or_default(wavelength)
-        return torch.exp(2j * torch.pi / wavelength * self.optical_path_length)
+        return torch.exp(2j * torch.pi / wavelength * (self.n(wavelength) - 1) * self.thickness)
