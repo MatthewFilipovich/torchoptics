@@ -27,7 +27,7 @@ Gaussian
     import torchoptics
     from torchoptics import visualize_tensor
     from torchoptics.profiles import (
-    airy, airy_beam, bessel, binary_grating, blazed_grating, checkerboard,
+    airy_pattern, airy_beam, bessel, binary_grating, blazed_grating, checkerboard,
     circle, cylindrical_lens_phase, gaussian, hermite_gaussian, hexagon,
     laguerre_gaussian, lens_phase, plane_wave_phase, rectangle,
     siemens_star, sinc, sinusoidal_grating, spherical_wave_phase,
@@ -278,7 +278,7 @@ Special Functions
 
    * - Function
      - Description
-   * - :func:`~torchoptics.profiles.airy`
+   * - :func:`~torchoptics.profiles.airy_pattern`
      - Airy pattern :math:`\bigl(2J_1(r/a)/(r/a)\bigr)^2`.
    * - :func:`~torchoptics.profiles.sinc`
      - 2D sinc function (Fourier transform of a rectangle).
@@ -289,7 +289,7 @@ Special Functions
 .. plot::
     :context: close-figs
 
-    profile = airy(300, scale=100e-6)
+    profile = airy_pattern(300, scale=100e-6)
     visualize_tensor(profile, title="Airy Pattern")
 
 .. plot::
