@@ -99,7 +99,7 @@ the energy finite while preserving the characteristic self-accelerating lobe:
     :context: close-figs
 
     profile = airy_beam(300, scale=50e-6, truncation=0.05)
-    vmax = -profile.abs().max().item() * 0.5
+    vmax = profile.abs().max().item() * 0.5
     visualize_tensor(profile, title="Airy Beam", vmin=-vmax, vmax=vmax, cmap="RdBu")
 
 
