@@ -8,7 +8,7 @@ def make_special_args():
     return {"shape": (100, 100), "spacing": (0.1, 0.1), "offset": (0.0, 0.0)}
 
 
-def test_airy():
+def test_airy_pattern():
     args = make_special_args()
     scale = 10.0
     profile = special.airy_pattern(scale=scale, **args)
