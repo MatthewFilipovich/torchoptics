@@ -1,4 +1,4 @@
-"""Airy and sinc profile generation functions."""
+"""Special profile generation functions."""
 
 import torch
 from torch import Tensor
@@ -10,7 +10,7 @@ from ..utils import initialize_tensor
 from ._profile_meshgrid import profile_meshgrid
 
 
-def airy(
+def airy_pattern(
     shape: Vector2,
     scale: Scalar,
     spacing: Vector2 | None = None,

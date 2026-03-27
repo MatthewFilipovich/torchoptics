@@ -27,11 +27,11 @@ Gaussian
     import torchoptics
     from torchoptics import visualize_tensor
     from torchoptics.profiles import (
-        airy, bessel, binary_grating, blazed_grating, checkerboard, circle,
-        cylindrical_lens_phase, gaussian, hermite_gaussian, hexagon,
-        laguerre_gaussian, lens_phase, plane_wave_phase, rectangle,
-        siemens_star, sinc, sinusoidal_grating, spherical_wave_phase,
-        square, triangle, zernike,
+    airy_pattern, airy_beam, bessel, binary_grating, blazed_grating, checkerboard,
+    circle, cylindrical_lens_phase, gaussian, hermite_gaussian, hexagon,
+    laguerre_gaussian, lens_phase, plane_wave_phase, rectangle,
+    siemens_star, sinc, sinusoidal_grating, spherical_wave_phase,
+    square, triangle, zernike,
     )
 
     torchoptics.set_default_spacing(10e-6)
@@ -85,7 +85,22 @@ Bessel
     :context: close-figs
 
     profile = bessel(300, cone_angle=0.01, wavelength=700e-9)
-    visualize_tensor(profile, title="Bessel Beam")
+    vmax = profile.abs().max() * 0.5
+    visualize_tensor(profile, title="Bessel Beam", vmin=-vmax, vmax=vmax, cmap="RdBu")
+
+Airy Beam
+^^^^^^^^^
+
+:func:`~torchoptics.profiles.airy_beam` generates a truncated 2D Airy beam,
+which combines the Airy function with an exponential truncation factor to keep
+the energy finite while preserving the characteristic self-accelerating lobe:
+
+.. plot::
+    :context: close-figs
+
+    profile = airy_beam(300, scale=50e-6, truncation=0.05)
+    vmax = profile.abs().max().item() * 0.5
+    visualize_tensor(profile, title="Airy Beam", vmin=-vmax, vmax=vmax, cmap="RdBu")
 
 
 Geometric Apertures
@@ -263,7 +278,7 @@ Special Functions
 
    * - Function
      - Description
-   * - :func:`~torchoptics.profiles.airy`
+   * - :func:`~torchoptics.profiles.airy_pattern`
      - Airy pattern :math:`\bigl(2J_1(r/a)/(r/a)\bigr)^2`.
    * - :func:`~torchoptics.profiles.sinc`
      - 2D sinc function (Fourier transform of a rectangle).
@@ -274,7 +289,7 @@ Special Functions
 .. plot::
     :context: close-figs
 
-    profile = airy(300, scale=100e-6)
+    profile = airy_pattern(300, scale=100e-6)
     visualize_tensor(profile, title="Airy Pattern")
 
 .. plot::
