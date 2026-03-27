@@ -11,7 +11,7 @@ def make_special_args():
 def test_airy():
     args = make_special_args()
     scale = 10.0
-    profile = special.airy(scale=scale, **args)
+    profile = special.airy_pattern(scale=scale, **args)
     assert profile.shape == args["shape"]
     assert torch.all(profile >= 0)
 
