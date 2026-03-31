@@ -1,18 +1,17 @@
 Inverse Design
 ==============
 
-
 Every TorchOptics operation (propagation, modulation, detection) is fully differentiable
 through :mod:`torch.autograd`. This enables gradient-based optimization of optical systems using
-the same tools and patterns used to train neural networks.
+the same tools used to train neural networks.
 
 
 Trainable Properties
 --------------------
 
-Wrap any property value in :class:`torch.nn.Parameter` to make it learnable:
+Wrap any property value in :class:`torch.nn.Parameter` to make it learnable.
 
-**Modulation data** — the most common case:
+Modulation data (the most common case):
 
 .. code-block:: python
 
@@ -21,9 +20,8 @@ Wrap any property value in :class:`torch.nn.Parameter` to make it learnable:
     from torchoptics.elements import PhaseModulator
 
     slm = PhaseModulator(Parameter(torch.zeros(300, 300)), z=0)
-    list(slm.parameters())  # [Parameter containing: 300×300 tensor]
 
-**Scalar properties** — focal length, position, angle, etc.:
+Scalar properties such as focal length, position, or angle:
 
 .. code-block:: python
 
@@ -40,28 +38,26 @@ fixed buffer.
 Parameterization
 ----------------
 
-For unconstrained phase modulation, ``PhaseModulator(Parameter(torch.zeros(...)))`` already
-works; gradients flow directly through the phase values and the optimizer is free to explore
-all real numbers.
+For unconstrained phase modulation, ``PhaseModulator(Parameter(torch.zeros(...)))`` works
+directly: gradients flow through the phase values and the optimizer is free to explore all
+real numbers.
 
-When you need to **constrain** a parameter to a physical range, use
-:func:`torch.nn.utils.parametrize.register_parametrization`. For example, amplitude must
-stay in :math:`[0, 1]`; register a sigmoid parametrization directly on the
-``AmplitudeModulator``'s ``amplitude`` parameter:
+When a parameter must stay within a physical range, use
+:func:`torch.nn.utils.parametrize.register_parametrization`. For example, to keep an amplitude
+modulator's values in :math:`[0, 1]`, register a sigmoid parametrization:
 
 .. code-block:: python
 
-    import torch
     import torch.nn.utils.parametrize as parametrize
     from torch.nn import Parameter
     from torchoptics.elements import AmplitudeModulator
 
     slm = AmplitudeModulator(Parameter(torch.zeros(300, 300)), z=0)
     parametrize.register_parametrization(slm, "amplitude", torch.nn.Sigmoid())
-    # slm.amplitude is always sigmoid(raw) ∈ (0, 1); the optimizer trains the raw logits
+    # slm.amplitude is always sigmoid(raw) in (0, 1); the optimizer trains the raw logits
 
-The same pattern works for any differentiable constraint; use ``torch.nn.Softplus()`` for
-positive-only values, or write a custom :class:`torch.nn.Module` for arbitrary mappings.
+The same pattern works for any differentiable constraint: ``torch.nn.Softplus()`` for
+positive-only values, or a custom :class:`torch.nn.Module` for arbitrary mappings.
 
 
 Training Loop
@@ -83,6 +79,7 @@ The standard PyTorch training loop applies directly:
 
     shape = 250
     input_field = Field(gaussian(shape, waist_radius=300e-6), z=0)
+    target_field = Field(gaussian(shape, waist_radius=100e-6), z=0.4).normalize()
 
     system = System(
         PhaseModulator(Parameter(torch.zeros(shape, shape)), z=0.0),
@@ -94,33 +91,14 @@ The standard PyTorch training loop applies directly:
     for iteration in range(200):
         optimizer.zero_grad()
         output = system.measure_at_z(input_field, z=0.4)
-        loss = compute_loss(output)
+        loss = 1 - output.inner(target_field).abs().square()
         loss.backward()
         optimizer.step()
 
-The :meth:`~torchoptics.Field.inner` method provides a natural loss for mode matching:
+:meth:`~torchoptics.Field.inner` computes the complex overlap integral between two fields.
+The loss :math:`1 - |\eta|^2`, where :math:`\eta` is the inner product, is zero for perfect
+overlap and one for orthogonal fields. Any differentiable PyTorch loss can be used here.
 
-.. code-block:: python
+.. seealso::
 
-    overlap = output.inner(target_field).abs().square()
-    loss = 1 - overlap
-
-See the :doc:`/quickstart/index` for a complete end-to-end training example.
-
-
-Saving and Loading
-------------------
-
-Use PyTorch's standard serialization:
-
-.. code-block:: python
-
-    torch.save(system.state_dict(), "optimized_system.pt")
-    system.load_state_dict(torch.load("optimized_system.pt"))
-
-
-GPU Acceleration
-----------------
-
-For large grids and long training loops, move everything to the GPU for significant speedups.
-See :doc:`configuration` for device management.
+    :doc:`/examples/optimization/index` — complete end-to-end optimization examples.
