@@ -52,7 +52,7 @@ torchoptics.set_default_wavelength(700e-9)
 # Target Field: Eight-Petal Beam
 # ------------------------------
 # The target is an interference pattern formed by the superposition of two Laguerre-Gaussian
-# modes :math:`\mathrm{LG}_{0}^{4}` and :math:`\mathrm{LG}_{0}^{-4}`, producing an
+# modes :math:`\mathrm{LG}_{0}^{+4}` and :math:`\mathrm{LG}_{0}^{-4}`, producing an
 # eight-petal intensity distribution.
 
 petal_profile = laguerre_gaussian(shape, p=0, l=4, waist_radius=waist_radius)

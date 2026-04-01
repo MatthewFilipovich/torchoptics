@@ -45,10 +45,11 @@ and Gaussian coherence:
     \Gamma(x_1, y_1, x_2, y_2) = \sqrt{I(x_1,y_1)\,I(x_2,y_2)} \cdot
     \exp\!\left(-\frac{|\mathbf{r}_1-\mathbf{r}_2|^2}{2\sigma_c^2}\right)
 
-where :math:`I(x,y) = \exp(-2r^2/w^2)` is the Gaussian intensity with waist :math:`w`, and
-:math:`\sigma_c` is the **coherence width**: the length scale over which the field remains
-correlated. A small :math:`\sigma_c` (much less than :math:`w`) gives a low-coherence source
-like an LED; a large :math:`\sigma_c` approaches a coherent Gaussian beam:
+where :math:`I(x,y) = \frac{2}{\pi w^2}\exp(-2r^2/w^2)` is the Gaussian intensity with waist
+:math:`w` (normalized to unit power), and :math:`\sigma_c` is the **coherence width**: the
+length scale over which the field remains correlated. A small :math:`\sigma_c` (much less than
+:math:`w`) gives a low-coherence source like an LED; a large :math:`\sigma_c` approaches a
+coherent Gaussian beam:
 
 .. plot::
     :context: reset

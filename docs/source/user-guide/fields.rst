@@ -152,16 +152,17 @@ The overlap integral between two fields is:
 
 .. math::
 
-    \langle \psi_1 | \psi_2 \rangle = \sum_{i,j} \psi_1^*(i,j) \, \psi_2(i,j) \, \Delta A
+    \eta = \sum_{i,j} \psi_1(i,j) \, \psi_2^*(i,j) \, \Delta A
 
-:meth:`~torchoptics.Field.inner` returns this as a complex scalar. Taking the squared magnitude
-gives the **mode overlap** :math:`|\langle\psi_1|\psi_2\rangle|^2`: a value in :math:`[0, 1]`
-when both fields are normalized to unit power (by Cauchy–Schwarz), and a natural fidelity metric
-for inverse design (see :doc:`inverse_design`):
+:meth:`~torchoptics.Field.inner` returns this as a complex scalar, where :math:`\psi_1` is
+``self`` and :math:`\psi_2` is the argument. Taking the squared magnitude gives the
+**mode overlap** :math:`|\eta|^2`: a value in :math:`[0, 1]` when both fields are normalized
+to unit power (by Cauchy–Schwarz), and a natural fidelity metric for inverse design
+(see :doc:`inverse_design`):
 
 .. code-block:: python
 
-    overlap = field_a.inner(field_b).abs().square()  # in [0, 1] if both normalized
+    overlap = field_a.inner(field_b).abs().square()  # |η|² in [0, 1] if both normalized
     loss = 1 - overlap
 
 Both fields must share the same geometry (``shape``, ``spacing``, ``offset``, and ``z``).

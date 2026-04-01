@@ -19,9 +19,10 @@ a critical distance :math:`z_c` and comparing it to the propagation distance
 
     z_c = \frac{2 \, |x_\text{max}| \, \Delta}{\lambda}
 
-where :math:`|x_\text{max}|` is the maximum coordinate magnitude across both planes
-(half the physical field width), :math:`\Delta` is the spacing, and :math:`\lambda` is the
-wavelength.
+where :math:`|x_\text{max}|` denotes, for each transverse dimension (x and y), the maximum
+coordinate separation along that dimension between any grid point in the input plane and
+any grid point in the propagation plane; :math:`\Delta` is the grid spacing in that
+dimension, and :math:`\lambda` is the wavelength.
 
 - :math:`|\Delta z| < z_c` in at least one dimension → **ASM** (short-distance regime).
 - Otherwise → **DIM** (long-distance regime).
