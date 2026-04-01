@@ -9,7 +9,7 @@ transform of the field at the midplane. Inserting amplitude masks at this Fourie
 plane enables spatial filtering: low-pass filters smooth the image, while high-pass
 filters extract edges and fine detail.
 
-The four focal planes have distinct physical meanings:
+The five key planes have distinct physical meanings:
 
 - :math:`z = 0` — Input plane: the object field
 - :math:`z = f` — Back focal plane of lens 1: spatial frequency spectrum begins forming
