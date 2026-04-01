@@ -77,8 +77,8 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 torchoptics.set_default_spacing(10e-6)
 torchoptics.set_default_wavelength(700e-9)
 
-shape = 500  # Number of grid points in each dimension
-f = 50e-3  # Lens focal length (m)
+shape = 500
+f = 50e-3
 
 input_field = Field(checkerboard(shape, tile_length=200e-6, num_tiles=15)).to(device)
 
