@@ -1,3 +1,4 @@
+# ruff: noqa: E741
 import torch
 
 from torchoptics.profiles import gaussian, laguerre_gaussian

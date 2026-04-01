@@ -1,3 +1,4 @@
+# ruff: noqa: E741
 """Laguerre-Gaussian profile generation."""
 
 import math
