@@ -28,7 +28,8 @@ def dim_propagation(field: Field, propagation_plane: PlanarGrid, propagation_met
     """
     x, y = calculate_meshgrid(field, propagation_plane)
     impulse_response = calculate_impulse_response(field, propagation_plane, x, y, propagation_method)
-    propagated_data = conv2d_fft(impulse_response, field.data)
+    # padding=1: impulse response is (N+M-1), so FFT runs at (N+M) which can improve performance
+    propagated_data = conv2d_fft(impulse_response, field.data, fft_padding=1)
     return field.copy(data=propagated_data, z=propagation_plane.z, offset=propagation_plane.offset)
 
 
