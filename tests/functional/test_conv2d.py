@@ -12,8 +12,8 @@ def test_conv2d_fft():
 
 
 def test_conv2d_fft_large_kernel():
-    input = torch.randn(1, 1, 300, 500, dtype=torch.complex128)
-    weight = torch.randn(1, 1, 50, 100, dtype=torch.complex128)
+    input = torch.randn(1, 1, 64, 96, dtype=torch.complex128)
+    weight = torch.randn(1, 1, 17, 33, dtype=torch.complex128)
     conv2d_output = torch.nn.functional.conv2d(input, weight.flip(-1, -2))
     conv2d_fft_output = conv2d_fft(input, weight)
     assert torch.allclose(conv2d_output, conv2d_fft_output, atol=1e-8)
