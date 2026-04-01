@@ -42,7 +42,7 @@ def calculate_std(intensity: Tensor, meshgrid: tuple[Tensor, Tensor]) -> Tensor:
     )
 
 
-def conv2d_fft(input: Tensor, weight: Tensor, padding: int = 0) -> Tensor:
+def conv2d_fft(input: Tensor, weight: Tensor, fft_padding: int = 0) -> Tensor:
     """Perform a 2D convolution using Fast Fourier Transforms (FFT).
 
     Unlike the :func:`torch.nn.functional.conv2d` function, which performs cross-correlation,
@@ -51,7 +51,7 @@ def conv2d_fft(input: Tensor, weight: Tensor, padding: int = 0) -> Tensor:
     Args:
         input (torch.Tensor): Input tensor to be convolved of shape :math:`(..., iH, iW)`.
         weight (torch.Tensor): Filters of shape :math:`(..., kH, kW)`.
-        padding (int): Number of extra zeros appended to the input in each spatial dimension
+        fft_padding (int): Number of extra zeros appended to the input in each spatial dimension
             before the FFT. Does not affect the output size, but can improve FFT performance
             when the padded size has favorable prime factors. Default: ``0``.
 
@@ -60,7 +60,7 @@ def conv2d_fft(input: Tensor, weight: Tensor, padding: int = 0) -> Tensor:
 
     """
     output_size = (input.size(-2) - weight.size(-2) + 1, input.size(-1) - weight.size(-1) + 1)
-    fft_size = (input.size(-2) + padding, input.size(-1) + padding)
+    fft_size = (input.size(-2) + fft_padding, input.size(-1) + fft_padding)
     input_fr = fft2(input, s=fft_size)
     weight_fr = fft2(weight.flip(-1, -2).conj(), s=fft_size)
     output_fr = input_fr * weight_fr.conj()
