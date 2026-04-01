@@ -1,3 +1,4 @@
+# ruff: noqa: E741
 import torch
 
 from torchoptics.profiles import gaussian, laguerre_gaussian
@@ -22,7 +23,7 @@ def make_laguerre_gaussian_profiles():
             offset=offset,
         )
         for p in range(3)
-        for l in range(-2, 3)  # noqa: E741
+        for l in range(-2, 3)
         if p + abs(l) < 3
     ]
     return profiles

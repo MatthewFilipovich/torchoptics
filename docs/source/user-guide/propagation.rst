@@ -133,6 +133,11 @@ When to Use Which
 - **DIM** — best for long-distance propagation or when the output grid has very different
   spacing or offset. Can change grid geometry without interpolation artifacts.
 
+- **Fresnel variants** (``"ASM_FRESNEL"``, ``"DIM_FRESNEL"``, ``"AUTO_FRESNEL"``) — use when
+  the paraxial approximation holds (:math:`\theta \ll 1` rad) and you need faster computation
+  or match a specific physical model. For high-NA systems or large propagation angles, the
+  default Rayleigh–Sommerfeld is more accurate.
+
 For most use cases, ``"AUTO"`` works well.
 
 

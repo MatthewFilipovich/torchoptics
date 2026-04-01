@@ -1,4 +1,5 @@
 Examples
 =========
 
-This page contains a gallery of examples using the TorchOptics library.
+A gallery of TorchOptics examples organized by topic. Each example is a
+self-contained script that can be downloaded and run locally.

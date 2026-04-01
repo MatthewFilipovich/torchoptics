@@ -53,13 +53,12 @@ sphinx_gallery_conf = {
     "matplotlib_animations": (True, "jshtml"),
     "subsection_order": ExplicitOrder(
         [
-            "../../examples/basics",
-            "../../examples/beam_modes",
+            "../../examples/optical_phenomena",
             "../../examples/optical_systems",
-            "../../examples/advanced",
+            "../../examples/aberrations",
+            "../../examples/coherence_and_polarization",
             "../../examples/optimization",
-            "../../examples/quantum_computing",
-            "../../examples/quantum_states",
+            "../../examples/quantum",
         ]
     ),
 }

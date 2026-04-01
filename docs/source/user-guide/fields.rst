@@ -27,6 +27,10 @@ Construct a :class:`~torchoptics.Field` from a 2D complex tensor. If ``spacing``
     field.visualize(title="Circular Aperture")
     print(field)
 
+.. code-block:: text
+
+    Field(shape=(300, 300), z=0.00e+00, spacing=(1.00e-05, 1.00e-05), offset=(0.00e+00, 0.00e+00), wavelength=7.00e-07)
+
 The ``data`` tensor must have at least 2 dimensions (H × W). Leading dimensions are treated as
 batch dimensions. Fields can be created from :mod:`~torchoptics.profiles` functions (see
 :doc:`profiles`) or from arbitrary tensors:
@@ -68,9 +72,9 @@ Retrieve spatial coordinates and bounds:
 
 .. code-block:: python
 
-    x, y = field.meshgrid()      # 2D coordinate arrays
-    bounds = field.bounds()       # [y_min, y_max, x_min, x_max]
-    length = field.length()       # Physical extent [Ly, Lx]
+    x, y = field.meshgrid()     # 2D coordinate arrays
+    bounds = field.bounds()     # [y_min, y_max, x_min, x_max]
+    length = field.length()     # Physical extent [Ly, Lx]
 
 
 Propagation
@@ -129,10 +133,16 @@ Analysis
 .. plot::
     :context: close-figs
 
-    g = Field(gaussian(300, waist_radius=500e-6))
+    g = Field(gaussian(300, waist_radius=500e-6, offset=(200e-6, 300e-6)))
     print(f"Power:    {g.power().item():.4e}")
     print(f"Centroid: ({g.centroid()[0].item():.2e}, {g.centroid()[1].item():.2e})")
     print(f"Std:      ({g.std()[0].item():.2e}, {g.std()[1].item():.2e})")
+
+.. code-block:: text
+
+    Power:    1.0000e+00
+    Centroid: (2.00e-04, 3.00e-04)
+    Std:      (2.50e-04, 2.50e-04)
 
 
 Inner Product
@@ -145,15 +155,16 @@ The overlap integral between two fields is:
     \langle \psi_1 | \psi_2 \rangle = \sum_{i,j} \psi_1^*(i,j) \, \psi_2(i,j) \, \Delta A
 
 :meth:`~torchoptics.Field.inner` returns this as a complex scalar. Taking the squared magnitude
-gives the **mode overlap**: a value in :math:`[0, 1]` when both fields are normalized to unit
-power, and a natural loss function for inverse design (see :doc:`inverse_design`):
+gives the **mode overlap** :math:`|\langle\psi_1|\psi_2\rangle|^2`: a value in :math:`[0, 1]`
+when both fields are normalized to unit power (by Cauchy–Schwarz), and a natural fidelity metric
+for inverse design (see :doc:`inverse_design`):
 
 .. code-block:: python
 
-    overlap = field_a.inner(field_b).abs().square()  # in [0, 1]
+    overlap = field_a.inner(field_b).abs().square()  # in [0, 1] if both normalized
     loss = 1 - overlap
 
-Both fields must share the same geometry.
+Both fields must share the same geometry (``shape``, ``spacing``, ``offset``, and ``z``).
 
 Modulation
 ----------
@@ -164,13 +175,19 @@ Point-wise complex multiplication:
 
     \psi'(x, y) = \mathcal{M}(x, y) \cdot \psi(x, y)
 
-This is the mechanism by which :doc:`elements <elements>` transform fields, and can be used to apply 
-arbitrary complex-valued masks:
+This is the mechanism by which :doc:`elements <elements>` transform fields, and can be used to
+apply arbitrary complex-valued masks directly. The profile may be real (amplitude mask) or
+complex (phase and amplitude):
 
 .. code-block:: python
 
+    # Complex phase mask
     profile = torch.exp(1j * torch.randn(300, 300, dtype=torch.double))
     modulated = field.modulate(profile)
+
+    # Real amplitude mask
+    from torchoptics.profiles import circle
+    apertured = field.modulate(circle(300, radius=1e-3))
 
 
 Normalization and Copying
@@ -197,7 +214,7 @@ Assignments are validated automatically; invalid values raise errors immediately
     field.spacing = (8e-6, 8e-6)
     field.offset = (100e-6, 0)
 
-Element properties work the same way; see :ref:`custom-elements`.
+Element properties work the same way.
 
 
 Visualization

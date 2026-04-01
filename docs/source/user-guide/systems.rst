@@ -51,14 +51,15 @@ Forward Pass
 ------------
 
 The :meth:`~torchoptics.System.forward` method propagates a field through every element in
-order of increasing ``z``, returning the field after the last element:
+order of increasing ``z``, returning the field immediately after the last element:
 
 .. code-block:: python
 
     input_field = Field(gaussian(shape, waist_radius=1e-3), z=0)
     output_field = system(input_field)
 
-Elements before the field's starting ``z`` are skipped.
+Elements whose ``z`` position is strictly less than the field's starting ``z`` are skipped;
+elements at exactly the field's starting ``z`` are applied.
 
 
 Measuring at Output Planes

@@ -19,12 +19,12 @@ Learn more in our [paper on arXiv](https://arxiv.org/abs/2411.18591).
 
 ## Key Features
 
-- 🌊 **Differentiable Wave Optics** — Model, analyze, and optimize optical systems using Fourier optics.
-- 🔥 **Built on PyTorch** — GPU acceleration, batch processing, and automatic differentiation.
-- 🛠️ **End-to-End Optimization** — Joint optimization of optical hardware and machine learning models.
-- 🔬 **Optical Elements** — Lenses, phase/amplitude modulators, detectors, polarizers, and more.
-- 🖼️ **Spatial Profiles** — Hermite-Gaussian, Laguerre-Gaussian, Zernike modes, gratings, and others.
-- 🔆 **Polarization and Coherence** — Simulate polarized light and fields with arbitrary spatial coherence.
+- 🌊 **Differentiable Wave Optics:** Model, analyze, and optimize optical systems using Fourier optics.
+- 🔥 **Built on PyTorch:** GPU acceleration, batch processing, and automatic differentiation.
+- 🛠️ **End-to-End Optimization:** Joint optimization of optical hardware and machine learning models.
+- 🔬 **Optical Elements:** Lenses, phase/amplitude modulators, detectors, polarizers, and more.
+- 🖼️ **Spatial Profiles:** Hermite-Gaussian, Laguerre-Gaussian, Zernike modes, gratings, and others.
+- 🔆 **Polarization and Coherence:** Simulate polarized light and fields with arbitrary spatial coherence.
 
 
 ## Installation
@@ -41,7 +41,7 @@ Full documentation is available at [torchoptics.readthedocs.io](https://torchopt
 
 ### Wave Propagation
 
-Simulate free-space propagation of an octagonal aperture:
+Simulate free-space propagation of an octagonal aperture ([full example](https://torchoptics.readthedocs.io/en/stable/examples/optical_phenomena/animate_propagation.html)):
 
 ```python
 import torch
@@ -65,8 +65,7 @@ for z in torch.linspace(0, 2, 11):
 
 ### 4f Imaging System
 
-Simulate a 4f system with a high-pass spatial filter:
-
+Simulate a 4f system with a high-pass spatial filter ([full example](https://torchoptics.readthedocs.io/en/stable/examples/optical_systems/4f_system.html)):
 ```python
 import torch
 import torchoptics
@@ -99,7 +98,7 @@ for i in range(5):
 
 ### Inverse Design
 
-Train a diffractive optical system to convert a Gaussian beam into a petal beam:
+Train a diffractive optical system to convert a Gaussian beam into a petal beam ([full example](https://torchoptics.readthedocs.io/en/stable/examples/optimization/training_petal_beam.html)):
 
 ```python
 import torch

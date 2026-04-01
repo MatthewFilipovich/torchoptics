@@ -2,9 +2,9 @@ Configuration
 =============
 
 
-TorchOptics uses two global defaults — **spacing** and **wavelength** — that are applied
+TorchOptics uses two global defaults, **spacing** and **wavelength**, that are applied
 whenever a :class:`~torchoptics.Field` or :class:`~torchoptics.elements.Element` is created
-without explicitly specifying them. Set these at the start of every script.
+without explicitly specifying them.
 
 
 Setting Defaults
@@ -14,7 +14,7 @@ Setting Defaults
 
     import torchoptics
 
-    torchoptics.set_default_spacing(10e-6)       # 10 µm grid spacing
+    torchoptics.set_default_spacing(10e-6)        # 10 µm grid spacing
     torchoptics.set_default_wavelength(700e-9)    # 700 nm wavelength
 
 Retrieve the current values with the corresponding getters:
@@ -24,8 +24,9 @@ Retrieve the current values with the corresponding getters:
     torchoptics.get_default_spacing()       # Returns Tensor
     torchoptics.get_default_wavelength()    # Returns Tensor
 
-If you create a field or element without setting defaults first (and without passing ``spacing``
-or ``wavelength`` explicitly), a ``ValueError`` is raised.
+Set defaults at the start of every script, before creating any fields or elements. If you create
+a field or element without setting defaults first (and without passing ``spacing`` or
+``wavelength`` explicitly), a ``ValueError`` is raised.
 
 
 Spacing
@@ -54,9 +55,10 @@ Spacing can be **isotropic** (scalar) or **anisotropic** (2-element tuple):
 Wavelength
 ----------
 
-The wavelength :math:`\lambda` sets the monochromatic operating wavelength used by propagation
-methods, wavelength-dependent elements like :class:`~torchoptics.elements.Lens`, and profile
-functions like :func:`~torchoptics.profiles.gaussian`.
+The wavelength :math:`\lambda` sets the monochromatic operating wavelength for any
+:class:`~torchoptics.Field` created without an explicit ``wavelength`` argument. It is used by
+propagation algorithms, wavelength-dependent elements like :class:`~torchoptics.elements.Lens`,
+and beam profile functions like :func:`~torchoptics.profiles.gaussian`.
 
 
 Per-Object Overrides
@@ -82,6 +84,8 @@ All tensors default to ``torch.float64`` (double precision), which provides high
 accuracy for phase-sensitive wave optics. Switch to single precision for faster computation:
 
 .. code-block:: python
+
+    import torch
 
     torchoptics.set_default_dtype(torch.float32)
 
