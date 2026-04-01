@@ -77,14 +77,14 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 torchoptics.set_default_spacing(10e-6)
 torchoptics.set_default_wavelength(700e-9)
 
-shape = 1000
-f = 200e-3
+shape = 500  # Number of grid points in each dimension
+f = 50e-3  # Lens focal length (m)
 
-input_field = Field(checkerboard(shape, tile_length=400e-6, num_tiles=15)).to(device)
+input_field = Field(checkerboard(shape, tile_length=200e-6, num_tiles=15)).to(device)
 
 system = System(
     Lens(shape, f, z=1 * f),
-    AmplitudeModulator(1 - circle(shape, radius=5e-4), z=2 * f),
+    AmplitudeModulator(1 - circle(shape, radius=200e-6), z=2 * f),
     Lens(shape, f, z=3 * f),
 ).to(device)
 

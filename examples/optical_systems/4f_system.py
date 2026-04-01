@@ -39,12 +39,12 @@ from torchoptics.profiles import checkerboard, circle
 # A checkerboard input field tests both low- and high-frequency response,
 # since a checkerboard contains spatial frequencies near its fundamental tile period.
 
-shape = 1000  # Grid size (number of points per dimension)
+shape = 500  # Grid size (number of points per dimension)
 spacing = 10e-6  # Grid spacing (m)
 wavelength = 700e-9  # Wavelength (m)
-focal_length = 200e-3  # Lens focal length (m)
+focal_length = 50e-3  # Lens focal length (m)
 
-tile_length = 400e-6  # Checkerboard tile size (m)
+tile_length = 200e-6  # Checkerboard tile size (m)
 num_tiles = 15  # Number of tiles in each dimension
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -90,7 +90,7 @@ plt.show()
 # frequencies, leaving only the low-frequency content. The result is a blurred
 # version of the input; edges are smoothed and fine detail is lost.
 
-radius = 500e-6  # Low-pass filter radius in the Fourier plane (m)
+radius = 200e-6  # Low-pass filter radius in the Fourier plane (m)
 low_pass_profile = circle(shape, radius)
 
 low_pass_4f_system = System(

@@ -62,8 +62,8 @@ Let's create a field from a circular aperture:
 .. plot::
     :context: close-figs
 
-    shape = 1000  # 1000×1000 grid (10 mm × 10 mm physical extent)
-    field = Field(circle(shape, radius=2e-3))
+    shape = 500  # 500×500 grid (5 mm × 5 mm physical extent)
+    field = Field(circle(shape, radius=1e-3))
     field.visualize(title="Circular Aperture (z = 0)")
 
 Use :meth:`~torchoptics.Field.propagate_to_z` to propagate a field through free space. As light
@@ -73,13 +73,13 @@ travels, it diffracts, producing characteristic patterns at different distances:
     :context: close-figs
 
     # Near-field (Fresnel) diffraction
-    field.propagate_to_z(0.5).visualize(title="z = 0.5 m  (Fresnel region)")
+    field.propagate_to_z(0.2).visualize(title="z = 0.2 m  (Fresnel region)")
 
 .. plot::
     :context: close-figs
 
     # Far-field (Fraunhofer) diffraction: the Airy pattern
-    field.propagate_to_z(10.0).visualize(title="z = 10.0 m  (Fraunhofer region)")
+    field.propagate_to_z(2.0).visualize(title="z = 2.0 m  (Fraunhofer region)")
 
 Close to the aperture (the Fresnel region), diffraction produces fringes near the edges. Far away
 (the Fraunhofer region), the wavefront converges to the `Airy pattern
@@ -107,18 +107,18 @@ where :math:`r = \sqrt{x^2 + y^2}`, :math:`R` is the aperture radius (half the l
 physical extent), :math:`\lambda` is the wavelength, and :math:`f` is the focal length.
 
 Calling an element on a field (``lens(field)``) applies this transformation. Let's focus a Gaussian
-beam with a 400 mm lens:
+beam with a 200 mm lens:
 
 .. plot::
     :context: close-figs
 
-    gaussian_beam = Field(gaussian(shape, waist_radius=3e-3))
+    gaussian_beam = Field(gaussian(shape, waist_radius=1e-3))
     gaussian_beam.visualize(title="Gaussian Beam (z = 0)")
 
 .. plot::
     :context: close-figs
 
-    f = 1  # Focal length: 1 m
+    f = 200e-3  # Focal length: 200 mm
     lens = Lens(shape, f, z=0)
 
     focused = lens(gaussian_beam).propagate_to_z(f)
@@ -144,15 +144,15 @@ blocks low spatial frequencies, extracting edges from a checkerboard:
 .. plot::
     :context: close-figs
 
-    input_field = Field(checkerboard(shape, tile_length=400e-6, num_tiles=15))
+    input_field = Field(checkerboard(shape, tile_length=200e-6, num_tiles=15))
     input_field.visualize(title="Input Field", vmax=1)
 
 .. plot::
     :context: close-figs
 
     # High-pass filter at the Fourier plane (z = 2f)
-    f = 200e-3  # Focal length: 200 mm
-    filter_mask = 1 - circle(shape, radius=500e-6)
+    f = 50e-3  # Focal length: 50 mm
+    filter_mask = 1 - circle(shape, radius=200e-6)
     aperture = AmplitudeModulator(filter_mask, z=2 * f)
 
     aperture.visualize(title="High-Pass Filter at Fourier Plane")
